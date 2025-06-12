@@ -1,0 +1,521 @@
+/* Navbar */
+.custom-navbar {
+    background-color: #201E15 !important;
+}
+
+/* Logo: nổi bật và rõ */
+.custom-navbar .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+/* Các item ở giữa (menu) rõ hơn, đẹp hơn */
+.custom-navbar .nav-link {
+    color: #f5f5f5 !important;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+/* Gạch chân nhỏ khi hover (nhẹ nhàng sang trọng) */
+.custom-navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+    background-color: #d4af37; /* vàng sang */
+    transition: width 0.3s ease-in-out;
+}
+
+.custom-navbar .nav-link:hover::after,
+.custom-navbar .nav-link:focus::after {
+    width: 100%;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #ffe58a !important;
+}
+
+/* Nút đăng nhập / đăng ký: màu tinh tế hơn */
+.custom-navbar .btn-outline-primary {
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    font-weight: 500;
+    padding: 6px 16px;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .btn-outline-primary:hover {
+    background-color: #d4af37;
+    color: #201E15;
+}
+
+/* Responsive chỉnh nhẹ khoảng cách */
+@media (max-width: 992px) {
+    .custom-navbar .btn-outline-primary {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* khung carousel */
+.carousel-item {
+    aspect-ratio: 18 / 5; /* Giảm tỉ lệ chiều cao để không quá dày */
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        aspect-ratio: 4 / 3; /* Tỉ lệ cao hơn chút cho màn nhỏ */
+    }
+}
+
+.carousel-container {
+    margin-top: 20px;
+    margin-bottom: 30px; /* Giảm khoảng cách dưới carousel */
+}
+
+
+
+
+/* Service */
+.section-title {
+    font-weight: bold;
+    color:  #1d1d1b;
+    margin-bottom: 20px;
+    padding-left: 5px;
+    border-left: 4px solid #4a90e2;
+    margin-top: -20px;
+}
+.service-card {
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+.service-card img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+.service-info {
+    padding: 16px;
+    color:  #1d1d1b;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.service-info h5 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.service-info p {
+    font-size: 0.95rem;
+    color:  #1d1d1b;
+    margin: 0;
+    font-weight: 500;
+}
+.container {
+    margin-top: 20px;
+}
+.row.mb-4 {
+    margin-bottom: 30px;
+}
+
+
+
+
+/* Cam kết dịch vụ section */
+.commitment-section {
+    background-color: #FFFFFF;
+    padding: 40px 0;
+    margin-top: -80px;
+}
+
+.commitment-header {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.commitment-title {
+    font-weight: bold;
+    color: #0d3b66;
+    margin: 0 0 10px 0;
+    padding-left: 5px;
+    border-left: 4px solid #4a90e2;
+    font-size: 1.5rem;
+}
+
+.subtitle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.commitment-subtitle {
+    color: #666;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.commitment-link {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 15px;
+    white-space: nowrap;
+}
+
+.commitment-link:hover {
+    color: #0056b3;
+}
+
+/* Banner styling similar to screenshot */
+.commitment-banner {
+    background-color: #1e3a5f;
+    height: 200px;
+    border-radius: 16px;
+    position: relative;
+    margin-bottom: 30px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.commitment-banner-content {
+    position: relative;
+    text-align: center;
+    color: white;
+    padding: 0 15px;
+}
+
+.banner-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.banner-subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+/* Feature boxes - now with 2 columns */
+.commitment-features {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.commitment-feature {
+    text-align: center;
+    padding: 20px 15px;
+}
+
+.feature-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.feature-number {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.feature-unit {
+    font-size: 1.3rem;
+    color: #1e3a8a;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.feature-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.feature-description {
+    color: #555;
+    font-size: 1.1rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .subtitle-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .commitment-link {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+
+    .commitment-feature {
+        margin-bottom: 15px;
+    }
+
+    .banner-title {
+        font-size: 1.5rem;
+    }
+
+    .banner-subtitle {
+        font-size: 1rem;
+    }
+
+    .feature-number {
+        font-size: 3.5rem;
+    }
+
+    .feature-title {
+        font-size: 1.7rem;
+    }
+}
+
+
+
+.antam-tintruong-section {
+    background-color: #FFFFFF;
+    padding: 40px 0;
+    margin-top: -100px;
+}
+
+.section-header {
+    margin-bottom: 30px;
+    text-align: relative;
+}
+
+.section-title {
+    font-weight: bold;
+    color: #0d3b66;
+    margin: 0 0 10px 0;
+    padding-left: 5px;
+    border-left: 4px solid #4a90e2;
+    font-size: 1.5rem;
+    display: inline-block;
+}
+
+.section-subtitle {
+    color: #666;
+    margin: 10px 0 0 0;
+    font-size: 1.1rem;
+}
+
+.service-row {
+    margin-top: 20px;
+}
+
+.service-support-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-support-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.service-support-img {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.service-support-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.service-support-card:hover .service-support-img img {
+    transform: scale(1.05);
+}
+
+.service-support-info {
+    padding: 20px;
+    text-align: center;
+    background-color: #fff;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.service-support-info h5 {
+    font-weight: 600;
+    color: #1e3a8a;
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+.card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+/*Map*/
+.map-section{
+    background:#fff;
+}
+/* CSS để thay đổi màu của h2 trong map-section */
+.map-section h2 {
+    color: #0D3B66; /* Màu xanh dương */
+    font-size: 2rem; /* Tùy chỉnh kích thước chữ */
+    font-weight: bold; /* Làm chữ đậm */
+    text-align: center; /* Căn giữa */
+}
+
+.map-container{
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    height: 28.125rem;
+}
+.map-container iframe{
+    width: 100%;
+    height: 100%;
+    border:none;
+}
+
+
+/*footer*/
+.footer {
+    background-color: #201E15;
+    color: #f5f5f5;
+    padding: 40px 0 20px;
+    margin-top: 20px;
+}
+
+.footer-logo {
+    max-width: 180px;
+    margin-bottom: 20px;
+  
+}
+
+.footer-title {
+    font-weight: 700;
+    color: #d4af37;
+    margin-bottom: 15px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 2px;
+    background-color: #d4af37;
+}
+
+.footer-links {
+    list-style: none;
+    padding-left: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: #f5f5f5;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+}
+
+.footer-links a:hover {
+    color: #d4af37;
+}
+
+.footer-contact {
+    margin-bottom: 15px;
+}
+
+.footer-contact i {
+    color: #d4af37;
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.footer-contact span {
+    display: inline-block;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+.social-icons a {
+    display: inline-block;
+    color: #f5f5f5;
+    margin-right: 15px;
+    font-size: 20px;
+    transition: color 0.2s ease;
+}
+.social-icons a:hover {
+    color: #d4af37;
+}
+@media (max-width: 767px) {
+    .footer-col {
+        margin-bottom: 30px;
+    }
+}

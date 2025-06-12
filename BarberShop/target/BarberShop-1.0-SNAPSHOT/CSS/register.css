@@ -1,0 +1,353 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65); /* Slightly darker overlay for better contrast */
+    z-index: -1;
+}
+
+.register-container {
+    width: 100%;
+    max-width: 520px; /* Slightly wider for balance */
+    background-color: rgba(255, 255, 255, 0.97); /* Slightly more opaque for readability */
+    border-radius: 20px; /* Softer corners */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); /* Stronger shadow for depth */
+    overflow: hidden;
+    padding: 50px 40px; /* More padding for spacious feel */
+    position: relative;
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.logo h1 {
+    font-size: 36px; /* Larger for emphasis */
+    font-weight: 800;
+    color: #222;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.logo span {
+    color: #d4a373; /* Warmer gold tone to match barber theme */
+}
+
+.logo p {
+    font-size: 15px;
+    color: #666;
+    margin-top: 8px;
+    letter-spacing: 1.5px;
+    font-style: italic;
+}
+
+.logo::after {
+    content: '';
+    display: block;
+    width: 80px; /* Wider underline */
+    height: 4px;
+    background: linear-gradient(90deg, #d4a373, #a67c00);
+    margin: 20px auto 0;
+}
+
+.form-group {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #444;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 16px 16px 50px; /* More padding for comfort */
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.form-group input:focus {
+    border-color: #d4a373;
+    box-shadow: 0 0 0 4px rgba(212, 163, 115, 0.25);
+    outline: none;
+    background-color: #fefefe;
+}
+
+.form-group i {
+    position: absolute;
+    left: 18px;
+    top: 48px; /* Adjusted for input height */
+    color: #888;
+    font-size: 18px;
+}
+
+.form-columns {
+    display: flex;
+    gap: 25px;
+}
+
+.form-columns .form-group {
+    flex: 1;
+}
+
+.password-requirements {
+    font-size: 13px;
+    color: #666;
+    margin-top: 8px;
+    padding-left: 10px;
+}
+
+.password-requirements ul {
+    list-style-type: none;
+    margin-top: 8px;
+    padding-left: 0;
+}
+
+.password-requirements li {
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.password-requirements li i {
+    margin-right: 8px;
+    position: static;
+    font-size: 12px;
+}
+
+.terms {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.terms input {
+    margin-right: 12px;
+    margin-top: 6px;
+    width: 18px;
+    height: 18px;
+    accent-color: #d4a373;
+}
+
+.terms label {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.terms a {
+    color: #d4a373;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.terms a:hover {
+    color: #a67c00;
+    text-decoration: underline;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #d4a373, #a67c00);
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(212, 163, 115, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.register-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(212, 163, 115, 0.5);
+    background: linear-gradient(90deg, #e6b98a, #b88e00);
+}
+
+.social-register {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.social-register p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 15px;
+    position: relative;
+}
+
+.social-register p::before,
+.social-register p::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.social-register p::before {
+    left: 0;
+}
+
+.social-register p::after {
+    right: 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background-color: #f8f8f8;
+    color: #444;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    font-size: 22px;
+}
+
+.facebook:hover {
+    background-color: #3b5998;
+    color: white;
+}
+
+.google:hover {
+    background-color: #db4437;
+    color: white;
+}
+
+.twitter:hover {
+    background-color: #1da1f2;
+    color: white;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 18px;
+    top: 48px;
+    color: #888;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 15px;
+    color: #555;
+}
+
+.login-link a {
+    color: #d4a373;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 6px;
+}
+
+.login-link a:hover {
+    color: #a67c00;
+    text-decoration: underline;
+}
+
+.scissor-icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    color: #d4a373;
+    opacity: 0.2;
+}
+
+.scissor-1 {
+    top: 25px;
+    right: 35px;
+    transform: rotate(45deg);
+}
+
+.scissor-2 {
+    bottom: 25px;
+    left: 35px;
+    transform: rotate(-45deg);
+}
+
+@media (max-width: 580px) {
+    .register-container {
+        padding: 35px 25px;
+    }
+
+    .logo h1 {
+        font-size: 30px;
+    }
+
+    .social-icons {
+        gap: 18px;
+    }
+
+    .social-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .form-columns {
+        flex-direction: column;
+        gap: 0;
+    }
+}
