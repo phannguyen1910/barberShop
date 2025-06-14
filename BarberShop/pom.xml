@@ -98,7 +98,12 @@
             <artifactId>json</artifactId>
             <version>20240303</version> <!-- Hoặc phiên bản mới nhất -->
         </dependency>
-
+        <dependency>
+            <groupId>org.eclipse.scout.rt</groupId>
+            <artifactId>org.eclipse.scout.json</artifactId>
+            <version>25.1.14</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     
    

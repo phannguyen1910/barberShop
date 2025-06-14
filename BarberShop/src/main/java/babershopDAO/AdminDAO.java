@@ -49,10 +49,8 @@ public class AdminDAO {
         }
         return null;
     }
-  
-  
 
-      public static Admin getAdminByAccountId(int accountId) {
+    public static Admin getAdminByAccountId(int accountId) {
         String sql = "SELECT * FROM [Admin] WHERE accountId = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -70,8 +68,6 @@ public class AdminDAO {
         }
         return null;
     }
-      
-      
 
     public static List<Admin> getAllAdmin() {
         List<Admin> admins = new ArrayList<>();
@@ -94,9 +90,6 @@ public class AdminDAO {
         return null;
     }
 
-    
-    
-    
     public static void insertAdmin(String firstName, String lastName, String email, String password, String phoneNumber) {
         String sql = "INSERT INTO Admin (first_name, last_name, email, password, phone_number) VALUES (?,?,?,?,?)";
         try (Connection con = getConnect()) {
@@ -129,6 +122,4 @@ public class AdminDAO {
             System.out.println(e);
         }
     }
-    
-    
 }
