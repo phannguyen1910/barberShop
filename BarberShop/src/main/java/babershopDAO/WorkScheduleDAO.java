@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class WorkScheduleDAO {
             System.out.println("Failed to establish database connection");
             return false;
         }
-        String sql = "INSERT INTO [WorkSchedule] (staffId, workDate, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO [WorkSchedule] (staffId, workDate, status) VALUES (?,?,?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, schedule.getStaffId());
             ps.setObject(2, schedule.getWorkDate());
@@ -133,8 +134,8 @@ public class WorkScheduleDAO {
 
     public List<WorkSchedule> getAllOffSchedules() {
         List<WorkSchedule> schedules = new ArrayList<>();
-        String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName " +
-                     "FROM [WorkSchedule] ws JOIN [Staff] s ON ws.staffId = s.id WHERE ws.status = 'off'";
+        String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName "
+                + "FROM [WorkSchedule] ws JOIN [Staff] s ON ws.staffId = s.id WHERE ws.status = 'off'";
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -198,5 +199,54 @@ public class WorkScheduleDAO {
             System.out.println("Error fetching staff name: " + e.getMessage());
         }
         return "Unknown Staff";
+    }
+
+    public int getStaffIdByAccountId(int accountId) {
+        String sql = "SELECT id FROM [Staff] WHERE accountId = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int staffId = rs.getInt("id");
+                System.out.println("Found staffId " + staffId + " for accountId " + accountId);
+                return staffId;
+            } else {
+                System.out.println("No staffId found for accountId " + accountId);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching staff by account ID: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int getAccountIdByEmailAndPassword(String email, String password) {
+        String sql = "SELECT accountId FROM [Account] WHERE email = ? AND password = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, password); // Nên mã hóa password trong thực tế
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("accountId");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching accountId: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // Thêm phương thức isDuplicateSchedule
+    public boolean isDuplicateSchedule(int staffId, LocalDate workDate) {
+        String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND workDate = ? AND status = 'off'";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, staffId);
+            ps.setObject(2, workDate);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking duplicate schedule: " + e.getMessage());
+        }
+        return false;
     }
 }

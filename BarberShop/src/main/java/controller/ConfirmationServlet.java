@@ -1,10 +1,7 @@
 package controller;
 
-import babershopDAO.AppointmentDAO;
 import babershopDAO.ServiceDAO;
-import babershopDAO.StaffDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -38,7 +35,7 @@ public class ConfirmationServlet extends HttpServlet {
         List<Service> listService = new ArrayList<>();
         for (int id : serviceIds) {
             amount += serviceDAO.getServicePriceById(id);
-            Service service = serviceDAO.getServiceById(id);  // ✅ cần để hiển thị tên, giá
+            Service service = serviceDAO.getServiceById(id);
             if (service != null) listService.add(service);
         }
         amount *= numberOfPeople;

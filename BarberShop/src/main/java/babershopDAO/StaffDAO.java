@@ -1,7 +1,5 @@
 package babershopDAO;
 
-import static babershopDAO.CustomerDAO.getConnect;
-import babershopDatabase.databaseInfo;
 import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;
@@ -33,26 +31,30 @@ public class StaffDAO {
         return null;
     }
 
-    public static Staff getStaffByAccountId(int staffId) {
-        String sql = "SELECT * FROM [Staff] WHERE id = ?";
+    public static Staff getStaffByAccountId(int accountId) {
+        String sql = "SELECT * FROM [Staff] WHERE id = ? AND EXISTS (SELECT 1 FROM [Account] WHERE id = ? AND role = 'Staff')";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, staffId);
+            ps.setInt(1, accountId);
+            ps.setInt(2, accountId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
+                int id = rs.getInt("id");
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 String img = rs.getString("img");
-                Staff staff = new Staff(firstName, lastName, img);
-                System.out.println(staff);
+                Staff staff = new Staff(id, firstName, lastName, img);
+                System.out.println("Found staff for accountId " + accountId + ": " + staff);
                 return staff;
+            } else {
+                System.out.println("No staff found for accountId: " + accountId);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Error fetching staff: " + e);
         }
         return null;
     }
-//da sua chu y xem lai
+
     public static List<Staff> getAllStaffs() {
 
         List<Staff> staffs = new ArrayList<>();
@@ -75,25 +77,21 @@ public class StaffDAO {
         }
         return null;
     }
-    public Staff getStaffById(int staffId) {
-    Staff staff = null;
-    String sql = "SELECT firstName, lastName FROM Staff WHERE id = ?";
-    try (Connection con = getConnect()) {
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, staffId); // SET GIÁ TRỊ CHO ?
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            String firstName = rs.getString("firstName");
-            String lastName = rs.getString("lastName");
-            staff = new Staff(staffId, firstName, lastName);
-        }
-    } catch (Exception e) {
-        e.printStackTrace(); // Đừng để trống
-    }
-    return staff;
-}
 
-
+ 
+  public static void insertStaff(String firstName, String lastName, String email, String password, String phoneNumber) {
+        String sql = "INSERT INTO Staff (first_name, last_name, email, password, phone_number) VALUES (?,?,?,?,?)";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, firstName);
+            ps.setString(2, lastName);
+            ps.setString(3, email);
+            ps.setString(4, password);
+            ps.setString(5, phoneNumber);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);}
+  }
 
     public static void updateStaff(int id, String firstName, String lastName, String email, String password, String phoneNumber) {
 
@@ -206,6 +204,24 @@ public class StaffDAO {
             System.out.println(e);
         }
         return false;
+    }
+
+    public Staff getStaffById(int staffId) {
+        Staff staff = null;
+        String sql = "SELECT firstName, lastName FROM Staff WHERE id = ?";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, staffId); // SET GIÁ TRỊ CHO ?
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String firstName = rs.getString("firstName");
+                String lastName = rs.getString("lastName");
+                staff = new Staff(staffId, firstName, lastName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Đừng để trống
+        }
+        return staff;
     }
 
     public static void main(String[] args) {
