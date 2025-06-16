@@ -573,7 +573,7 @@
                     this.disallowedDays = [];
                     this.registeredDays = {};
                     this.monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-                    console.log("Staff ID from session: " + ${sessionScope.staff.id});
+                    console.log("Staff ID from session: " + ${sessionScope.staff.accountId});
                     this.init();
                     this.loadRegistrations();
                     this.loadDisallowedDays();
@@ -627,7 +627,7 @@
                 }
 
                 loadRegisteredDays() {
-                    const staffId = ${sessionScope.staff.id};
+                    const staffId = ${sessionScope.staff.accountId};
                     const year = this.currentDate.getFullYear();
                     const month = this.currentDate.getMonth() + 1;
                     fetch('${pageContext.request.contextPath}/ViewScheduleServlet?action=getRegisteredDays&staffId=' + staffId + '&year=' + year + '&month=' + month, {

@@ -36,29 +36,31 @@ public class StaffDAO {
         return null;
     }
 
-    public static Staff getStaffByAccountId(int staffId) {
-        String sql = "SELECT * FROM [Staff] WHERE id = ?";
+    public static Staff getStaffByAccountId(int accountId) {
+        String sql = "SELECT * FROM [Staff] WHERE id = ? AND EXISTS (SELECT 1 FROM [Account] WHERE id = ? AND role = 'Staff')";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, staffId);
+            ps.setInt(1, accountId);
+            ps.setInt(2, accountId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
+                int id = rs.getInt("id");
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 String img = rs.getString("img");
-                Staff staff = new Staff(firstName, lastName, img);
-                System.out.println(staff);
+                Staff staff = new Staff(id, firstName, lastName, img);
+                System.out.println("Found staff for accountId " + accountId + ": " + staff);
                 return staff;
+            } else {
+                System.out.println("No staff found for accountId: " + accountId);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Error fetching staff: " + e);
         }
         return null;
     }
 
-
-
-     public static List<Staff> getAllStaffs() {
+    public static List<Staff> getAllStaffs() {
 
         List<Staff> staffs = new ArrayList<>();
         String sql = "SELECT id, firstName, lastName, img FROM [Staff]";
@@ -80,7 +82,6 @@ public class StaffDAO {
         }
         return null;
     }
-
 
     public static void insertStaff(String firstName, String lastName, String email, String password, String phoneNumber) {
         String sql = "INSERT INTO Staff (first_name, last_name, email, password, phone_number) VALUES (?,?,?,?,?)";
@@ -129,25 +130,24 @@ public class StaffDAO {
         }
         return false;
     }
-    
-   public Staff getStaffById(int staffId) {
-    Staff staff = null;
-    String sql = "SELECT firstName, lastName FROM Staff WHERE id = ?";
-    try (Connection con = getConnect()) {
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, staffId); // SET GIÁ TRỊ CHO ?
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            String firstName = rs.getString("firstName");
-            String lastName = rs.getString("lastName");
-            staff = new Staff(staffId, firstName, lastName);
-        }
-    } catch (Exception e) {
-        e.printStackTrace(); // Đừng để trống
-    }
-    return staff;
-}
 
+    public Staff getStaffById(int staffId) {
+        Staff staff = null;
+        String sql = "SELECT firstName, lastName FROM Staff WHERE id = ?";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, staffId); // SET GIÁ TRỊ CHO ?
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String firstName = rs.getString("firstName");
+                String lastName = rs.getString("lastName");
+                staff = new Staff(staffId, firstName, lastName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Đừng để trống
+        }
+        return staff;
+    }
 
     public static void main(String[] args) {
         System.out.println("1");
