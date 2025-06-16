@@ -671,18 +671,11 @@
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
-
                     </div>
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/viewschedule.jsp" class="nav-link active">
-                            <i class="fas fa-user-tie"></i>
-                            <span>View Schedule</span>
                         </a>
                     </div>
                     <div class="nav-item">
@@ -715,8 +708,19 @@
                             <span>Quản lý Doanh thu</span>
                         </a>
                     </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Lịch làm nhân viên</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Quản lí ngày nghỉ</span>
+                        </a>
+                    </div>
                 </div>
-
             </nav>
 
             <!-- Main Content -->
