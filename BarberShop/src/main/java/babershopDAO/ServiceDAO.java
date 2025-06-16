@@ -190,5 +190,43 @@ public class ServiceDAO {
         }
         return null;
     }
+    public double getServicePriceById(int serviceId) {
+    String sql = "SELECT price FROM Service WHERE id = ?";
+    try (Connection con = AppointmentDAO.getConnect();  // dùng chung connection nếu ServiceDAO không có riêng
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, serviceId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("price");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+
+    public Service getServiceById(int id) {
+    String sql = "SELECT id, name, price FROM Service WHERE id = ?";
+    try (Connection con = AppointmentDAO.getConnect();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Service service = new Service();
+            service.setId(rs.getInt("id"));
+            service.setName(rs.getString("name"));
+            service.setPrice(rs.getFloat("price"));
+            return service;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+    
+    
+
 
 }

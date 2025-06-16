@@ -17,6 +17,7 @@ D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ViewScheduleServlet
 D:\BarberShop\barberShop\BarberShop\src\main\java\AppointmentManager\UpdateAppointmentStatusServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ValidateOTP.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\controller\EditProfileServlet.java
+D:\BarberShop\barberShop\BarberShop\src\main\java\payment\PaymentServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\controller\BanStaffServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\controller\HolidayServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\model\Payment.java
@@ -31,8 +32,10 @@ D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\CustomerDAO.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\AdminDAO.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ChangePasswordServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\model\Feedback.java
+D:\BarberShop\barberShop\BarberShop\src\main\java\payment\VnpayReturnServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\StaffDAO.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ViewCustomerServlet.java
+D:\BarberShop\barberShop\BarberShop\src\main\java\payment\Config.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\AppointmentManager\DashBoardServlet.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\HolidayDAO.java
 D:\BarberShop\barberShop\BarberShop\src\main\java\model\Account.java

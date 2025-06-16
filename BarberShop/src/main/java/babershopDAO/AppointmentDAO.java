@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,7 +61,7 @@ public class AppointmentDAO {
                 if (customer != null) {
                     appointment.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
                 }
-                
+
                 float totalAmount = getFeeOfAppointment(appointment.getId());
                 appointment.setTotalAmount(totalAmount);
 
@@ -177,22 +178,19 @@ public class AppointmentDAO {
             System.out.println(e);
         }
     }
-    
-    
+
     public boolean updateAppointmentStatus(int id, String status) {
-    String sql = "UPDATE appointments SET status = ? WHERE id = ?";
-    try (Connection con = getConnect();
-         PreparedStatement stmt = con.prepareStatement(sql)) {
-        stmt.setString(1, status);
-        stmt.setInt(2, id);
-        int rowsAffected = stmt.executeUpdate();
-        return rowsAffected > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
+        String sql = "UPDATE appointments SET status = ? WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, id);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
-    
 
     public void updateAppointment(int id, int staffId) {
 
@@ -219,7 +217,7 @@ public class AppointmentDAO {
     }
 
     public String Booking(int customerId, int staffId, String appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-        String insertAppointment = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'pending')";
+        String insertAppointment = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'processing')";
         String insertAppointmentService = "INSERT INTO Appointment_Service (appointmentId, serviceId, quantity) VALUES (?, ?, 1)";
         String checkDuplicate = "SELECT COUNT(*) FROM Appointment WHERE staffId = ? AND appointmentTime = ?";
 
@@ -340,6 +338,23 @@ public class AppointmentDAO {
             e.printStackTrace(); // hoặc log
         }
         return vouchers; // Luôn trả về danh sách, có thể rỗng nếu lỗi
+    }
+    // Trong AppointmentDAO.java
+
+    public int getLastInsertedAppointmentId() {
+        String sql = "SELECT TOP 1 id FROM Appointment ORDER BY id DESC";
+
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1; // Trả -1 nếu có lỗi hoặc không tìm thấy
     }
 
 }
