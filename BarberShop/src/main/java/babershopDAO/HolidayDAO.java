@@ -30,9 +30,7 @@ public class HolidayDAO {
     public static List<Holiday> getAllHolidays() {
         List<Holiday> list = new ArrayList<>();
         String sql = "SELECT date, name, status FROM Holiday ORDER BY date ASC";
-        try (Connection con = getConnect();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 String date = rs.getString("date");
                 String name = rs.getString("name");
@@ -45,10 +43,23 @@ public class HolidayDAO {
         return list;
     }
 
+    public boolean isLockedHoliday(Date date) {
+    String sql = "SELECT COUNT(*) FROM Holiday WHERE date = ? AND status = 'locked'";
+    try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setDate(1, date);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
     public static void insertHoliday(String date, String name, String status) {
         String sql = "INSERT INTO Holiday (date, name, status) VALUES (?, ?, ?)";
-        try (Connection con = getConnect();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, date);
             ps.setString(2, name);
             ps.setString(3, status);
@@ -60,8 +71,7 @@ public class HolidayDAO {
 
     public static void updateHoliday(String date, String name, String status) {
         String sql = "UPDATE Holiday SET name = ?, status = ? WHERE date = ?";
-        try (Connection con = getConnect();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, name);
             ps.setString(2, status);
             ps.setString(3, date);
@@ -73,8 +83,7 @@ public class HolidayDAO {
 
     public static void deleteHolidayByDate(String date) {
         String sql = "DELETE FROM Holiday WHERE date = ?";
-        try (Connection con = getConnect();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, date);
             ps.executeUpdate();
         } catch (Exception e) {
@@ -84,8 +93,7 @@ public class HolidayDAO {
 
     public static boolean isExistingHoliday(String date) {
         String sql = "SELECT COUNT(*) FROM Holiday WHERE date = ?";
-        try (Connection con = getConnect();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, date);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -105,4 +113,3 @@ public class HolidayDAO {
         }
     }
 }
-    

@@ -791,7 +791,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link active">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link ">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
@@ -850,8 +850,8 @@
             <main class="main-content" aria-label="Nội dung chính">
                 <div class="header">
                     <div>
-                        <h1><i class="fas fa-calendar-edit"></i> Quản Lý Lịch Làm Việc</h1>
-                        <p>Quản lý ngày lễ và lịch làm việc của nhân viên</p>
+                        <h1><i class="fas fa-calendar-edit"></i> Quản Lý Ngày Nghỉ</h1>
+                        <p>Quản lý ngày lễ, ngày nghỉ của Barbershop </p>
                     </div>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
                         <i class="fas fa-plus"></i> Thêm Ngày Lễ
@@ -874,12 +874,8 @@
 
                 <div class="schedule-container">
                     <div class="control-tabs">
-                        <button class="tab-btn active" onclick="switchTab('holidays')" id="holidaysTab" aria-label="Quản lý ngày lễ">
-                            <i class="fas fa-calendar-times"></i> Quản Lý Ngày Lễ
-                        </button>
-                        <button class="tab-btn" onclick="switchTab('staff')" id="staffTab" aria-label="Quản lý lịch nhân viên">
-                            <i class="fas fa-user-clock"></i> Quản Lý Lịch Staff
-                        </button>
+                        
+                        
                     </div>
 
                     <!-- Tab Quản lý Ngày Lễ -->

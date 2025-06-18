@@ -498,7 +498,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link active">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link ">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>

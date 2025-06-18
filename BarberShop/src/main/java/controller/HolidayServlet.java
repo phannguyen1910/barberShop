@@ -32,6 +32,7 @@ public class HolidayServlet extends HttpServlet {
         response.getWriter().write("{\"success\":true}");
     }
 
+
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String date = request.getParameter("date");
