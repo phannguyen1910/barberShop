@@ -158,10 +158,7 @@ public class BookingServlet extends HttpServlet {
             LocalDate appointmentDate = LocalDate.parse(appointmentDateStr);
             // 🔹 Kiểm tra ngày nghỉ lễ
             HolidayDAO holidayDAO = new HolidayDAO();
-            if (holidayDAO.isHoliday(java.sql.Date.valueOf(appointmentDate))) {
-                throw new IllegalArgumentException("Ngày này là ngày nghỉ. Vui lòng chọn ngày khác!");
-                
-            }
+          
 
             LocalTime appointmentTime = LocalTime.parse(appointmentTimeStr);
             LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);

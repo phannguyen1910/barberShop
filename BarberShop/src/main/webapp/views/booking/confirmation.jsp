@@ -179,9 +179,8 @@
                     <input type="hidden" name="staffId" value="${staffId}" />
                     <input type="hidden" name="appointmentTime" value="${dateTime}" />
                     <input type="hidden" name="numberOfPeople" value="${numberOfPeople}" />
-
-                    <c:forEach var="id" items="${serviceIds}">
-                        <input type="hidden" name="serviceIds" value="${id}" />
+                    <c:forEach var="service" items="${listService}">
+                        <input type="hidden" name="serviceIds" value="${service.id}" />
                     </c:forEach>
 
                     <input type="hidden" name="totalBill" value="${totalMoney}" />

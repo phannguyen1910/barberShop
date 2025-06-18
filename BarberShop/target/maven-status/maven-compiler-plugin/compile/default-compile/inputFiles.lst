@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Customer.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\BanCustomerServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Account.java
@@ -8,6 +7,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\m
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\RegisterServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\AppointmentManager\DashBoardServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ResendOTPServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\HolidayAPI.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\LogoutServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\EditProfileServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffListServlet.java
@@ -59,65 +59,3 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\b
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Appointment.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\SendOTPServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ScheduleServlet.java
-=======
-D:\BarberShop\barberShop\BarberShop\src\main\java\AppointmentManager\ChangeStatusServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\BanCustomerServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Voucher.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\BookingServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ResendOTPServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Invoice.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\HomeServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\CustomerVoucher.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\FeedbackDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ChooseServiceServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\AddStaffServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\WorkSchedule.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\AccountDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\AppointmentDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ForgetPassword.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ViewScheduleServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\AppointmentManager\UpdateAppointmentStatusServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ValidateOTP.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\EditProfileServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\payment\PaymentServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\BanStaffServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\HolidayServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Payment.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ConfirmationServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\AddCustomerServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Holiday.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\VoucherDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\GoogleLogin.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\LoginServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ScheduleServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\CustomerDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\AdminDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ChangePasswordServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Feedback.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\payment\VnpayReturnServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\StaffDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\ViewCustomerServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\payment\Config.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\AppointmentManager\DashBoardServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\HolidayDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Account.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\RegisterServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\GoogleAccount.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\WorkScheduleDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\HolidayAPI.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\AppointmentService.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\LogoutServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\SendOTPServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Admin.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\AppointmentManager\AppointmentManagerServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\ServiceDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\controller\StaffListServlet.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDAO\InvoiceDAO.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Validation.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Appointment.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\constant\Iconstant.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Service.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Staff.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\model\Customer.java
-D:\BarberShop\barberShop\BarberShop\src\main\java\babershopDatabase\databaseInfo.java
->>>>>>> 8a362740912d175610ce11096bf4f1299500502e

@@ -29,8 +29,13 @@ public class ConfirmationServlet extends HttpServlet {
         List<Integer> serviceIds = new ArrayList<>();
         if (serviceIdParams != null) {
             for (String s : serviceIdParams) {
-                serviceIds.add(Integer.parseInt(s));
+                Integer id = Integer.parseInt(s);
+                serviceIds.add(id);
+                System.out.println(id);
             }
+
+        }else{
+            System.out.println("Khong co list ids");
         }
         ServiceDAO serviceDAO = new ServiceDAO();
         double amount = 0;
@@ -38,29 +43,23 @@ public class ConfirmationServlet extends HttpServlet {
         for (int id : serviceIds) {
             amount += serviceDAO.getServicePriceById(id);
             Service service = serviceDAO.getServiceById(id);
-            if (service != null) listService.add(service);
+            if (service != null) {
+                listService.add(service);
+            }
         }
-        
-        
-        
-   
+
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        
 
         LocalDateTime dateTime = LocalDateTime.parse(appointmentTime, outputFormatter);
-    
-        
-        
+
         amount *= numberOfPeople;
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, numberOfPeople, serviceIds);
-        if(check == true){
+        if (check == true) {
             request.getRequestDispatcher("Payment").forward(request, response);
-        }
-        else{
+        } else {
             request.getRequestDispatcher("BookingServlet").forward(request, response);
         }
-        
+
     }
 }
-

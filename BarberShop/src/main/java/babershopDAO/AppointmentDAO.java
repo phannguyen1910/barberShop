@@ -42,94 +42,85 @@ public class AppointmentDAO {
         return null;
     }
 
-   public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-    String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'pending')";
-    String sql2 = "INSERT INTO Appointment_Service (appointmentId, serviceId) VALUES (?, ?)";
-    boolean check = false;
+    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'pending')";
+        String sql2 = "INSERT INTO Appointment_Service ([appointmentId] ,[serviceId]) VALUES (?, ?)";
+        boolean check = false;
 
-    try (Connection con = getConnect()) {
-        con.setAutoCommit(false); // Bắt đầu transaction
+        try (Connection con = getConnect()) {
+            con.setAutoCommit(false); // Bắt đầu transaction
 
-        try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, customerId);
-            ps.setInt(2, staffId);
-            ps.setTimestamp(3, Timestamp.valueOf(appointmentTime)); // đúng kiểu
-            ps.setInt(4, numberOfPeople);
+            try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, customerId);
+                ps.setInt(2, staffId);
+                ps.setTimestamp(3, Timestamp.valueOf(appointmentTime)); // đúng kiểu
+                ps.setInt(4, numberOfPeople);
 
-            int rows = ps.executeUpdate();
-            if (rows == 0) {
-                System.err.println("❌ Không thể chèn Appointment (không có dòng nào được chèn).");
-                return false;
-            }
-
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    int appointmentId = rs.getInt(1);
-                    System.out.println("✅ Appointment ID đã tạo: " + appointmentId);
-
-                    try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
-                        for (int serviceId : serviceIds) {
-                            System.out.println(serviceId);
-                            ps2.setInt(1, appointmentId);
-                            ps2.setInt(2, serviceId);
-                            int affected = ps2.executeUpdate();
-                            if (affected == 0) {
-                                System.err.println("❌ Không thể thêm dịch vụ ID: " + serviceId);
-                            }
-                        }
-                    }catch(Exception e){
-                        System.out.println("lỗi");
-                    }
-
-                    con.commit();
-                    check = true;
-                } else {
-                    System.err.println("❌ Không thể lấy ID của Appointment vừa chèn.");
+                int rows = ps.executeUpdate();
+                if (rows == 0) {
+                    System.err.println("❌ Không thể chèn Appointment (không có dòng nào được chèn).");
+                    return false;
                 }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌ Lỗi khi chèn dữ liệu vào CSDL:");
-            System.err.println("Message: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            e.printStackTrace();
 
-            try {
-                con.rollback();
-                System.err.println("⚠️ Đã rollback transaction.");
-            } catch (SQLException rollbackEx) {
-                System.err.println("❌ Lỗi khi rollback: " + rollbackEx.getMessage());
-                rollbackEx.printStackTrace();
+                ResultSet rs = ps.getGeneratedKeys();
+                    if (rs.next()) {
+                        int appointmentId = rs.getInt(1);
+                        System.out.println("✅ Appointment ID đã tạo: " + appointmentId);
+                        if(serviceIds.isEmpty()){
+                            System.out.println("empty");
+                        }else{
+                            for (Integer serviceId : serviceIds) {
+                              
+                                    System.err.println("❌ Không thể thêm dịch vụ ID: " + serviceId);
+                              
+                                }
+                        }
+                            
+
+                        PreparedStatement ps2 = con.prepareStatement(sql2);
+                            for (Integer serviceId : serviceIds) {
+                                System.out.println(serviceId);
+                                ps2.setInt(1, appointmentId);
+                                ps2.setInt(2, serviceId);
+                                int affected = ps2.executeUpdate();
+                                if (affected == 0) {
+                                    System.err.println("❌ Không thể thêm dịch vụ ID: " + serviceId);
+                                }else{
+                                    System.err.println(" thêm dịch vụ thanh cong, ID: " + serviceId);
+                                }
+                            }
+
+                        con.commit();
+                        check = true;
+                    } else {
+                        System.err.println("❌ Không thể lấy ID của Appointment vừa chèn.");
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("❌ Lỗi khi chèn dữ liệu vào CSDL:");
+                System.err.println("Message: " + e.getMessage());
+                System.err.println("SQL State: " + e.getSQLState());
+                System.err.println("Error Code: " + e.getErrorCode());
+                e.printStackTrace();
             }
-        }
-    } catch (SQLException e) {
-        System.err.println("❌ Lỗi khi kết nối hoặc thao tác với CSDL:");
-        System.err.println("Message: " + e.getMessage());
-        e.printStackTrace();
+
+        return check;
     }
-
-    return check;
-}
-
-
 
     public boolean editAppointmentService(int appointmentId, int[] serviceIds, String status) throws SQLException {
         String sqlUpdateAppointment = "UPDATE Appointment SET status = ? WHERE id = ?";
         String sqlDeleteServices = "DELETE FROM Appointment_Service WHERE AppointmentId = ?";
         String sqlInsertService = "INSERT INTO Appointment_Service (ServiceId, AppointmentId) VALUES (?, ?)";
 
- 
         try (Connection con = getConnect()) {
             // Bắt đầu transaction
             con.setAutoCommit(false);
 
             try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdateAppointment); PreparedStatement psDelete = con.prepareStatement(sqlDeleteServices); PreparedStatement psInsert = con.prepareStatement(sqlInsertService)) {
 
-
                 psUpdate.setString(1, status);
                 psUpdate.setInt(2, appointmentId);
                 psUpdate.executeUpdate();
-
 
                 psDelete.setInt(1, appointmentId);
                 psDelete.executeUpdate();
@@ -138,19 +129,18 @@ public class AppointmentDAO {
                 for (int serviceId : serviceIds) {
                     psInsert.setInt(1, serviceId);
                     psInsert.setInt(2, appointmentId);
-                    psInsert.addBatch(); 
+                    psInsert.addBatch();
                 }
                 psInsert.executeBatch();
-
 
                 con.commit();
                 return true;
 
             } catch (SQLException e) {
-            
+
                 con.rollback();
                 System.err.println("Transaction is being rolled back. Error: " + e.getMessage());
-        
+
                 throw e;
             }
         }
