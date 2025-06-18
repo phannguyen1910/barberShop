@@ -37,14 +37,13 @@ public class StaffDAO {
     }
 
     public static Staff getStaffByAccountId(int accountId) {
-        String sql = "SELECT * FROM [Staff] WHERE id = ? AND EXISTS (SELECT 1 FROM [Account] WHERE id = ? AND role = 'Staff')";
+        String sql = "SELECT * FROM [Staff] WHERE accountId = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, accountId);
-            ps.setInt(2, accountId);
+            ps.setInt(1, accountId);  // Chỉ sử dụng accountId để tìm kiếm
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("id");  // id là khóa chính của [Staff], có thể khác accountId
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 String img = rs.getString("img");

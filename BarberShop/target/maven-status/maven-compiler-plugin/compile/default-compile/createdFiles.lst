@@ -5,6 +5,7 @@ controller\ChangePasswordServlet.class
 controller\GoogleLogin.class
 babershopDAO\StaffDAO.class
 controller\BookingServlet.class
+controller\VoucherServlet$2.class
 model\WorkSchedule.class
 model\Appointment.class
 constant\Iconstant.class
@@ -19,6 +20,7 @@ AppointmentManager\UpdateAppointmentStatusServlet.class
 controller\LogoutServlet.class
 controller\ResendOTPServlet$1.class
 controller\ViewScheduleServlet.class
+controller\VoucherServlet$1.class
 controller\ChooseServiceServlet.class
 controller\RegisterServlet.class
 babershopDAO\WorkScheduleDAO.class
@@ -36,12 +38,14 @@ model\Account.class
 model\Validation.class
 controller\ForgetPassword.class
 controller\LoginServlet.class
+controller\VoucherServlet.class
 model\Invoice.class
 model\AppointmentService.class
 model\Feedback.class
 AppointmentManager\ChangeStatusServlet.class
 babershopDAO\ServiceDAO.class
 controller\ResendOTPServlet.class
+controller\VoucherServlet$ResponseWrapper.class
 controller\SendOTPServlet.class
 babershopDAO\FeedbackDAO.class
 babershopDAO\AdminDAO.class

@@ -11,13 +11,13 @@ public class Voucher {
     private String code;
     private float value;
     private LocalDate expiryDate;
-    private String status;
+    private int status;
 
     public Voucher() {
     }
 
     // Constructor
-    public Voucher(String code, float value, LocalDate expiryDate, String status) {
+    public Voucher(String code, float value, LocalDate expiryDate, int status) {
         this.code = code;
         this.value = value;
         this.expiryDate = expiryDate;
@@ -29,6 +29,36 @@ public class Voucher {
         this.value = value;
         this.expiryDate = expiryDate;
     }
+
+    public Voucher(int id, String code, float value, LocalDate expiryDate, int status) {
+        this.id = id;
+        this.code = code;
+        this.value = value;
+        this.expiryDate = expiryDate;
+        this.status = status;
+    }
+
+    public Voucher(int id, String code, LocalDate expiryDate,int status) {
+        this.id = id;
+        this.code = code;
+        this.expiryDate = expiryDate;
+        this.status = status;
+    }
+
+    public Voucher(String code, LocalDate expiryDate, int status) {
+        this.code= code;
+        this.expiryDate = expiryDate;
+        this.status = status;
+    }
+
+    public Voucher(int id, String code, float value, String expiryDate, int status) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+  
+
+
+    
     
     
 
@@ -65,11 +95,13 @@ public class Voucher {
         this.expiryDate = expiryDate;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
+
+     
 }

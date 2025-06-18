@@ -154,7 +154,7 @@
                                 <p>Không có voucher nào khả dụng.</p>
                             </c:otherwise>
                         </c:choose>
-                    </div>
+                    </div>  
                 </div>
 
                 <!-- Tổng tiền -->

@@ -319,27 +319,4 @@ public class AppointmentDAO {
         System.out.println(numberOfPeople);
         return amount;
     }
-
-    public List<Voucher> showVoucher() {
-        String sql = "SELECT code, value, expiryDate, status FROM Voucher";
-        List<Voucher> vouchers = new ArrayList<>();
-        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                String code = rs.getString("code");
-                float value = rs.getFloat("value");
-
-                LocalDate expiryDate = rs.getDate("expiryDate").toLocalDate(); // Dùng kiểu Date an toàn hơn
-
-                String status = rs.getString("status");
-                Voucher voucher = new Voucher(code, value, expiryDate, status);
-                vouchers.add(voucher);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace(); // hoặc log
-        }
-        return vouchers; // Luôn trả về danh sách, có thể rỗng nếu lỗi
-    }
-
 }

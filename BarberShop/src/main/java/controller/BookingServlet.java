@@ -4,6 +4,7 @@ import babershopDAO.AppointmentDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.ServiceDAO;
 import babershopDAO.StaffDAO;
+import babershopDAO.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -180,11 +181,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         if (Math.abs(calculatedTotalPrice - totalPrice) < 0.00) { // Allow small floating-point differences
             throw new IllegalArgumentException("Tổng tiền không khớp với dịch vụ và số người!");
         }
-            List<Voucher> vouchers = appointmentDAO.showVoucher();
-            for(Voucher v : vouchers){
-                System.out.println(v.getCode());
-            }
-            
+//            List<Voucher> vouchers = VoucherDAO.showVoucher();
+//            for(Voucher v : vouchers){
+//                System.out.println(v.getCode());
+//            }
+//                
             
             
             
@@ -197,7 +198,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             request.setAttribute("numberOfPeople", numberOfPeople);
             request.setAttribute("listService", services);
             request.setAttribute("totalMoney", calculatedTotalPrice);
-            request.setAttribute("vouchers", vouchers);
+//            request.setAttribute("vouchers", vouchers);
             request.getRequestDispatcher("/views/booking/confirmation.jsp").forward(request, response);
     } catch (Exception e) {
         String error = URLEncoder.encode(e.getMessage(), "UTF-8");
