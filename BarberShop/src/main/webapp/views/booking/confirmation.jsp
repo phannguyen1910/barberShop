@@ -174,7 +174,7 @@
                 </div>
 
                 <!-- Form đặt lịch -->
-                <form action="Payment" method="post">
+                <form action="ConfirmationServlet" method="post">
                     <input type="hidden" name="customerId" value="${customerId}" />
                     <input type="hidden" name="staffId" value="${staffId}" />
                     <input type="hidden" name="appointmentTime" value="${dateTime}" />

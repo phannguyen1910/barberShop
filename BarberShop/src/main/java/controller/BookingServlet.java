@@ -192,6 +192,8 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             for(Service s : services){
                 System.out.println(s.getId() + " " + s.getName());
             }
+            request.setAttribute("customerId", customerId);
+            request.setAttribute("staffId", staffId);
             request.setAttribute("dateTime", dateTime);
             request.setAttribute("staffName", staffFullName);
             request.setAttribute("numberOfPeople", numberOfPeople);

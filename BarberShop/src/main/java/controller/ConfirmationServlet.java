@@ -1,5 +1,6 @@
 package controller;
 
+import babershopDAO.AppointmentDAO;
 import babershopDAO.ServiceDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -7,6 +8,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Service;
@@ -29,7 +32,6 @@ public class ConfirmationServlet extends HttpServlet {
                 serviceIds.add(Integer.parseInt(s));
             }
         }
-
         ServiceDAO serviceDAO = new ServiceDAO();
         double amount = 0;
         List<Service> listService = new ArrayList<>();
@@ -38,19 +40,27 @@ public class ConfirmationServlet extends HttpServlet {
             Service service = serviceDAO.getServiceById(id);
             if (service != null) listService.add(service);
         }
+        
+        
+        
+   
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        
+
+        LocalDateTime dateTime = LocalDateTime.parse(appointmentTime, outputFormatter);
+    
+        
+        
         amount *= numberOfPeople;
-
-        // Gửi dữ liệu sang JSP
-        request.setAttribute("staffId", staffId);
-        request.setAttribute("customerId", customerId);
-        request.setAttribute("numberOfPeople", numberOfPeople);
-        request.setAttribute("dateTime", appointmentTime);
-        request.setAttribute("totalMoney", amount);
-        request.setAttribute("listService", listService);
-        request.setAttribute("serviceIds", serviceIds);
-// ✅ thêm dòng này
-
-        request.getRequestDispatcher("Payment").forward(request, response);
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, numberOfPeople, serviceIds);
+        if(check == true){
+            request.getRequestDispatcher("Payment").forward(request, response);
+        }
+        else{
+            request.getRequestDispatcher("BookingServlet").forward(request, response);
+        }
+        
     }
 }
 
