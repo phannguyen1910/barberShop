@@ -399,25 +399,27 @@
             function selectStaff(cardElement, staffId) {
                 const allCards = document.querySelectorAll('.staff-card');
                 const currentlySelected = cardElement.classList.contains('selected');
-                
+
                 // Remove selection from all cards
                 allCards.forEach(card => {
                     card.classList.remove('selected');
                     const radio = card.querySelector('.staff-radio');
-                    if (radio) radio.checked = false;
+                    if (radio)
+                        radio.checked = false;
                 });
-                
+
                 // Clear hidden field
                 document.getElementById('hiddenStaffId').value = '';
-                
+
                 // If card wasn't selected, select it
                 if (!currentlySelected) {
                     cardElement.classList.add('selected');
                     const radio = cardElement.querySelector('.staff-radio');
-                    if (radio) radio.checked = true;
+                    if (radio)
+                        radio.checked = true;
                     document.getElementById('hiddenStaffId').value = staffId;
                 }
-                
+
                 // Update form validation
                 checkFormComplete();
             }
@@ -442,16 +444,16 @@
             // Show available times with Vietnam timezone (UTC+7)
             function showAvailableTimes(selectedDate) {
                 const vnTimeZone = 'Asia/Ho_Chi_Minh';
-                const now = new Date().toLocaleString('en-US', { timeZone: vnTimeZone });
+                const now = new Date().toLocaleString('en-US', {timeZone: vnTimeZone});
                 const currentDate = new Date(now);
 
                 const selectedDateMidnight = new Date(selectedDate);
                 selectedDateMidnight.setHours(0, 0, 0, 0);
-                
+
                 const currentMidnight = new Date(currentDate);
                 currentMidnight.setHours(0, 0, 0, 0);
                 const isToday = selectedDateMidnight.getTime() === currentMidnight.getTime();
-                
+
                 const currentMinutes = isToday ? (currentDate.getHours() * 60 + currentDate.getMinutes()) : 0;
 
                 container.style.display = "grid";
@@ -461,8 +463,10 @@
 
                 for (let hour = Math.floor(startHour); hour <= Math.floor(endHour); hour++) {
                     for (let minute of [0, 30]) {
-                        if (hour === Math.floor(startHour) && minute < (startHour % 1) * 60) continue;
-                        if (hour === Math.floor(endHour) && minute > (endHour % 1) * 60) continue;
+                        if (hour === Math.floor(startHour) && minute < (startHour % 1) * 60)
+                            continue;
+                        if (hour === Math.floor(endHour) && minute > (endHour % 1) * 60)
+                            continue;
 
                         const label = hour.toString().padStart(2, '0') + ':' + (minute === 0 ? '00' : '30');
                         const timeValue = hour * 60 + minute;
@@ -486,6 +490,27 @@
                     }
                 }
             }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                fetch('<%=request.getContextPath()%>/api/holiday')
+                        .then(response => response.json())
+                        .then(holidayList => {
+                            const dateInput = document.getElementById("date");
+                            if (!dateInput)
+                                return;
+
+                            dateInput.addEventListener("change", function () {
+                                const selectedDate = this.value;
+                                if (holidayList.includes(selectedDate)) {
+                                    alert("Ngày bạn chọn là ngày nghỉ. Vui lòng chọn ngày khác.");
+                                    this.value = "";
+                                }
+                            });
+                        })
+                        .catch(error => console.error("Lỗi khi tải danh sách ngày nghỉ:", error));
+            });
+
+
 
             // Check if selections are complete
             function checkFormComplete() {

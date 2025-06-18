@@ -45,6 +45,7 @@ model\Validation.class
 controller\ForgetPassword.class
 controller\LoginServlet.class
 controller\BanCustomerServlet.class
+controller\HolidayAPI.class
 model\Invoice.class
 model\AppointmentService.class
 model\Feedback.class
