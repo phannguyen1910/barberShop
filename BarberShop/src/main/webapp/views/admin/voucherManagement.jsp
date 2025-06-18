@@ -661,9 +661,18 @@
                 border-radius: 10px;
             }
 
-            .badge-active { background-color: #28a745; color: #fff; }
-            .badge-inactive { background-color: #dc3545; color: #fff; }
-            .badge-expired { background-color: #6c757d; color: #fff; }
+            .badge-active {
+                background-color: #28a745;
+                color: #fff;
+            }
+            .badge-inactive {
+                background-color: #dc3545;
+                color: #fff;
+            }
+            .badge-expired {
+                background-color: #6c757d;
+                color: #fff;
+            }
 
             .pagination {
                 display: flex;
@@ -693,7 +702,7 @@
             }
         </style>
     </head>
-  <body>
+    <body>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
@@ -841,6 +850,7 @@
                     <thead>
                         <tr>
                             <th>STT</th>
+                            <th>Tên Voucher</th> <!-- Thêm cột mới -->
                             <th>Mã voucher</th>
                             <th>Ngày hết hạn</th>
                             <th>Phần trăm giảm giá</th>
@@ -852,7 +862,8 @@
                         <c:forEach var="voucher" items="${vouchers}" varStatus="loop">
                             <tr>
                                 <td class="voucher-id">${loop.count}</td>
-                                <td class="voucher-code">${voucher.code}</td> <!-- Sửa thành voucher.code -->
+                                <td class="voucher-name">${voucher.voucherName}</td> <!-- Thêm cột mới -->
+                                <td class="voucher-code">${voucher.code}</td>
                                 <td class="voucher-expire"><fmt:formatDate value="${voucher.expiryDate}" pattern="dd/MM/yyyy"/></td>
                                 <td class="voucher-value">${voucher.value}%</td>
                                 <td>
@@ -894,92 +905,162 @@
                     <span class="pagination-info">Hiển thị 1-${vouchers.size()} của ${totalRecords} voucher</span>
                     <a href="#" class="pagination-btn next" onclick="loadPage(5)">»</a>
                 </div>
-            </div>
+        </div>
 
-            <!-- Modal Thêm Voucher -->
-            <div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addVoucherModalLabel">Thêm Voucher Mới</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addVoucherForm">
-                                <div class="form-group">
-                                    <label for="addCode">Mã Voucher</label>
-                                    <input type="text" class="form-control" id="addCode" name="code" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="addExpiryDate">Ngày Hết Hạn</label>
-                                    <input type="date" class="form-control" id="addExpiryDate" name="expiryDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="addValue">Phần Trăm Giảm Giá (%)</label>
-                                    <input type="number" class="form-control" id="addValue" name="value" min="1" max="100" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary mt-3">Thêm Voucher</button>
-                            </form>
-                        </div>
+        <!-- Modal Thêm Voucher -->
+        <div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addVoucherModalLabel">Thêm Voucher Mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addVoucherForm">
+                            <div class="form-group">
+                                <label for="addVoucherName">Tên Voucher</label>
+                                <input type="text" class="form-control" id="addVoucherName" name="voucherName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addCode">Mã Voucher</label>
+                                <input type="text" class="form-control" id="addCode" name="code" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addExpiryDate">Ngày Hết Hạn</label>
+                                <input type="date" class="form-control" id="addExpiryDate" name="expiryDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addValue">Phần Trăm Giảm Giá (%)</label>
+                                <input type="number" class="form-control" id="addValue" name="value" min="1" max="100" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Thêm Voucher</button>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Modal Sửa Voucher -->
-            <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="editVoucherForm">
-                                <input type="hidden" id="editId" name="id">
-                                <div class="form-group">
-                                    <label for="editCode">Mã Voucher</label>
-                                    <input type="text" class="form-control" id="editCode" name="code" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editExpiryDate">Ngày Hết Hạn</label>
-                                    <input type="date" class="form-control" id="editExpiryDate" name="expiryDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editValue">Phần Trăm Giảm Giá (%)</label>
-                                    <input type="number" class="form-control" id="editValue" name="value" min="1" max="100" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary mt-3">Cập Nhật</button>
-                            </form>
-                        </div>
+        <!-- Modal Sửa Voucher -->
+        <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editVoucherForm">
+                            <input type="hidden" id="editId" name="id">
+                            <div class="form-group">
+                                <label for="editVoucherName">Tên Voucher</label>
+                                <input type="text" class="form-control" id="editVoucherName" name="voucherName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCode">Mã Voucher</label>
+                                <input type="text" class="form-control" id="editCode" name="code" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editExpiryDate">Ngày Hết Hạn</label>
+                                <input type="date" class="form-control" id="editExpiryDate" name="expiryDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editValue">Phần Trăm Giảm Giá (%)</label>
+                                <input type="number" class="form-control" id="editValue" name="value" min="1" max="100" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Cập Nhật</button>
+                        </form>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+</div>
 
-    <script>
-        // Toggle sidebar for mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        }
+<script>
+    // Toggle sidebar for mobile
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+    }
 
-        function loadPage(page) {
-            $.ajax({
-                url: '${pageContext.request.contextPath}/VoucherServlet',
-                type: 'GET',
-                data: {action: 'list', page: page},
-                dataType: 'json',
-                success: function (response) {
-                    if (!response.success) {
-                        alert('Lỗi khi tải dữ liệu: ' + (response.message || 'Không xác định'));
-                        return;
-                    }
-                    const vouchers = Array.isArray(response.data) ? response.data : [];
+    function loadPage(page) {
+        $.ajax({
+            url: '${pageContext.request.contextPath}/VoucherServlet',
+            type: 'GET',
+            data: {action: 'list', page: page},
+            dataType: 'json',
+            success: function (response) {
+                if (!response.success) {
+                    alert('Lỗi khi tải dữ liệu: ' + (response.message || 'Không xác định'));
+                    return;
+                }
+                const vouchers = Array.isArray(response.data) ? response.data : [];
+                const tbody = $('#voucherTableBody');
+                tbody.empty();
+                let index = (page - 1) * 10;
+
+                if (vouchers.length > 0) {
+                    vouchers.forEach(voucher => {
+                        index++;
+                        const expiryDate = voucher.expiryDate || 'N/A';
+                        const isExpired = expiryDate ? new Date(expiryDate) < new Date() : false;
+                        const statusClass = isExpired ? 'badge-expired' : voucher.status === 1 ? 'badge-active' : 'badge-inactive';
+                        const statusText = isExpired ? 'Hết hạn' : voucher.status === 1 ? 'Hoạt động' : 'Ngưng hoạt động';
+                        const toggleButton = voucher.status === 1
+                                ? '<button class="btn-action btn-deactivate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Dừng khuyến mãi"><i class="fas fa-pause"></i></button>'
+                                : '<button class="btn-action btn-activate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Kích hoạt"><i class="fas fa-play"></i></button>';
+
+                        let row = $('<tr></tr>');
+                        row.append('<td class="voucher-id">' + index + '</td>');
+                        row.append('<td class="voucher-name">' + (voucher.voucherName || '') + '</td>'); // Thêm cột voucherName
+                        row.append('<td class="voucher-code">' + (voucher.code || '') + '</td>');
+                        row.append('<td class="voucher-expire">' + (expiryDate !== 'N/A' ? expiryDate : '') + '</td>');
+                        row.append('<td class="voucher-value">' + (voucher.value || 0) + '%</td>');
+                        row.append('<td><span class="badge ' + statusClass + '">' + statusText + '</span></td>');
+                        let actions = $('<div class="action-buttons"></div>');
+                        actions.append(toggleButton);
+                        actions.append('<button class="btn-action btn-edit" onclick="editVoucher(' + (voucher.id || 0) + ')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>');
+                        actions.append('<button class="btn-action btn-delete" onclick="deleteVoucher(' + (voucher.id || 0) + ')" title="Xóa"><i class="fas fa-trash"></i></button>');
+                        row.append('<td></td>').find('td:last').append(actions);
+                        tbody.append(row);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="7" class="text-center">Không có dữ liệu voucher.</td></tr>'); // Cập nhật colspan
+                }
+                $('#totalVouchers').text(response.totalRecords || 0);
+                $('.pagination-info').text('Hiển thị ' + ((page - 1) * 10 + 1) + '-' + Math.min((page - 1) * 10 + vouchers.length, response.totalRecords) + ' của ' + (response.totalRecords || 0) + ' voucher');
+                updatePagination(page, response.totalRecords);
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi AJAX:', xhr.responseText);
+                alert('Lỗi khi tải danh sách voucher. Chi tiết: ' + xhr.responseText);
+            }
+        });
+    }
+
+    // Hàm filterVouchers (triển khai cơ bản)
+    function filterVouchers() {
+        const searchCode = $('#searchCode').val().toLowerCase();
+        const filterStatus = $('#filterStatus').val();
+        $.ajax({
+            url: '${pageContext.request.contextPath}/VoucherServlet',
+            type: 'GET',
+            data: {action: 'list', page: 1},
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    const vouchers = response.data.filter(voucher => {
+                        const matchesCode = voucher.code.toLowerCase().includes(searchCode);
+                        const isExpired = new Date(voucher.expiryDate) < new Date();
+                        const statusMatch = filterStatus === '' ||
+                                (filterStatus === 'active' && voucher.status === 1 && !isExpired) ||
+                                (filterStatus === 'inactive' && voucher.status === 0) ||
+                                (filterStatus === 'expired' && isExpired);
+                        return matchesCode && statusMatch;
+                    });
                     const tbody = $('#voucherTableBody');
                     tbody.empty();
-                    let index = (page - 1) * 10;
-
+                    let index = 0;
                     if (vouchers.length > 0) {
                         vouchers.forEach(voucher => {
                             index++;
@@ -987,13 +1068,14 @@
                             const isExpired = expiryDate ? new Date(expiryDate) < new Date() : false;
                             const statusClass = isExpired ? 'badge-expired' : voucher.status === 1 ? 'badge-active' : 'badge-inactive';
                             const statusText = isExpired ? 'Hết hạn' : voucher.status === 1 ? 'Hoạt động' : 'Ngưng hoạt động';
-                            const toggleButton = voucher.status === 1 
-                                ? '<button class="btn-action btn-deactivate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Dừng khuyến mãi"><i class="fas fa-pause"></i></button>'
-                                : '<button class="btn-action btn-activate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Kích hoạt"><i class="fas fa-play"></i></button>';
+                            const toggleButton = voucher.status === 1
+                                    ? '<button class="btn-action btn-deactivate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Dừng khuyến mãi"><i class="fas fa-pause"></i></button>'
+                                    : '<button class="btn-action btn-activate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Kích hoạt"><i class="fas fa-play"></i></button>';
 
                             let row = $('<tr></tr>');
                             row.append('<td class="voucher-id">' + index + '</td>');
-                            row.append('<td class="voucher-code">' + (voucher.code || '') + '</td>'); // Sử dụng voucher.code
+                            row.append('<td class="voucher-name">' + (voucher.voucherName || '') + '</td>'); // Thêm cột voucherName
+                            row.append('<td class="voucher-code">' + (voucher.code || '') + '</td>');
                             row.append('<td class="voucher-expire">' + (expiryDate !== 'N/A' ? expiryDate : '') + '</td>');
                             row.append('<td class="voucher-value">' + (voucher.value || 0) + '%</td>');
                             row.append('<td><span class="badge ' + statusClass + '">' + statusText + '</span></td>');
@@ -1005,180 +1087,243 @@
                             tbody.append(row);
                         });
                     } else {
-                        tbody.append('<tr><td colspan="6" class="text-center">Không có dữ liệu voucher.</td></tr>');
+                        tbody.append('<tr><td colspan="7" class="text-center">Không có dữ liệu voucher.</td></tr>'); // Cập nhật colspan
                     }
-                    $('#totalVouchers').text(response.totalRecords || 0);
-                    $('.pagination-info').text('Hiển thị ' + ((page - 1) * 10 + 1) + '-' + Math.min((page - 1) * 10 + vouchers.length, response.totalRecords) + ' của ' + (response.totalRecords || 0) + ' voucher');
-                    updatePagination(page, response.totalRecords);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Lỗi AJAX:', xhr.responseText);
-                    alert('Lỗi khi tải danh sách voucher. Chi tiết: ' + xhr.responseText);
+                    $('#totalVouchers').text(vouchers.length);
+                    $('.pagination-info').text('Hiển thị 1-' + vouchers.length + ' của ' + vouchers.length + ' voucher');
                 }
-            });
-        }
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi AJAX:', xhr.responseText);
+                alert('Lỗi khi lọc voucher. Chi tiết: ' + xhr.responseText);
+            }
+        });
+    }
 
-        // Hàm filterVouchers (triển khai cơ bản)
-        function filterVouchers() {
-            const searchCode = $('#searchCode').val().toLowerCase();
-            const filterStatus = $('#filterStatus').val();
-            $.ajax({
-                url: '${pageContext.request.contextPath}/VoucherServlet',
-                type: 'GET',
-                data: {action: 'list', page: 1},
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        const vouchers = response.data.filter(voucher => {
-                            const matchesCode = voucher.code.toLowerCase().includes(searchCode);
-                            const isExpired = new Date(voucher.expiryDate) < new Date();
-                            const statusMatch = filterStatus === '' || 
-                                (filterStatus === 'active' && voucher.status === 1 && !isExpired) ||
-                                (filterStatus === 'inactive' && voucher.status === 0) ||
-                                (filterStatus === 'expired' && isExpired);
-                            return matchesCode && statusMatch;
-                        });
-                        const tbody = $('#voucherTableBody');
-                        tbody.empty();
-                        let index = 0;
-                        if (vouchers.length > 0) {
-                            vouchers.forEach(voucher => {
-                                index++;
-                                const expiryDate = voucher.expiryDate || 'N/A';
-                                const isExpired = expiryDate ? new Date(expiryDate) < new Date() : false;
-                                const statusClass = isExpired ? 'badge-expired' : voucher.status === 1 ? 'badge-active' : 'badge-inactive';
-                                const statusText = isExpired ? 'Hết hạn' : voucher.status === 1 ? 'Hoạt động' : 'Ngưng hoạt động';
-                                const toggleButton = voucher.status === 1 
+    // Hàm sortVouchers (triển khai cơ bản)
+    function sortVouchers() {
+        const sortBy = $('#sortBy').val();
+        $.ajax({
+            url: '${pageContext.request.contextPath}/VoucherServlet',
+            type: 'GET',
+            data: {action: 'list', page: 1},
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    const vouchers = response.data.sort((a, b) => {
+                        if (sortBy === 'code')
+                            return a.code.localeCompare(b.code);
+                        if (sortBy === 'expire') {
+                            const dateA = new Date(a.expiryDate);
+                            const dateB = new Date(b.expiryDate);
+                            return dateA - dateB;
+                        }
+                        return a.id - b.id;
+                    });
+                    const tbody = $('#voucherTableBody');
+                    tbody.empty();
+                    let index = 0;
+                    if (vouchers.length > 0) {
+                        vouchers.forEach(voucher => {
+                            index++;
+                            const expiryDate = voucher.expiryDate || 'N/A';
+                            const isExpired = expiryDate ? new Date(expiryDate) < new Date() : false;
+                            const statusClass = isExpired ? 'badge-expired' : voucher.status === 1 ? 'badge-active' : 'badge-inactive';
+                            const statusText = isExpired ? 'Hết hạn' : voucher.status === 1 ? 'Hoạt động' : 'Ngưng hoạt động';
+                            const toggleButton = voucher.status === 1
                                     ? '<button class="btn-action btn-deactivate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Dừng khuyến mãi"><i class="fas fa-pause"></i></button>'
                                     : '<button class="btn-action btn-activate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Kích hoạt"><i class="fas fa-play"></i></button>';
 
-                                let row = $('<tr></tr>');
-                                row.append('<td class="voucher-id">' + index + '</td>');
-                                row.append('<td class="voucher-code">' + (voucher.code || '') + '</td>');
-                                row.append('<td class="voucher-expire">' + (expiryDate !== 'N/A' ? expiryDate : '') + '</td>');
-                                row.append('<td class="voucher-value">' + (voucher.value || 0) + '%</td>');
-                                row.append('<td><span class="badge ' + statusClass + '">' + statusText + '</span></td>');
-                                let actions = $('<div class="action-buttons"></div>');
-                                actions.append(toggleButton);
-                                actions.append('<button class="btn-action btn-edit" onclick="editVoucher(' + (voucher.id || 0) + ')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>');
-                                actions.append('<button class="btn-action btn-delete" onclick="deleteVoucher(' + (voucher.id || 0) + ')" title="Xóa"><i class="fas fa-trash"></i></button>');
-                                row.append('<td></td>').find('td:last').append(actions);
-                                tbody.append(row);
-                            });
-                        } else {
-                            tbody.append('<tr><td colspan="6" class="text-center">Không có dữ liệu voucher.</td></tr>');
-                        }
-                        $('#totalVouchers').text(vouchers.length);
-                        $('.pagination-info').text('Hiển thị 1-' + vouchers.length + ' của ' + vouchers.length + ' voucher');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Lỗi AJAX:', xhr.responseText);
-                    alert('Lỗi khi lọc voucher. Chi tiết: ' + xhr.responseText);
-                }
-            });
-        }
-
-        // Hàm sortVouchers (triển khai cơ bản)
-        function sortVouchers() {
-            const sortBy = $('#sortBy').val();
-            $.ajax({
-                url: '${pageContext.request.contextPath}/VoucherServlet',
-                type: 'GET',
-                data: {action: 'list', page: 1},
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        const vouchers = response.data.sort((a, b) => {
-                            if (sortBy === 'code') return a.code.localeCompare(b.code);
-                            if (sortBy === 'expire') {
-                                const dateA = new Date(a.expiryDate);
-                                const dateB = new Date(b.expiryDate);
-                                return dateA - dateB;
-                            }
-                            return a.id - b.id;
+                            let row = $('<tr></tr>');
+                            row.append('<td class="voucher-id">' + index + '</td>');
+                            row.append('<td class="voucher-name">' + (voucher.voucherName || '') + '</td>'); // Thêm cột voucherName
+                            row.append('<td class="voucher-code">' + (voucher.code || '') + '</td>');
+                            row.append('<td class="voucher-expire">' + (expiryDate !== 'N/A' ? expiryDate : '') + '</td>');
+                            row.append('<td class="voucher-value">' + (voucher.value || 0) + '%</td>');
+                            row.append('<td><span class="badge ' + statusClass + '">' + statusText + '</span></td>');
+                            let actions = $('<div class="action-buttons"></div>');
+                            actions.append(toggleButton);
+                            actions.append('<button class="btn-action btn-edit" onclick="editVoucher(' + (voucher.id || 0) + ')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>');
+                            actions.append('<button class="btn-action btn-delete" onclick="deleteVoucher(' + (voucher.id || 0) + ')" title="Xóa"><i class="fas fa-trash"></i></button>');
+                            row.append('<td></td>').find('td:last').append(actions);
+                            tbody.append(row);
                         });
-                        const tbody = $('#voucherTableBody');
-                        tbody.empty();
-                        let index = 0;
-                        if (vouchers.length > 0) {
-                            vouchers.forEach(voucher => {
-                                index++;
-                                const expiryDate = voucher.expiryDate || 'N/A';
-                                const isExpired = expiryDate ? new Date(expiryDate) < new Date() : false;
-                                const statusClass = isExpired ? 'badge-expired' : voucher.status === 1 ? 'badge-active' : 'badge-inactive';
-                                const statusText = isExpired ? 'Hết hạn' : voucher.status === 1 ? 'Hoạt động' : 'Ngưng hoạt động';
-                                const toggleButton = voucher.status === 1 
-                                    ? '<button class="btn-action btn-deactivate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Dừng khuyến mãi"><i class="fas fa-pause"></i></button>'
-                                    : '<button class="btn-action btn-activate" onclick="toggleVoucher(' + (voucher.id || 0) + ', this)" title="Kích hoạt"><i class="fas fa-play"></i></button>';
-
-                                let row = $('<tr></tr>');
-                                row.append('<td class="voucher-id">' + index + '</td>');
-                                row.append('<td class="voucher-code">' + (voucher.code || '') + '</td>');
-                                row.append('<td class="voucher-expire">' + (expiryDate !== 'N/A' ? expiryDate : '') + '</td>');
-                                row.append('<td class="voucher-value">' + (voucher.value || 0) + '%</td>');
-                                row.append('<td><span class="badge ' + statusClass + '">' + statusText + '</span></td>');
-                                let actions = $('<div class="action-buttons"></div>');
-                                actions.append(toggleButton);
-                                actions.append('<button class="btn-action btn-edit" onclick="editVoucher(' + (voucher.id || 0) + ')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>');
-                                actions.append('<button class="btn-action btn-delete" onclick="deleteVoucher(' + (voucher.id || 0) + ')" title="Xóa"><i class="fas fa-trash"></i></button>');
-                                row.append('<td></td>').find('td:last').append(actions);
-                                tbody.append(row);
-                            });
-                        } else {
-                            tbody.append('<tr><td colspan="6" class="text-center">Không có dữ liệu voucher.</td></tr>');
-                        }
-                        $('#totalVouchers').text(vouchers.length);
-                        $('.pagination-info').text('Hiển thị 1-' + vouchers.length + ' của ' + vouchers.length + ' voucher');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Lỗi AJAX:', xhr.responseText);
-                    alert('Lỗi khi sắp xếp voucher. Chi tiết: ' + xhr.responseText);
-                }
-            });
-        }
-
-        // Hàm editVoucher
-        function editVoucher(id) {
-            $.ajax({
-                url: '${pageContext.request.contextPath}/VoucherServlet',
-                type: 'GET',
-                data: {action: 'edit', id: id},
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        const voucher = response.data;
-                        if (voucher) {
-                            $('#editId').val(voucher.id || '');
-                            $('#editCode').val(voucher.code || '');
-                            $('#editExpiryDate').val(voucher.expiryDate ? voucher.expiryDate : '');
-                            $('#editValue').val(voucher.value || '');
-                            $('#editVoucherModal').modal('show');
-                        } else {
-                            alert('Không tìm thấy voucher để chỉnh sửa.');
-                        }
                     } else {
-                        alert('Lỗi khi tải thông tin voucher: ' + response.message);
+                        tbody.append('<tr><td colspan="7" class="text-center">Không có dữ liệu voucher.</td></tr>'); // Cập nhật colspan
+                    }
+                    $('#totalVouchers').text(vouchers.length);
+                    $('.pagination-info').text('Hiển thị 1-' + vouchers.length + ' của ' + vouchers.length + ' voucher');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi AJAX:', xhr.responseText);
+                alert('Lỗi khi sắp xếp voucher. Chi tiết: ' + xhr.responseText);
+            }
+        });
+    }
+
+    // Hàm editVoucher
+    function editVoucher(id) {
+        $.ajax({
+            url: '${pageContext.request.contextPath}/VoucherServlet',
+            type: 'GET',
+            data: {action: 'edit', id: id},
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    const voucher = response.data;
+                    if (voucher) {
+                        $('#editId').val(voucher.id || '');
+                        $('#editVoucherName').val(voucher.voucherName || '');
+                        $('#editCode').val(voucher.code || '');
+                        $('#editExpiryDate').val(voucher.expiryDate ? voucher.expiryDate : '');
+                        $('#editValue').val(voucher.value || '');
+                        $('#editVoucherModal').modal('show');
+                    } else {
+                        alert('Không tìm thấy voucher để chỉnh sửa.');
+                    }
+                } else {
+                    alert('Lỗi khi tải thông tin voucher: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi AJAX:', xhr.responseText);
+                alert('Lỗi khi tải thông tin voucher. Chi tiết: ' + xhr.responseText);
+            }
+        });
+    }
+
+    // Hàm updateVoucher
+    $('#editVoucherForm').on('submit', function (e) {
+        e.preventDefault();
+        const id = $('#editId').val();
+        const data = {
+            action: 'update',
+            id: id,
+            voucherName: $('#editVoucherName').val(), // Thêm voucherName
+            code: $('#editCode').val(),
+            expiryDate: $('#editExpiryDate').val(),
+            value: $('#editValue').val()
+        };
+        $.ajax({
+            url: '${pageContext.request.contextPath}/VoucherServlet',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function (response) {
+                alert(response.message);
+                if (response.success) {
+                    $('#editVoucherModal').modal('hide');
+                    loadPage(1); // Tải lại trang
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi AJAX:', xhr.responseText);
+                alert('Lỗi khi cập nhật voucher. Chi tiết: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // Hàm toggleVoucher
+    function toggleVoucher(id, button) {
+        const status = button.classList.contains('btn-deactivate') ? 0 : 1;
+        $.ajax({
+            url: '${pageContext.request.contextPath}/VoucherServlet',
+            type: 'POST',
+            data: {action: 'toggle', id: id, status: status},
+            dataType: 'json',
+            success: function (response) {
+                alert(response.message);
+                if (response.success) {
+                    loadPage(1); // Tải lại trang
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi AJAX:', xhr.responseText);
+                alert('Lỗi khi thay đổi trạng thái voucher. Chi tiết: ' + xhr.responseText);
+            }
+        });
+    }
+
+    // Hàm deleteVoucher
+    function deleteVoucher(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa voucher này?')) {
+            $.ajax({
+                url: '${pageContext.request.contextPath}/VoucherServlet',
+                type: 'POST',
+                data: {action: 'delete', id: id},
+                dataType: 'json',
+                success: function (response) {
+                    alert(response.message);
+                    if (response.success) {
+                        loadPage(1); // Tải lại trang
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('Lỗi AJAX:', xhr.responseText);
-                    alert('Lỗi khi tải thông tin voucher. Chi tiết: ' + xhr.responseText);
+                    alert('Lỗi khi xóa voucher. Chi tiết: ' + xhr.responseText);
                 }
             });
         }
+    }
 
-        // Hàm updateVoucher
-        $('#editVoucherForm').on('submit', function (e) {
+    // Hàm updatePagination
+    function updatePagination(page, totalRecords) {
+        const totalPages = Math.ceil(totalRecords / 10);
+        const pagination = $('.pagination');
+        pagination.find('.pagination-btn').not('.prev, .next').remove();
+
+        let startPage = Math.max(1, page - 2);
+        let endPage = Math.min(totalPages, page + 2);
+
+        if (startPage > 1) {
+            pagination.append('<a href="#" class="pagination-btn" onclick="loadPage(1)">1</a>');
+            if (startPage > 2)
+                pagination.append('<span>...</span>');
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pagination.append('<a href="#" class="pagination-btn ' + (i === page ? 'active' : '') + '" onclick="loadPage(' + i + ')">' + i + '</a>');
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1)
+                pagination.append('<span>...</span>');
+            pagination.append('<a href="#" class="pagination-btn" onclick="loadPage(' + totalPages + ')">' + totalPages + '</a>');
+        }
+
+        pagination.find('.prev').attr('onclick', 'loadPage(' + (page > 1 ? page - 1 : 1) + ')');
+        pagination.find('.next').attr('onclick', 'loadPage(' + (page < totalPages ? page + 1 : totalPages) + ')');
+    }
+
+    $(document).ready(function () {
+        loadPage(1);
+
+        $(document).on('click', function (event) {
+            const sidebar = $('#sidebar');
+            const mobileBtn = $('.mobile-menu-btn');
+            if (window.innerWidth <= 768 &&
+                    !sidebar.is(event.target) &&
+                    sidebar.has(event.target).length === 0 &&
+                    !mobileBtn.is(event.target) &&
+                    sidebar.hasClass('active')) {
+                sidebar.removeClass('active');
+            }
+        });
+
+        $('#searchCode').on('keyup', filterVouchers);
+        $('#filterStatus').on('change', filterVouchers);
+        $('#sortBy').on('change', sortVouchers);
+
+        // Xử lý form thêm voucher
+        $('#addVoucherForm').on('submit', function (e) {
             e.preventDefault();
-            const id = $('#editId').val();
             const data = {
-                action: 'update',
-                id: id,
-                code: $('#editCode').val(),
-                expiryDate: $('#editExpiryDate').val(),
-                value: $('#editValue').val()
+                action: 'add',
+                voucherName: $('#addVoucherName').val(), // Thêm voucherName
+                code: $('#addCode').val(),
+                expiryDate: $('#addExpiryDate').val(),
+                value: $('#addValue').val()
             };
             $.ajax({
                 url: '${pageContext.request.contextPath}/VoucherServlet',
@@ -1188,134 +1333,17 @@
                 success: function (response) {
                     alert(response.message);
                     if (response.success) {
-                        $('#editVoucherModal').modal('hide');
+                        $('#addVoucherModal').modal('hide');
                         loadPage(1); // Tải lại trang
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('Lỗi AJAX:', xhr.responseText);
-                    alert('Lỗi khi cập nhật voucher. Chi tiết: ' + xhr.responseText);
+                    alert('Lỗi khi thêm voucher. Chi tiết: ' + xhr.responseText);
                 }
             });
         });
-
-        // Hàm toggleVoucher
-        function toggleVoucher(id, button) {
-            const status = button.classList.contains('btn-deactivate') ? 0 : 1;
-            $.ajax({
-                url: '${pageContext.request.contextPath}/VoucherServlet',
-                type: 'POST',
-                data: {action: 'toggle', id: id, status: status},
-                dataType: 'json',
-                success: function (response) {
-                    alert(response.message);
-                    if (response.success) {
-                        loadPage(1); // Tải lại trang
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Lỗi AJAX:', xhr.responseText);
-                    alert('Lỗi khi thay đổi trạng thái voucher. Chi tiết: ' + xhr.responseText);
-                }
-            });
-        }
-
-        // Hàm deleteVoucher
-        function deleteVoucher(id) {
-            if (confirm('Bạn có chắc chắn muốn xóa voucher này?')) {
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/VoucherServlet',
-                    type: 'POST',
-                    data: {action: 'delete', id: id},
-                    dataType: 'json',
-                    success: function (response) {
-                        alert(response.message);
-                        if (response.success) {
-                            loadPage(1); // Tải lại trang
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Lỗi AJAX:', xhr.responseText);
-                        alert('Lỗi khi xóa voucher. Chi tiết: ' + xhr.responseText);
-                    }
-                });
-            }
-        }
-
-        // Hàm updatePagination
-        function updatePagination(page, totalRecords) {
-            const totalPages = Math.ceil(totalRecords / 10);
-            const pagination = $('.pagination');
-            pagination.find('.pagination-btn').not('.prev, .next').remove();
-
-            let startPage = Math.max(1, page - 2);
-            let endPage = Math.min(totalPages, page + 2);
-
-            if (startPage > 1) {
-                pagination.append('<a href="#" class="pagination-btn" onclick="loadPage(1)">1</a>');
-                if (startPage > 2) pagination.append('<span>...</span>');
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                pagination.append('<a href="#" class="pagination-btn ' + (i === page ? 'active' : '') + '" onclick="loadPage(' + i + ')">' + i + '</a>');
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) pagination.append('<span>...</span>');
-                pagination.append('<a href="#" class="pagination-btn" onclick="loadPage(' + totalPages + ')">' + totalPages + '</a>');
-            }
-
-            pagination.find('.prev').attr('onclick', 'loadPage(' + (page > 1 ? page - 1 : 1) + ')');
-            pagination.find('.next').attr('onclick', 'loadPage(' + (page < totalPages ? page + 1 : totalPages) + ')');
-        }
-
-        $(document).ready(function () {
-            loadPage(1);
-
-            $(document).on('click', function (event) {
-                const sidebar = $('#sidebar');
-                const mobileBtn = $('.mobile-menu-btn');
-                if (window.innerWidth <= 768 &&
-                        !sidebar.is(event.target) &&
-                        sidebar.has(event.target).length === 0 &&
-                        !mobileBtn.is(event.target) &&
-                        sidebar.hasClass('active')) {
-                    sidebar.removeClass('active');
-                }
-            });
-
-            $('#searchCode').on('keyup', filterVouchers);
-            $('#filterStatus').on('change', filterVouchers);
-            $('#sortBy').on('change', sortVouchers);
-
-            // Xử lý form thêm voucher
-            $('#addVoucherForm').on('submit', function (e) {
-                e.preventDefault();
-                const data = {
-                    action: 'add',
-                    code: $('#addCode').val(),
-                    expiryDate: $('#addExpiryDate').val(),
-                    value: $('#addValue').val()
-                };
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/VoucherServlet',
-                    type: 'POST',
-                    data: data,
-                    dataType: 'json',
-                    success: function (response) {
-                        alert(response.message);
-                        if (response.success) {
-                            $('#addVoucherModal').modal('hide');
-                            loadPage(1); // Tải lại trang
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Lỗi AJAX:', xhr.responseText);
-                        alert('Lỗi khi thêm voucher. Chi tiết: ' + xhr.responseText);
-                    }
-                });
-            });
-        });
-    </script>
+    });
+</script>
 </body>
 </html>

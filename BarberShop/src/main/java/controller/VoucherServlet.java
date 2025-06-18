@@ -174,6 +174,7 @@ public class VoucherServlet extends HttpServlet {
     private void addVoucher(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
             throws ServletException, IOException {
         try {
+            String voucherName = request.getParameter("voucherName").trim(); // Thêm voucherName
             String code = request.getParameter("code").trim();
             String expiryDateStr = request.getParameter("expiryDate");
             String valueStr = request.getParameter("value");
@@ -187,6 +188,12 @@ public class VoucherServlet extends HttpServlet {
             if (!code.matches("[a-zA-Z0-9_-]+")) {
                 throw new IllegalArgumentException("Mã voucher chỉ được chứa chữ cái, số, dấu gạch dưới hoặc gạch ngang.");
             }
+            if (voucherName == null || voucherName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Tên voucher không được để trống.");
+            }
+            if (voucherName.length() > 100) {
+                throw new IllegalArgumentException("Tên voucher không được vượt quá 100 ký tự.");
+            }
             float value = Float.parseFloat(valueStr);
             if (value <= 0 || value > 100) {
                 throw new IllegalArgumentException("Phần trăm giảm giá phải từ 1 - 100");
@@ -197,7 +204,7 @@ public class VoucherServlet extends HttpServlet {
                 throw new IllegalArgumentException("Ngày hết hạn phải từ hôm nay trở đi.");
             }
 
-            Voucher voucher = new Voucher(code, value, expiryDate, 1);
+            Voucher voucher = new Voucher(code, voucherName, value, expiryDate, 1); // Sử dụng constructor mới
             boolean success = voucherDAO.insertVoucher(voucher);
             out.print("{\"success\": " + success + ", \"message\": \"" + (success ? "Thêm voucher thành công!" : "Thêm voucher thất bại.") + "\"}");
         } catch (IllegalArgumentException e) {
@@ -211,6 +218,7 @@ public class VoucherServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
+            String voucherName = request.getParameter("voucherName").trim(); // Thêm voucherName
             String code = request.getParameter("code").trim();
             String expiryDateStr = request.getParameter("expiryDate");
             String valueStr = request.getParameter("value");
@@ -224,6 +232,12 @@ public class VoucherServlet extends HttpServlet {
             if (!code.matches("[a-zA-Z0-9_-]+")) {
                 throw new IllegalArgumentException("Mã voucher chỉ được chứa chữ cái, số, dấu gạch dưới hoặc gạch ngang.");
             }
+            if (voucherName == null || voucherName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Tên voucher không được để trống.");
+            }
+            if (voucherName.length() > 100) {
+                throw new IllegalArgumentException("Tên voucher không được vượt quá 100 ký tự.");
+            }
             float value = Float.parseFloat(valueStr);
             if (value <= 0 || value > 100) {
                 throw new IllegalArgumentException("Phần trăm giảm giá phải từ 1 - 100");
@@ -234,7 +248,7 @@ public class VoucherServlet extends HttpServlet {
                 throw new IllegalArgumentException("Ngày hết hạn phải từ hôm nay trở đi.");
             }
 
-            Voucher voucher = new Voucher(id, code, value, expiryDate, 1);
+            Voucher voucher = new Voucher(id, code, voucherName, value, expiryDate, 1); // Sử dụng constructor mới
             boolean success = voucherDAO.updateVoucher(voucher);
             out.print("{\"success\": " + success + ", \"message\": \"" + (success ? "Cập nhật thành công" : "Cập nhật thất bại") + "\"}");
         } catch (NumberFormatException e) {

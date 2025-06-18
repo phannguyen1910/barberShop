@@ -1,14 +1,12 @@
 package model;
 
-/**
- *
- * @author Sekiro
- */
+
 import java.time.LocalDate;
 
 public class Voucher {
     private int id;
     private String code;
+    private String voucherName; // Thêm thuộc tính mới
     private float value;
     private LocalDate expiryDate;
     private int status;
@@ -38,7 +36,7 @@ public class Voucher {
         this.status = status;
     }
 
-    public Voucher(int id, String code, LocalDate expiryDate,int status) {
+    public Voucher(int id, String code, LocalDate expiryDate, int status) {
         this.id = id;
         this.code = code;
         this.expiryDate = expiryDate;
@@ -46,20 +44,39 @@ public class Voucher {
     }
 
     public Voucher(String code, LocalDate expiryDate, int status) {
-        this.code= code;
+        this.code = code;
         this.expiryDate = expiryDate;
         this.status = status;
     }
 
     public Voucher(int id, String code, float value, String expiryDate, int status) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); }
+
+    // Constructor mới bao gồm voucherName
+    public Voucher(int id, String code, String voucherName, float value, LocalDate expiryDate, int status) {
+        this.id = id;
+        this.code = code;
+        this.voucherName = voucherName;
+        this.value = value;
+        this.expiryDate = expiryDate;
+        this.status = status;
     }
 
-  
+    public Voucher(String code, String voucherName, float value, LocalDate expiryDate, int status) {
+        this.code = code;
+        this.voucherName = voucherName;
+        this.value = value;
+        this.expiryDate = expiryDate;
+        this.status = status;
+    }
 
+    public Voucher(int id, String code, String voucherName, LocalDate expiryDate, int status) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
 
-    
-    
+    public Voucher(String code, float value, LocalDate expiryDate, String status) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 
     // Getters and Setters
@@ -77,6 +94,14 @@ public class Voucher {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getVoucherName() { // Thêm getter
+        return voucherName;
+    }
+
+    public void setVoucherName(String voucherName) { // Thêm setter
+        this.voucherName = voucherName;
     }
 
     public float getValue() {
@@ -102,6 +127,4 @@ public class Voucher {
     public void setStatus(int status) {
         this.status = status;
     }
-
-     
 }

@@ -33,7 +33,7 @@ public class VoucherDAO {
 
     public List<Voucher> getAllVouchers(int page, int pageSize) {
         List<Voucher> list = new ArrayList<>();
-        String sql = "SELECT id, code, value, expirydate, status FROM Voucher"; // Lấy tất cả dữ liệu
+        String sql = "SELECT id, voucherName, code, value, expirydate, status FROM Voucher";
         try (Connection conn = getConnect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             int startIndex = (page - 1) * pageSize;
@@ -43,8 +43,9 @@ public class VoucherDAO {
                     Voucher v = new Voucher(
                             rs.getInt("id"),
                             rs.getString("code"),
+                            rs.getString("voucherName"),
                             rs.getFloat("value"),
-                            rs.getObject("expirydate", LocalDate.class), // Sử dụng getObject cho LocalDate
+                            rs.getObject("expirydate", LocalDate.class),
                             rs.getInt("status")
                     );
                     list.add(v);
@@ -71,15 +72,17 @@ public class VoucherDAO {
     }
 
     public Voucher getVoucher(int id) {
-        String sql = "SELECT code, expirydate, status FROM Voucher WHERE id = ?";
+        String sql = "SELECT id, voucherName, code, value, expirydate, status FROM Voucher WHERE id = ?"; // Đầy đủ cột
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    String voucherName = rs.getString("voucherName");
                     String code = rs.getString("code");
-                    LocalDate expiryDate = rs.getObject("expirydate", LocalDate.class); // Sử dụng getObject
+                    float value = rs.getFloat("value");
+                    LocalDate expiryDate = rs.getObject("expirydate", LocalDate.class);
                     int status = rs.getInt("status");
-                    return new Voucher(id, code, expiryDate, status);
+                    return new Voucher(id, code, voucherName, value, expiryDate, status);
                 }
             }
         } catch (SQLException e) {
@@ -88,13 +91,34 @@ public class VoucherDAO {
         return null;
     }
 
+  public List<Voucher> showVoucher() {
+        String sql = "SELECT id, voucherName, code, value, expirydate, status FROM Voucher"; // Thêm id và voucherName
+        List<Voucher> vouchers = new ArrayList<>();
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String voucherName = rs.getString("voucherName");
+                String code = rs.getString("code");
+                float value = rs.getFloat("value");
+                LocalDate expiryDate = rs.getObject("expirydate", LocalDate.class);
+                int status = rs.getInt("status");
+                Voucher voucher = new Voucher(id, code, voucherName, value, expiryDate, status);
+                vouchers.add(voucher);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Lỗi: " + e.getMessage());
+        }
+        return vouchers;
+    }
     public boolean insertVoucher(Voucher voucher) {
-        String sql = "INSERT INTO Voucher (code, value, expirydate, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Voucher (code, voucherName, value, expirydate, status) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, voucher.getCode());
-            ps.setFloat(2, voucher.getValue());
-            ps.setObject(3, voucher.getExpiryDate()); // Sử dụng setObject cho LocalDate
-            ps.setInt(4, voucher.getStatus());
+            ps.setString(2, voucher.getVoucherName());
+            ps.setFloat(3, voucher.getValue());
+            ps.setObject(4, voucher.getExpiryDate());
+            ps.setInt(5, voucher.getStatus());
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -104,13 +128,14 @@ public class VoucherDAO {
     }
 
     public boolean updateVoucher(Voucher voucher) {
-        String sql = "UPDATE Voucher SET code = ?, value = ?, expirydate = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE Voucher SET code = ?, voucherName = ?, value = ?, expirydate = ?, status = ? WHERE id = ?";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, voucher.getCode());
-            ps.setFloat(2, voucher.getValue());
-            ps.setObject(3, voucher.getExpiryDate()); // Sử dụng setObject
-            ps.setInt(4, voucher.getStatus());
-            ps.setInt(5, voucher.getId());
+            ps.setString(2, voucher.getVoucherName());
+            ps.setFloat(3, voucher.getValue());
+            ps.setObject(4, voucher.getExpiryDate());
+            ps.setInt(5, voucher.getStatus());
+            ps.setInt(6, voucher.getId());
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
