@@ -603,7 +603,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -627,12 +627,6 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Quản lý Nhượng quyền</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
@@ -650,7 +644,7 @@
                             <span>Quản lí ngày nghỉ</span>
                         </a>
                     </div>
-                </div>
+                </div>           
             </nav>
 
             <!-- Main Content -->

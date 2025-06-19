@@ -18,6 +18,7 @@ babershopDatabase\databaseInfo.class
 controller\EditProfileServlet.class
 model\Payment.class
 model\Service.class
+babershopDAO\AccountDAO$4.class
 AppointmentManager\EditAppointmentServlet.class
 AppointmentManager\UpdateAppointmentStatusServlet.class
 controller\LogoutServlet.class

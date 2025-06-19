@@ -247,48 +247,12 @@
         </footer>
 
         <script>
-<<<<<<< HEAD
+
             let originalTotal = ${totalMoney};
             let selectedVoucherCode = null;
             let selectedVoucherDiscount = 0;
 
-            function toggleVoucherList() {
-                const voucherList = document.getElementById('voucherList');
-                voucherList.style.display = voucherList.style.display === 'block' ? 'none' : 'block';
-            }
-
-            function selectVoucher(code, discountPercent) {
-                selectedVoucherCode = code;
-                selectedVoucherDiscount = discountPercent / 100; // Convert to decimal (e.g., 10% -> 0.10)
-                document.querySelectorAll('.voucher-item').forEach(item => item.classList.remove('selected'));
-                event.target.classList.add('selected');
-
-                updateTotal();
-                toggleVoucherList();
-            }
-
-            function updateTotal() {
-                const discountRow = document.getElementById('discountRow');
-                const discountAmount = document.getElementById('discountAmount');
-                const finalTotal = document.getElementById('finalTotal');
-                const finalAmountInput = document.getElementById('finalAmountInput');
-                const voucherCodeInput = document.getElementById('voucherCodeInput');
-
-                if (selectedVoucherDiscount > 0) {
-                    const discount = originalTotal * selectedVoucherDiscount;
-                    const finalAmount = originalTotal - discount;
-                    discountRow.style.display = 'flex';
-                    discountAmount.textContent = '-' + formatNumber(discount) + ' VNĐ';
-                    finalTotal.textContent = formatNumber(finalAmount) + ' VNĐ';
-                    finalAmountInput.value = finalAmount;
-                    voucherCodeInput.value = selectedVoucherCode;
-                } else {
-                    discountRow.style.display = 'none';
-                    finalTotal.textContent = formatNumber(originalTotal) + ' VNĐ';
-                    finalAmountInput.value = originalTotal;
-                    voucherCodeInput.value = '';
-                }
-            }
+            
 
             function formatNumber(num) {
                 return new Intl.NumberFormat('vi-VN').format(num);
@@ -305,10 +269,7 @@
                     paymentButton.disabled = true;
                 }
             }
-=======
-       let originalTotal = ${totalMoney};
-       let selectedVoucherCode = null;
-       let selectedVoucherDiscount = 0;
+  
 
        function toggleVoucherList() {
            const voucherList = document.getElementById('voucherList');
@@ -351,7 +312,6 @@
        function formatNumber(num) {
            return new Intl.NumberFormat('vi-VN').format(num);
        }
->>>>>>> 1e74cb5a1a8ca6b5d001d7a104312f2a0ba6b043
         </script>
     </body>
 </html>

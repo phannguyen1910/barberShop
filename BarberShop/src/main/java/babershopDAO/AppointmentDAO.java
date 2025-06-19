@@ -43,7 +43,7 @@ public class AppointmentDAO {
     }
 
     public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'pending')";
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'Pending')";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId] ,[serviceId]) VALUES (?, ?)";
         boolean check = false;
 
@@ -106,6 +106,9 @@ public class AppointmentDAO {
 
         return check;
     }
+    
+    
+    
 
     public boolean editAppointmentService(int appointmentId, int[] serviceIds, String status) throws SQLException {
         String sqlUpdateAppointment = "UPDATE Appointment SET status = ? WHERE id = ?";
@@ -324,7 +327,7 @@ public class AppointmentDAO {
     }
 
     public String Booking(int customerId, int staffId, String appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-        String insertAppointment = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'processing')";
+        String insertAppointment = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'pending')";
         String insertAppointmentService = "INSERT INTO Appointment_Service (appointmentId, serviceId, quantity) VALUES (?, ?, 1)";
         String checkDuplicate = "SELECT COUNT(*) FROM Appointment WHERE staffId = ? AND appointmentTime = ?";
 

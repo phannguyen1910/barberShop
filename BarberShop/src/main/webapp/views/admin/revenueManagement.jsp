@@ -484,7 +484,7 @@
                     <div class="logo-text">BarberShop Pro</div>
                     <div class="logo-subtitle">Admin Dashboard</div>
                 </div>
-               <div class="nav-menu">
+                <div class="nav-menu">
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
@@ -504,7 +504,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -525,12 +525,6 @@
                         <a href="${pageContext.request.contextPath}/views/admin/voucherManagement.jsp" class="nav-link">
                             <i class="fas fa-ticket-alt"></i>
                             <span>Quản lý Voucher</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Quản lý Nhượng quyền</span>
                         </a>
                     </div>
                     <div class="nav-item">

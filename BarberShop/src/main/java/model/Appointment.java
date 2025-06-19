@@ -10,7 +10,7 @@ public class Appointment {
     private LocalDateTime appointmentTime;
     private String status;
     private int numberOfPeople;
-    private String customerName; // Thêm để lưu tên khách hàng
+    private String customerName; 
     private String services;
     private double totalAmount;
 
