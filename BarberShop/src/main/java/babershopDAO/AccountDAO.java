@@ -135,24 +135,7 @@ public static Account getAccountById(int id) {
     }
 
 
-public static Account getAccountById(int id) {
-        String sql = "SELECT id, email, phoneNumber, password, role FROM [Account] WHERE id = ?";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                String email = rs.getString("email");
-                String phoneNumber = rs.getString("phoneNumber");
-                String password = rs.getString("password");
-                String role = rs.getString("role");
-                return new Account(id, email, password, role, 1, phoneNumber) {};
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return null;
-    }
+
 
 
     public String changePassword(String email, String currentPassword, String newPassword) {

@@ -5,6 +5,7 @@ controller\ChangePasswordServlet.class
 controller\GoogleLogin.class
 babershopDAO\StaffDAO.class
 controller\BookingServlet.class
+controller\VoucherServlet$2.class
 model\WorkSchedule.class
 controller\HolidayServlet.class
 model\Appointment.class
@@ -23,6 +24,7 @@ controller\LogoutServlet.class
 model\Holiday.class
 controller\ResendOTPServlet$1.class
 controller\ViewScheduleServlet.class
+controller\VoucherServlet$1.class
 controller\ChooseServiceServlet.class
 babershopDAO\HolidayDAO.class
 controller\RegisterServlet.class
@@ -45,6 +47,7 @@ model\Account.class
 model\Validation.class
 controller\ForgetPassword.class
 controller\LoginServlet.class
+controller\VoucherServlet.class
 controller\BanCustomerServlet.class
 controller\HolidayAPI.class
 model\Invoice.class
@@ -55,6 +58,7 @@ babershopDAO\ServiceDAO.class
 controller\ViewCustomerServlet.class
 payment\VnpayReturnServlet.class
 controller\ResendOTPServlet.class
+controller\VoucherServlet$ResponseWrapper.class
 controller\SendOTPServlet.class
 babershopDAO\FeedbackDAO.class
 babershopDAO\AdminDAO.class

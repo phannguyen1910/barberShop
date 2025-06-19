@@ -5,6 +5,7 @@ import babershopDAO.CustomerDAO;
 import babershopDAO.HolidayDAO;
 import babershopDAO.ServiceDAO;
 import babershopDAO.StaffDAO;
+import babershopDAO.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -66,9 +67,9 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("error", "Tổng giá không hợp lệ.");
             totalPrice = 0;
         }
-
+        StaffDAO staffDAO = new StaffDAO();
         // Fetch staff data
-        List<Staff> staffs = StaffDAO.getAllStaffs();
+        List<Staff> staffs = staffDAO.getAllStaffs();
         if (staffs == null) {
             staffs = new ArrayList<>();
         }
@@ -158,7 +159,6 @@ public class BookingServlet extends HttpServlet {
             LocalDate appointmentDate = LocalDate.parse(appointmentDateStr);
             // 🔹 Kiểm tra ngày nghỉ lễ
             HolidayDAO holidayDAO = new HolidayDAO();
-          
 
             LocalTime appointmentTime = LocalTime.parse(appointmentTimeStr);
             LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
@@ -184,7 +184,9 @@ public class BookingServlet extends HttpServlet {
             if (Math.abs(calculatedTotalPrice - totalPrice) < 0.00) { // Allow small floating-point differences
                 throw new IllegalArgumentException("Tổng tiền không khớp với dịch vụ và số người!");
             }
-            List<Voucher> vouchers = appointmentDAO.showVoucher();
+            VoucherDAO voucherDAO = new VoucherDAO();
+            List<Voucher> vouchers = voucherDAO.showVoucher();
+
             for (Voucher v : vouchers) {
                 System.out.println(v.getCode());
             }

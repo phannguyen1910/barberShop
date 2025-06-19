@@ -53,6 +53,8 @@ public class AppointmentManagerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 //        AccountDAO accountDAO = AccountDAO.get
+
+
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         ServiceDAO serviceDAO = new ServiceDAO();
         CustomerDAO customerDAO = new CustomerDAO();

@@ -425,6 +425,7 @@ public class AppointmentDAO {
         return amount;
     }
 
+
     public List<Voucher> showVoucher() {
         String sql = "SELECT code, value, expiryDate, status FROM Voucher";
         List<Voucher> vouchers = new ArrayList<>();
