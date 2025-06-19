@@ -154,6 +154,7 @@ public class AppointmentDAO {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                 
                 Appointment appointment = new Appointment();
                 appointment.setId(rs.getInt("id"));
                 appointment.setCustomerId(rs.getInt("customerId"));

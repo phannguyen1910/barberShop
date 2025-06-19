@@ -81,7 +81,7 @@ public class CustomerDAO {
         }
         return 0;
     }
-    public static Customer getCustomerById(int id) {
+    public Customer getCustomerById(int id) {
         String sql = "SELECT * FROM [Customer] WHERE id = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -106,7 +106,7 @@ public class CustomerDAO {
         return c != null ? c.getLastName() + " " + c.getFirstName() : "Unknown";
     }
 
-    public static List<Customer> getAllCustomer() {
+    public List<Customer> getAllCustomer() {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT DISTINCT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status " +
                      "FROM Customer c JOIN Account a ON c.accountId = a.id";

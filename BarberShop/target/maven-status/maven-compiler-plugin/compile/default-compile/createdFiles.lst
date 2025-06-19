@@ -1,6 +1,5 @@
 babershopDAO\AccountDAO$1.class
 AppointmentManager\DashBoardServlet.class
-AppointmentManager\EditAppointmentServlet$AppointmentUpdateRequest.class
 controller\ValidateOTP.class
 controller\ChangePasswordServlet.class
 controller\GoogleLogin.class
@@ -58,7 +57,6 @@ payment\VnpayReturnServlet.class
 controller\ResendOTPServlet.class
 controller\SendOTPServlet.class
 babershopDAO\FeedbackDAO.class
-AppointmentManager\EditAppointmentServlet$Response.class
 babershopDAO\AdminDAO.class
 babershopDAO\CustomerDAO.class
 controller\StaffListServlet.class

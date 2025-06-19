@@ -4,7 +4,11 @@
  */
 package AppointmentManager;
 
+import babershopDAO.AccountDAO;
 import babershopDAO.AppointmentDAO;
+import babershopDAO.CustomerDAO;
+import babershopDAO.ServiceDAO;
+import babershopDAO.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Appointment;
 import model.AppointmentService;
+import model.Customer;
+import model.Service;
+import model.Staff;
 
 /**
  *
@@ -45,12 +52,19 @@ public class AppointmentManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+//        AccountDAO accountDAO = AccountDAO.get
         AppointmentDAO appointmentDAO = new AppointmentDAO();
+        ServiceDAO serviceDAO = new ServiceDAO();
+        CustomerDAO customerDAO = new CustomerDAO();
+        StaffDAO staffDAO = new StaffDAO();
         List <Appointment> appointments = appointmentDAO.getAllAppointmentsWithDetails();
-        for(Appointment a : appointments){
-            System.out.println(a.getServices());
-        }
+        List <Service> services = serviceDAO.getAllService();
+        List <Customer> customers  = customerDAO.getAllCustomer();
+        List <Staff> staffs = staffDAO.getAllStaffs();
+        request.setAttribute("listCustomer", customers);
+        request.setAttribute("listStaff", staffs);
         request.setAttribute("listAppointment", appointments);
+        request.setAttribute("listService", services);
         request.getRequestDispatcher("/views/admin/appointmentManagement.jsp").forward(request, response);
     }
 

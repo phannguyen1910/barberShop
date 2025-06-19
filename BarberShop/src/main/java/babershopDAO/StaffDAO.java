@@ -55,7 +55,7 @@ public class StaffDAO {
         return null;
     }
 
-    public static List<Staff> getAllStaffs() {
+    public List<Staff> getAllStaffs() {
 
         List<Staff> staffs = new ArrayList<>();
         String sql = "SELECT id, firstName, lastName, img FROM [Staff]";

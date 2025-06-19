@@ -477,7 +477,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>

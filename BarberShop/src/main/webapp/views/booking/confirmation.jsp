@@ -92,6 +92,30 @@
                 border-top: 2px solid #ffd700;
                 padding-top: 1.5rem;
             }
+            .deposit-section {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+            .deposit-section label {
+                margin-left: 0.5rem;
+                font-size: 1rem;
+                color: #1a1a1a;
+            }
+            .payment-button {
+                width: 100%;
+                background: #ccc;
+                border: none;
+                padding: 1rem;
+                border-radius: 8px;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+            .payment-button.enabled {
+                background: #ffd700;
+                cursor: pointer;
+                opacity: 1;
+            }
         </style>
     </head>
     <body>
@@ -182,10 +206,13 @@
                     <c:forEach var="service" items="${listService}">
                         <input type="hidden" name="serviceIds" value="${service.id}" />
                     </c:forEach>
-
                     <input type="hidden" name="totalBill" value="${totalMoney}" />
 
-                    <button type="submit">Thanh toán bằng VNPAY</button>
+                    <div class="deposit-section">
+                        <input type="checkbox" id="depositConfirm" onchange="togglePaymentButton()">
+                        <label for="depositConfirm">Vui lòng đặt cọc 50.000đ để xác nhận đặt lịch</label>
+                    </div>
+                    <button type="submit" id="paymentButton" class="payment-button" disabled>Thanh toán bằng VNPAY</button>
                 </form>
 
             </div>
@@ -264,6 +291,18 @@
 
             function formatNumber(num) {
                 return new Intl.NumberFormat('vi-VN').format(num);
+            }
+
+            function togglePaymentButton() {
+                const checkbox = document.getElementById('depositConfirm');
+                const paymentButton = document.getElementById('paymentButton');
+                if (checkbox.checked) {
+                    paymentButton.classList.add('enabled');
+                    paymentButton.disabled = false;
+                } else {
+                    paymentButton.classList.remove('enabled');
+                    paymentButton.disabled = true;
+                }
             }
         </script>
     </body>

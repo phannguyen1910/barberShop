@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.sql.SQLException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -44,10 +45,6 @@ public class EditAppointmentServlet extends HttpServlet {
     }
     
     
-    
-    
-    
-private AppointmentDAO appointmentDAO;
 
 @Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -55,153 +52,89 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
     processRequest(request, response);
 }
 
-private final Gson gson = new Gson();
+private AppointmentDAO appointmentDAO = new AppointmentDAO();
 
-@Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("application/json");
-    response.setCharacterEncoding("UTF-8");
-    
-    try {
-        // Đọc dữ liệu JSON từ request body
-        StringBuilder sb = new StringBuilder();
-        String line;
-        try (BufferedReader reader = request.getReader()) {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            // Đọc JSON từ request body
+            BufferedReader reader = request.getReader();
+            StringBuilder jsonInput = new StringBuilder();
+            String line;
             while ((line = reader.readLine()) != null) {
-                sb.append(line);
+                jsonInput.append(line);
             }
-        }
-        
-        String jsonData = sb.toString();
-        System.out.println("Received JSON: " + jsonData); // Debug log
-        
-        // Kiểm tra JSON có rỗng không
-        if (jsonData == null || jsonData.trim().isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new Response(false, "Dữ liệu JSON trống", null)));
-            return;
-        }
-        
-        // Parse JSON thành đối tượng
-        AppointmentUpdateRequest updateRequest = gson.fromJson(jsonData, AppointmentUpdateRequest.class);
-        
-        // Kiểm tra dữ liệu đầu vào chi tiết hơn
-        if (updateRequest == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new Response(false, "Không thể parse JSON", null)));
-            return;
-        }
-        
-        if (updateRequest.appointmentId <= 0) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new Response(false, "ID lịch hẹn không hợp lệ", null)));
-            return;
-        }
-        
-        if (updateRequest.status == null || updateRequest.status.trim().isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new Response(false, "Trạng thái không được để trống", null)));
-            return;
-        }
-        
-        if (updateRequest.serviceIds == null || updateRequest.serviceIds.length == 0) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new Response(false, "Phải chọn ít nhất một dịch vụ", null)));
-            return;
-        }
-        
-        // Validate status values
-        String[] validStatuses = {"pending", "confirmed", "completed", "cancelled"};
-        boolean isValidStatus = false;
-        for (String validStatus : validStatuses) {
-            if (validStatus.equals(updateRequest.status)) {
-                isValidStatus = true;
-                break;
+
+            JSONObject jsonObject = new JSONObject(jsonInput.toString());
+            int appointmentId = jsonObject.getInt("id");
+            String status = jsonObject.getString("status");
+            JSONArray serviceIdsArray = jsonObject.getJSONArray("serviceIds");
+            int[] serviceIds = new int[serviceIdsArray.length()];
+            for (int i = 0; i < serviceIdsArray.length(); i++) {
+                serviceIds[i] = serviceIdsArray.getInt(i);
             }
-        }
-        
-        if (!isValidStatus) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new Response(false, "Trạng thái không hợp lệ", null)));
-            return;
-        }
-        
-        System.out.println("Processing update for appointment ID: " + updateRequest.appointmentId); // Debug log
-        
-        // Khởi tạo DAO nếu chưa có
-        if (appointmentDAO == null) {
-            appointmentDAO = new AppointmentDAO();
-        }
-        
-        // Gọi DAO để cập nhật lịch hẹn
-        boolean success = appointmentDAO.editAppointmentService(
-            updateRequest.appointmentId, 
-            updateRequest.serviceIds, 
-            updateRequest.status
-        );
-        
-        if (success) {
-            // Trả về phản hồi thành công
-            response.getWriter().write(gson.toJson(new Response(true, "Cập nhật lịch hẹn thành công", null)));
-        } else {
-            // Trả về phản hồi thất bại
+
+            // Gọi DAO để chỉnh sửa lịch hẹn
+            boolean success = appointmentDAO.editAppointmentService(appointmentId, serviceIds, status);
+
+            // Lấy danh sách tên dịch vụ để trả về client
+            String[] serviceNames = getServiceNames(serviceIds); // Giả định có phương thức này
+
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("success", success);
+            if (success) {
+                jsonResponse.put("services", new JSONArray(serviceNames));
+            } else {
+                jsonResponse.put("message", "Không thể chỉnh sửa lịch hẹn");
+            }
+            out.print(jsonResponse.toString());
+
+        } catch (SQLException e) {
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("success", false);
+            jsonResponse.put("message", "Lỗi cơ sở dữ liệu: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(gson.toJson(new Response(false, "Không thể cập nhật lịch hẹn. Vui lòng kiểm tra lại dữ liệu.", null)));
+            out.print(jsonResponse.toString());
+        } catch (Exception e) {
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("success", false);
+            jsonResponse.put("message", "Lỗi: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(jsonResponse.toString());
+        } finally {
+            out.close();
         }
-        
-    } catch (JsonSyntaxException e) {
-        System.err.println("JSON Syntax Error: " + e.getMessage()); // Debug log
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write(gson.toJson(new Response(false, "Lỗi định dạng JSON: " + e.getMessage(), null)));
-    } catch (SQLException e) {
-        System.err.println("Database Error: " + e.getMessage()); // Debug log
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write(gson.toJson(new Response(false, "Lỗi cơ sở dữ liệu: " + e.getMessage(), null)));
-    } catch (Exception e) {
-        System.err.println("Unexpected Error: " + e.getMessage()); // Debug log
-        e.printStackTrace();
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write(gson.toJson(new Response(false, "Lỗi không xác định: " + e.getMessage(), null)));
     }
-}
 
-// Lớp để parse JSON từ request
-private static class AppointmentUpdateRequest {
-    int appointmentId;
-    String status;
-    int[] serviceIds;
-    
-    // Constructor mặc định
-    public AppointmentUpdateRequest() {}
-    
-    // Getters và Setters (nếu cần)
-    public int getAppointmentId() { return appointmentId; }
-    public void setAppointmentId(int appointmentId) { this.appointmentId = appointmentId; }
-    
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    
-    public int[] getServiceIds() { return serviceIds; }
-    public void setServiceIds(int[] serviceIds) { this.serviceIds = serviceIds; }
-}
-
-// Lớp để trả về phản hồi JSON
-private static class Response {
-    boolean success;
-    String message;
-    Object data;
-    
-    Response(boolean success, String message, Object data) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
+    // Phương thức giả định để lấy tên dịch vụ từ ServiceId
+    private String[] getServiceNames(int[] serviceIds) {
+        // Đây là mock data, bạn cần thay bằng truy vấn thực tế từ bảng Service
+        String[] serviceNames = new String[serviceIds.length];
+        for (int i = 0; i < serviceIds.length; i++) {
+            switch (serviceIds[i]) {
+                case 1:
+                    serviceNames[i] = "Cắt tóc";
+                    break;
+                case 2:
+                    serviceNames[i] = "Cạo mặt";
+                    break;
+                case 3:
+                    serviceNames[i] = "Nhuộm tóc";
+                    break;
+                case 4:
+                    serviceNames[i] = "Gội đầu";
+                    break;
+                default:
+                    serviceNames[i] = "Dịch vụ không xác định";
+            }
+        }
+        return serviceNames;
     }
-    
-    // Getters (nếu cần)
-    public boolean isSuccess() { return success; }
-    public String getMessage() { return message; }
-    public Object getData() { return data; }
-}
     @Override
     public String getServletInfo() {
         return "Short description";

@@ -129,18 +129,6 @@
                 animation: selectedPulse 2s infinite;
             }
 
-            @keyframes selectedPulse {
-                0% {
-                    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
-                }
-                50% {
-                    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5);
-                }
-                100% {
-                    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
-                }
-            }
-
             /* Debug Styles */
             .debug-section {
                 margin: 1rem 0;
