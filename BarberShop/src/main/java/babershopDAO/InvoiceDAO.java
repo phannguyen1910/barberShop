@@ -80,21 +80,24 @@ public class InvoiceDAO {
         return null;
     }
 
-    public static void insertInvoice(double amount, String paymentStatus, LocalDate receivedDate, int appointmentId, Integer voucherId) {
-        String sql = "INSERT INTO Invloice (amount, paymentStatus, receivedDate, appointmentId, voucherId) VALUES (?,?,?,?,?)";
+     public boolean insertInvoice(double totalAmount, LocalDateTime receivedDate, int appointmentId) {
+        String sql = "INSERT INTO Invloice (totalAmount, receivedDate) VALUES (?,?,?)";
+        boolean check = false;
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setDouble(1, amount);
-            ps.setString(2,paymentStatus );
-            String formattedDate = receivedDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-            ps.setString(3, formattedDate);
-            ps.setInt(4, appointmentId);
-            ps.setInt(4, voucherId);
-            ps.executeUpdate();
+            ps.setDouble(1, totalAmount);
+            String formattedDate = receivedDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss"));
+            ps.setString(2, formattedDate);
+            ps.setInt(3, appointmentId);
+            if(ps.executeUpdate()>0){
+                check = true;
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
+        return check;
     }
+     
     public boolean insertInvoice(int appointmentId, String transactionNo, double amount, String method, String status, LocalDateTime payTime) {
         String sql = "INSERT INTO Payment (booking_id, transaction_no, amount, method, status, pay_time) VALUES (?, ?, ?, ?, ?, ?)";
 

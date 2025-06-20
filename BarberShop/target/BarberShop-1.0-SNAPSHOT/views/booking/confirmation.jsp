@@ -202,7 +202,7 @@
                     <input type="hidden" name="customerId" value="${customerId}" />
                     <input type="hidden" name="staffId" value="${staffId}" />
                     <input type="hidden" name="appointmentTime" value="${dateTime}" />
-                    <input type="hidden" name="numberOfPeople" value="${numberOfPeople}" />
+                    <input type="hidden" name="numberOfPeople" value="${numberOfPeople}"/>
                     <c:forEach var="service" items="${listService}">
                         <input type="hidden" name="serviceIds" value="${service.id}" />
                     </c:forEach>

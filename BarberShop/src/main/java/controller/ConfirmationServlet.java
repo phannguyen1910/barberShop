@@ -1,6 +1,7 @@
 package controller;
 
 import babershopDAO.AppointmentDAO;
+import babershopDAO.InvoiceDAO;
 import babershopDAO.ServiceDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -8,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class ConfirmationServlet extends HttpServlet {
         String appointmentTime = request.getParameter("appointmentTime");
         int numberOfPeople = Integer.parseInt(request.getParameter("numberOfPeople"));
         String[] serviceIdParams = request.getParameterValues("serviceIds");
+        float totalAmount = Float.parseFloat(request.getParameter("totalBill"));
         List<Integer> serviceIds = new ArrayList<>();
         if (serviceIdParams != null) {
             for (String s : serviceIdParams) {
@@ -54,6 +57,8 @@ public class ConfirmationServlet extends HttpServlet {
 
         amount *= numberOfPeople;
         AppointmentDAO appointmentDAO = new AppointmentDAO();
+        InvoiceDAO invoiceDAO = new InvoiceDAO();
+//        if(invoiceDAO.insertInvoice(amount,  dateTime,));
         boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, numberOfPeople, serviceIds);
         if (check == true) {
             request.getRequestDispatcher("Payment").forward(request, response);

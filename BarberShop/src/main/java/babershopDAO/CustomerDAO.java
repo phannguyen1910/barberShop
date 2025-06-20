@@ -132,30 +132,31 @@ public class CustomerDAO {
         return customers;
     }
 
-    public Customer getAllCustomerInformation(String phoneNumber) {
+    public List <Customer> getAllCustomerInformation() {
+        List <Customer> customers = new ArrayList<>();
         String sql = "SELECT DISTINCT c.id, c.firstName, c.lastName, a.email, a.phoneNumber "
                 + "FROM Customer c "
                 + "JOIN Account a ON c.accountId = a.id "
-                + "WHERE a.phoneNumber = ? AND a.role = 'Customer' AND a.status = 1";
+                + "WHERE a.role = 'Customer' AND a.status = 1";
 
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, phoneNumber);
             ResultSet rs = ps.executeQuery(); 
             
-            if (rs.next()) {
-               return new Customer(
+            while(rs.next()) {
+               Customer customer = new Customer(
                         rs.getInt("id"),
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email"),
                         rs.getString("phoneNumber")
                 );
-            }
+               customers.add(customer);
+            };
         } catch (Exception e) {
             System.out.println("🔥 ERROR in getAllCustomerInformation(): " + e);
         }
-        return null;
+        return customers;
     }
 
     public static boolean checkEmailExist(String email) {
