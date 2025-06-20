@@ -15,6 +15,7 @@ model\Customer.class
 babershopDAO\AppointmentDAO.class
 payment\Config.class
 babershopDatabase\databaseInfo.class
+controller\EditProfileServlet.class
 model\Payment.class
 model\Service.class
 babershopDAO\AccountDAO$4.class
@@ -57,6 +58,7 @@ model\Feedback.class
 AppointmentManager\ChangeStatusServlet.class
 babershopDAO\ServiceDAO.class
 controller\ViewCustomerServlet.class
+payment\VnpayReturnServlet.class
 controller\ResendOTPServlet.class
 controller\VoucherServlet$ResponseWrapper.class
 controller\SendOTPServlet.class

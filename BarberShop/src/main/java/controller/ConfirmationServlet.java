@@ -57,9 +57,8 @@ public class ConfirmationServlet extends HttpServlet {
 
         amount *= numberOfPeople;
         AppointmentDAO appointmentDAO = new AppointmentDAO();
-        InvoiceDAO invoiceDAO = new InvoiceDAO();
-//        if(invoiceDAO.insertInvoice(amount,  dateTime,));
-        boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, numberOfPeople, serviceIds);
+
+        boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, numberOfPeople, serviceIds, totalAmount);
         if (check == true) {
             request.getRequestDispatcher("Payment").forward(request, response);
         } else {

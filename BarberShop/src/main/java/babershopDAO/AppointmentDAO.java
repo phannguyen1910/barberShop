@@ -43,89 +43,82 @@ public class AppointmentDAO {
         return null;
     }
 
-    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'pending')";
-        String sql2 = "INSERT INTO Appointment_Service ([appointmentId] ,[serviceId]) VALUES (?, ?)";
-        boolean check = false;
+    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime,
+                              int numberOfPeople, List<Integer> serviceIds, float totalAmount) {
+    String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'Pending')";
+    String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
-        // Cú pháp dấu ngoặc vuông [] là đúng cho SQL Server
-        try (Connection con = getConnect()) {
-            con.setAutoCommit(false); // Bắt đầu transaction
+    Connection con = null;
+    try {
+        con = getConnect();
+        con.setAutoCommit(false);
 
-            try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, customerId);
-                ps.setInt(2, staffId);
-                ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
-                ps.setInt(4, numberOfPeople);
-                //ps.setString(5, "Pending"); // 'Pending' đã được hardcode trong SQL, không cần set tham số này
+        try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, customerId);
+            ps.setInt(2, staffId);
+            ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
+            ps.setInt(4, numberOfPeople);
 
-                int rows = ps.executeUpdate(); // Thực thi INSERT
+            ps.executeUpdate(); // ✅ Sửa lỗi ở đây
 
-                // === Lấy ID được sinh ra tự động ===
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        int appointmentId = rs.getInt(1); // Lấy ID đầu tiên từ ResultSet
-                        System.out.println("✅ Appointment ID created: " + appointmentId);
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int appointmentId = rs.getInt(1);
+                    System.out.println("✅ Appointment ID created: " + appointmentId);
 
-                        // === Thêm các dịch vụ vào Appointment_Service (sử dụng Batch Update) ===
-                        if (!serviceIds.isEmpty()) {
-                            try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
-                                for (Integer serviceId : serviceIds) {
-                                    ps2.setInt(1, appointmentId);
-                                    ps2.setInt(2, serviceId);
-                                    ps2.addBatch(); // Thêm vào batch
+                    if (!serviceIds.isEmpty()) {
+                        try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
+                            for (Integer serviceId : serviceIds) {
+                                ps2.setInt(1, appointmentId);
+                                ps2.setInt(2, serviceId);
+                                ps2.addBatch();
+                            }
+                            int[] affectedRows = ps2.executeBatch();
+                            for (int affected : affectedRows) {
+                                if (affected == 0) {
+                                    con.rollback();
+                                    return false;
                                 }
-                                int[] affectedRows = ps2.executeBatch(); // Thực thi tất cả các lệnh trong batch
-
-                                // Kiểm tra kết quả của batch update nếu cần
-                                for (int affected : affectedRows) {
-                                    if (affected == 0) {
-                                        System.err.println("❌ Một dịch vụ không thể thêm (serviceId có thể không tồn tại hoặc lỗi khác).");
-                                        con.rollback(); // Rollback toàn bộ nếu có lỗi trong batch
-                                        return false;
-                                    }
-                                }
-                                System.out.println("✅ Thêm " + serviceIds.size() + " dịch vụ thành công cho Appointment ID: " + appointmentId);
                             }
                         }
+                    }
 
-                        con.commit(); // Commit transaction nếu mọi thứ thành công
-                        return true;
-                    } else {
-                        // Trường hợp không lấy được ID, có thể do cột ID không phải IDENTITY hoặc lỗi khác
-                        System.err.println("❌ Không thể lấy ID của Appointment vừa chèn. Đảm bảo cột ID là IDENTITY.");
-                        con.rollback(); // Rollback nếu không lấy được ID
+                    InvoiceDAO invoiceDAO = new InvoiceDAO();
+                    boolean invoiceInserted = invoiceDAO.insertInvoice(con, totalAmount, appointmentTime, appointmentId);
+                    if (!invoiceInserted) {
+                        con.rollback();
                         return false;
                     }
-                }
-            }
-        } catch (SQLException e) {
-            // Log lỗi chi tiết từ database
-            System.err.println("❌ Lỗi khi chèn dữ liệu vào CSDL: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            e.printStackTrace(); // In ra full stack trace để debug
 
-            // Rollback nếu có lỗi xảy ra ở bất kỳ đâu trong try block
-            try (Connection con = getConnect()) { // Cần lấy lại kết nối để rollback nếu con đã đóng
-                if (con != null && !con.getAutoCommit()) {
+                    con.commit();
+                    return true;
+                } else {
                     con.rollback();
+                    return false;
                 }
-            } catch (SQLException ex) {
-                System.err.println("Lỗi khi rollback: " + ex.getMessage());
             }
-            return false;
-        } catch (Exception e) {
-            // Bắt các ngoại lệ khác không phải SQLException
-            System.err.println("❌ Lỗi không xác định trong addAppointment: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ SQLException: " + e.getMessage());
+        e.printStackTrace();
+        if (con != null) {
+            try {
+                con.rollback();
+            } catch (SQLException ex) {
+                System.err.println("❌ Rollback failed: " + ex.getMessage());
+            }
+        }
+        return false;
+    } finally {
+        if (con != null) {
+            try { con.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
+}
+
 
     public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-        // SQL Server: Sử dụng OUTPUT INSERTED.ID để trả về ID được tạo tự động
-        // Không cần Statement.RETURN_GENERATED_KEYS trong prepareStatement khi dùng OUTPUT
+
         String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) OUTPUT INSERTED.ID VALUES (?, ?, ?, ?, 'Pending')";
 
         // SQL Server: cú pháp dấu ngoặc vuông [] là đúng
