@@ -10,14 +10,28 @@ public class Appointment {
     private LocalDateTime appointmentTime;
     private String status;
     private int numberOfPeople;
-    private String customerName; 
+    private String customerName;
     private String services;
     private double totalAmount;
+    private int branchId;
 
     public Appointment(LocalDateTime appointment_time, int customerId1, int staff) {
     }
 
     public Appointment() {
+    }
+
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, int numberOfPeople, String customerName, String services, double totalAmount, int branchId) {
+        this.id = id;
+        this.customerId = customerId;
+        this.staffId = staffId;
+        this.appointmentTime = appointmentTime;
+        this.status = status;
+        this.numberOfPeople = numberOfPeople;
+        this.customerName = customerName;
+        this.services = services;
+        this.totalAmount = totalAmount;
+        this.branchId = branchId;
     }
 
     public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount) {
@@ -29,6 +43,14 @@ public class Appointment {
         this.customerName = customerName;
         this.services = services;
         this.totalAmount = totalAmount;
+    }
+
+    public int getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(int branchId) {
+        this.branchId = branchId;
     }
 
     public double getTotalAmount() {
@@ -73,7 +95,6 @@ public class Appointment {
         this.staffId = staffId;
     }
 
-    
     public LocalDateTime getAppointmentTime() {
         return appointmentTime;
     }

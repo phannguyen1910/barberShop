@@ -44,8 +44,8 @@ public class AppointmentDAO {
     }
 
     public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime,
-                              int numberOfPeople, List<Integer> serviceIds, float totalAmount) {
-    String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) VALUES (?, ?, ?, ?, 'Pending')";
+                              int numberOfPeople, List<Integer> serviceIds, float totalAmount, int branchId) {
+    String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status, branchId) VALUES (?, ?, ?, ?, 'Pending', ?)";
     String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
     Connection con = null;
@@ -58,7 +58,7 @@ public class AppointmentDAO {
             ps.setInt(2, staffId);
             ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
             ps.setInt(4, numberOfPeople);
-
+            ps.setInt(5, branchId);
             ps.executeUpdate(); // ✅ Sửa lỗi ở đây
 
             try (ResultSet rs = ps.getGeneratedKeys()) {

@@ -57,7 +57,7 @@ public class StaffDAO {
     public List<Staff> getAllStaffs() {
 
         List<Staff> staffs = new ArrayList<>();
-        String sql = "SELECT id, firstName, lastName, img FROM [Staff]";
+        String sql = "SELECT id, firstName, lastName, img, branchId FROM [Staff]";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -66,7 +66,8 @@ public class StaffDAO {
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 String img = rs.getString("img");
-                Staff staff = new Staff(staffId, firstName, lastName, img);
+                int branchId = rs.getInt("branchId");
+                Staff staff = new Staff(staffId, firstName, lastName, img, branchId);
 
                 staffs.add(staff);
             }
@@ -75,39 +76,6 @@ public class StaffDAO {
             System.out.println(e);
         }
         return null;
-    }
-
- 
-  public static void insertStaff(String firstName, String lastName, String email, String password, String phoneNumber) {
-        String sql = "INSERT INTO Staff (first_name, last_name, email, password, phone_number) VALUES (?,?,?,?,?)";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, firstName);
-            ps.setString(2, lastName);
-            ps.setString(3, email);
-            ps.setString(4, password);
-            ps.setString(5, phoneNumber);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);}
-  }
-
-    public static void updateStaff(int id, String firstName, String lastName, String email, String password, String phoneNumber) {
-
-        String sql = "UPDATE Staff SET first_name = ?, last_name = ?, email = ?, password = ?, phone_number = ? WHERE id = ?";
-
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, firstName);
-            ps.setString(2, lastName);
-            ps.setString(3, email);
-            ps.setString(4, password);
-            ps.setString(5, phoneNumber);
-            ps.setInt(6, id);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 
     public static void addStaff(String firstName, String lastName, String email, String phoneNumber, String role, String img) {
@@ -223,8 +191,36 @@ public class StaffDAO {
         return staff;
     }
 
-    public static void main(String[] args) {
-        System.out.println("1");
+    public List<Staff> getStaffByBranchId(int branchId) {
+        List<Staff> staffs = new ArrayList<>();
+        String sql = "SELECT id, firstName, lastName FROM Staff WHERE branchId = ?";
+
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, branchId); // Gán giá trị branchId vào dấu ?
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int staffId = rs.getInt("id");
+                String firstName = rs.getString("firstName");
+                String lastName = rs.getString("lastName");
+
+                Staff staff = new Staff(staffId, firstName, lastName);
+                staffs.add(staff);
+            }
+
+            if (staffs.isEmpty()) {
+                System.out.println("⚠️ Không có nhân viên nào thuộc chi nhánh có ID: " + branchId);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi lấy danh sách nhân viên theo chi nhánh: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi không xác định: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return staffs;
     }
 
     public static List<Staff> searchAndSortStaff(String name, String email, String role, String sort) {
@@ -274,20 +270,20 @@ public class StaffDAO {
             }
 
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(new Staff(
-                        rs.getInt("id"),
-                        rs.getInt("accountId"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("img"),
-                        rs.getString("email"),
-                        rs.getString("phoneNumber"),
-                        rs.getString("password"),
-                        rs.getString("role"),
-                        rs.getInt("status")
-                ));
-            }
+//            while (rs.next()) {
+//                list.add(new Staff(
+//                        rs.getInt("id"),
+//                        rs.getInt("accountId"),
+//                        rs.getString("firstName"),
+//                        rs.getString("lastName"),
+//                        rs.getString("img"),
+//                        rs.getString("email"),
+//                        rs.getString("phoneNumber"),
+//                        rs.getString("password"),
+//                        rs.getString("role"),
+//                        rs.getInt("status")
+//                ));
+//            }
         } catch (Exception e) {
             System.out.println("❌ Lỗi ở searchAndSortStaff(): " + e);
         }

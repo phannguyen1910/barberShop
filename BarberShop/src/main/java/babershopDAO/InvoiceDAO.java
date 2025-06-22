@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Invoice;
-import model.Service;
 
 public class InvoiceDAO {
     public static Connection getConnect() {

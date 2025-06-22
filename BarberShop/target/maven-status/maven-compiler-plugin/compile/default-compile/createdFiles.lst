@@ -1,6 +1,8 @@
 babershopDAO\AccountDAO$1.class
 AppointmentManager\DashBoardServlet.class
 controller\ValidateOTP.class
+model\Branch.class
+controller\ChooseBranchServlet.class
 controller\ChangePasswordServlet.class
 controller\GoogleLogin.class
 babershopDAO\StaffDAO.class
@@ -32,6 +34,7 @@ controller\RegisterServlet.class
 babershopDAO\WorkScheduleDAO.class
 babershopDAO\InvoiceDAO.class
 payment\PaymentServlet.class
+babershopDAO\BranchDAO.class
 AppointmentManager\AddAppointmentServlet.class
 babershopDAO\VoucherDAO.class
 model\Staff.class

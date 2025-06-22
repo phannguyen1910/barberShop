@@ -22,6 +22,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\m
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Holiday.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AppointmentDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\AppointmentManager\UpdateAppointmentStatusServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Branch.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AdminDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\HomeServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Invoice.java
@@ -33,6 +34,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\m
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\payment\PaymentServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\StaffDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\CustomerDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ChooseBranchServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ViewCustomerServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\VoucherServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Feedback.java
@@ -44,6 +46,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\c
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\LoginServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\payment\Config.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\constant\Iconstant.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\BranchDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\WorkScheduleDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ForgetPassword.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Service.java

@@ -12,170 +12,14 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-        <style>
-            .staff-selection {
-                margin-top: 1rem;
-                display: none;
-            }
 
-            .staff-grid {
-                display: flex;
-                gap: 1.5rem;
-                overflow-x: auto;
-                padding: 1rem 0;
-                scrollbar-width: thin;
-                justify-content: center;
-            }
-
-            .staff-card {
-                flex: 0 0 auto;
-                width: 225px;
-                height: 300px;
-                position: relative;
-                cursor: pointer;
-                border-radius: 15px;
-                overflow: hidden;
-                /* Enhanced styling */
-                transition: all 0.3s ease;
-                border: 3px solid transparent;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                transform: scale(1);
-            }
-
-            .staff-card:hover {
-                transform: scale(1.02);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-            }
-
-            .staff-card.selected {
-                border: 3px solid #007bff;
-                box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
-                transform: scale(1.02);
-            }
-
-            .staff-card img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                display: block;
-                transition: filter 0.3s ease;
-            }
-
-            .staff-card.selected img {
-                filter: brightness(1.1);
-            }
-
-            .staff-name {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: rgba(0, 0, 0, 0.6);
-                color: white;
-                text-align: center;
-                padding: 0.5rem;
-                font-size: 1.5rem;
-                font-weight: 500;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                transition: all 0.3s ease;
-            }
-
-            .staff-radio {
-                position: absolute;
-                opacity: 0;
-                width: 100%;
-                height: 100%;
-                cursor: pointer;
-            }
-
-            .staff-card:hover .staff-name {
-                background: rgba(0, 0, 0, 0.8);
-            }
-
-            .staff-card.selected .staff-name {
-                background: rgba(0, 123, 255, 0.9);
-                font-weight: 600;
-            }
-
-            /* Check icon for selected staff */
-            .staff-check-icon {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                width: 30px;
-                height: 30px;
-                background: #28a745;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 16px;
-                opacity: 0;
-                transform: scale(0);
-                transition: all 0.3s ease;
-                z-index: 10;
-            }
-
-            .staff-card.selected .staff-check-icon {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            /* Pulse animation for selected card */
-            .staff-card.selected {
-                animation: selectedPulse 2s infinite;
-            }
-
-            /* Debug Styles */
-            .debug-section {
-                margin: 1rem 0;
-                padding: 1rem;
-                background-color: #f8f9fa;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-            }
-
-            @media (max-width: 768px) {
-                .staff-grid {
-                    justify-content: flex-start;
-                }
-
-                .staff-card {
-                    width: 180px;
-                    height: 240px;
-                }
-
-                .staff-name {
-                    font-size: 1.2rem;
-                }
-
-                .staff-check-icon {
-                    width: 25px;
-                    height: 25px;
-                    font-size: 14px;
-                }
-            }
-
-            .time-slot.disabled {
-                background-color: #ccc;
-                cursor: not-allowed;
-                opacity: 0.6;
-            }
-        </style>
     </head>
     <body>
-        <!-- Navbar -->
         <%@ include file="/views/common/navbar.jsp" %>
-        <!-- Background Image Section -->
         <div class="background-section"></div>
 
-        <!-- Main Content -->
         <div class="main-container">
             <div class="booking-card fade-in">
-                <!-- Header -->
                 <div class="booking-header">
                     <h1 class="booking-title">Đặt lịch giữ chỗ</h1>
                     <p class="booking-subtitle">Đặt lịch nhanh chóng để trải nghiệm dịch vụ cao cấp tại salon của bạn</p>
@@ -187,12 +31,33 @@
                     </div>
                 </c:if>
 
-                <!-- Steps -->
                 <div class="steps-container">
-                    <!-- Step 1: Choose Number of People -->
                     <div class="step">
                         <div class="step-header">
                             <div class="step-number">1</div>
+                            <div class="step-title">Chọn cơ sở</div>
+                        </div>
+                        <div class="step-content">
+                            <%-- Nút này sẽ chuyển hướng sang trang ChooseBranchServlet --%>
+                            <a href="${pageContext.request.contextPath}/ChooseBranchServlet" class="btn btn-outline btn-full">
+                                <i class="bi bi-building"></i>
+                                <span id="toggleBranchText">
+                                    <c:choose>
+                                        <c:when test="${not empty preSelectedBranchName}">
+                                            Đã chọn: ${preSelectedBranchName}
+                                        </c:when>
+                                        <c:otherwise>
+                                            Chọn cơ sở
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
                             <div class="step-title">Chọn số người</div>
                         </div>
                         <div class="step-content">
@@ -220,14 +85,14 @@
                         </div>
                     </div>
 
-                    <!-- Step 2: Choose Service -->
                     <div class="step">
                         <div class="step-header">
-                            <div class="step-number">2</div>
+                            <div class="step-number">3</div>
                             <div class="step-title">Chọn dịch vụ</div>
                         </div>
                         <div class="step-content">
                             <div id="serviceList" class="service-list">
+                                <%-- Lấy serviceNames và totalPrice từ request attribute, đã được BookingServlet cập nhật từ session --%>
                                 <c:set var="serviceNamesAttr" value="${requestScope.serviceNames}" />
                                 <c:set var="totalPriceAttr" value="${requestScope.totalPrice}" />
                                 <c:choose>
@@ -254,10 +119,9 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Choose Date, Time & Stylist -->
                     <div class="step">
                         <div class="step-header">
-                            <div class="step-number">3</div>
+                            <div class="step-number">4</div>
                             <div class="step-title">Chọn ngày, giờ & stylist</div>
                         </div>
                         <div class="step-content">
@@ -278,16 +142,16 @@
                                 </button>
                                 <div class="time-grid" id="timeSlots" style="display: none;"></div>
 
-                                <!-- Staff Selection Form -->
                                 <button class="btn btn-outline btn-full" id="toggleStaffSelection" style="margin-top: 1rem;">
                                     <i class="bi bi-person-badge"></i>
                                     <span id="toggleStaffText">Chọn nhân viên</span>
                                 </button>
                                 <div class="staff-selection" id="staffSelection">
-                                    <div class="staff-grid">
+                                    <div class="staff-grid" id="staffGrid">
                                         <c:if test="${not empty listOfStaff}">
                                             <c:forEach var="staff" items="${listOfStaff}">
-                                                <div class="staff-card" data-staff-id="${staff.id}" onclick="selectStaff(this, '${staff.id}')">
+                                                <%-- Thêm data-branch-id vào mỗi thẻ nhân viên --%>
+                                                <div class="staff-card" data-staff-id="${staff.id}" data-branch-id="${staff.branchId}" onclick="selectStaff(this, '${staff.id}')" style="display: none;">
                                                     <img src="${pageContext.request.contextPath}/${staff.img}" 
                                                          alt="${staff.firstName} ${staff.lastName}" 
                                                          onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/image/default-avatar.jpg';">
@@ -299,9 +163,9 @@
                                                 </div>
                                             </c:forEach>
                                         </c:if>
-                                        <c:if test="${empty listOfStaff}">
-                                            <p>Không có nhân viên nào khả dụng.</p>
-                                        </c:if>
+                                        <div id="noStaffMessage" style="display: none;">
+                                            <p>Vui lòng chọn cơ sở trước để xem danh sách nhân viên.</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -309,7 +173,6 @@
                     </div>
                 </div>
 
-                <!-- Confirm Section -->
                 <div class="confirm-section">
                     <button type="button" class="btn btn-primary btn-full pulse" id="confirmBtn" disabled>
                         <i class="bi bi-check-circle"></i>
@@ -319,56 +182,67 @@
             </div>
         </div>
 
-        <!-- Hidden Form for Submission -->
         <form id="bookingForm" action="${pageContext.request.contextPath}/BookingServlet" method="post">
+            <%-- hiddenBranchId sẽ được pre-fill từ requestScope.preSelectedBranchId --%>
+            <input type="hidden" name="branchId" id="hiddenBranchId" value="${preSelectedBranchId}">
             <input type="hidden" name="numberOfPeople" id="hiddenNumberOfPeople">
             <input type="hidden" name="appointmentDate" id="hiddenAppointmentDate">
             <input type="hidden" name="appointmentTime" id="hiddenAppointmentTime">
-            <input type="hidden" name="customerId" id="hiddenCustomerId" value="${sessionScope.customerId}">
+            <input type="hidden" name="customerId" id="hiddenCustomerId" value="${sessionScope.account.id}"> <%-- Lấy account ID từ session --%>
             <input type="hidden" name="staffId" id="hiddenStaffId" value="">
-            <!-- Service Names from request attribute -->
-            <c:if test="${not empty requestScope.serviceNames and requestScope.serviceNames != ''}">
+            <%-- Service names và total price sẽ được lấy từ session trong BookingServlet doPost, không cần truyền lại ở đây --%>
+            <%-- <c:if test="${not empty requestScope.serviceNames and requestScope.serviceNames != ''}">
                 <c:forTokens var="serviceName" items="${requestScope.serviceNames}" delims=",">
                     <input type="hidden" name="serviceName" value="${serviceName}">
                 </c:forTokens>
             </c:if>
-            <input type="hidden" name="totalPrice" id="hiddenTotalPrice" value="${requestScope.totalPrice}">
+            <input type="hidden" name="totalPrice" id="hiddenTotalPrice" value="${requestScope.totalPrice}"> --%>
         </form>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-container">
-                <div>
-                    <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Cut&Styles Logo" class="footer-logo">
-                </div>
-                <div>
-                    <h4 class="footer-title">Liên kết nhanh</h4>
-                    <ul class="footer-links">
-                        <li><a href="${pageContext.request.contextPath}/views/common/aboutUs.jsp">Về chúng tôi</a></li>
-                        <li><a href="${pageContext.request.contextPath}/views/common/franchise.jsp">Liên hệ nhượng quyền</a></li>
-                        <li><a href="${pageContext.request.contextPath}/views/commit/support.jsp">Chính sách cam kết</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="footer-title">Thông tin liên hệ</h4>
-                    <div class="footer-contact">
-                        <p><i class="bi bi-geo-alt-fill"></i> Khu đô thị FPT city, Hòa Hải, Ngũ Hành Sơn, Đà Nẵng</p>
-                        <p><i class="bi bi-telephone-fill"></i> Liên hệ học nghề tóc: 0774511941</p>
-                        <p><i class="bi bi-clock-fill"></i> Giờ phục vụ: Thứ 2 đến Chủ Nhật, 8h30 - 20h30</p>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2025 Cut&Styles Barber. Tất cả quyền được bảo lưu.</p>
-            </div>
-        </footer>
+        <%@ include file="/views/common/footer.jsp" %>
 
         <script>
+            // Biến global để lưu trữ selectedBranchId
+            // Giá trị này được khởi tạo từ request attribute 'preSelectedBranchId'
+            let selectedBranchId = "${preSelectedBranchId}";
+            let preSelectedBranchName = "${preSelectedBranchName}"; // Get the name as well
+
+            // Khi DOM đã sẵn sàng
+            document.addEventListener("DOMContentLoaded", () => {
+                // Kiểm tra nếu có chi nhánh đã được chọn trước đó
+                if (selectedBranchId && selectedBranchId.trim() !== "") {
+                    filterStaffByBranch(selectedBranchId);
+                    document.getElementById('toggleBranchText').textContent = `Đã chọn: ${preSelectedBranchName}`;
+                } else {
+                    filterStaffByBranch(null); // Hide all staff initially
+                }
+
+                // Set default date and show available times
+                const today = new Date().toISOString().split("T")[0];
+                const bookingDateElement = document.getElementById("bookingDate");
+                bookingDateElement.value = today;
+                selectedDate = today;
+                showAvailableTimes(new Date(today));
+
+                // Initialize staff selection visibility based on whether a branch is pre-selected
+                if (selectedBranchId && selectedBranchId.trim() !== "") {
+                    document.getElementById('staffSelection').style.display = 'block';
+                    document.getElementById('toggleStaffText').textContent = "Ẩn danh sách nhân viên";
+                } else {
+                     document.getElementById('staffSelection').style.display = 'none';
+                     document.getElementById('toggleStaffText').textContent = "Chọn nhân viên";
+                }
+
+                // Kiểm tra trạng thái form hoàn chỉnh
+                checkFormComplete();
+            });
+
+            // Các hằng số và biến khác
             const container = document.getElementById("timeSlots");
             const confirmBtn = document.getElementById("confirmBtn");
             const bookingDate = document.getElementById("bookingDate");
-            const weekendBtn = document.getElementById("weekendBtn");
-            const dayType = document.getElementById("dayType");
+            const weekendBtn = document.getElementById("weekendBtn"); // This button still exists but its logic isn't fully in this snippet
+            const dayType = document.getElementById("dayType"); // Same as above
             const togglePeopleForm = document.getElementById("togglePeopleForm");
             const peopleForm = document.getElementById("peopleForm");
             const toggleTimeGrid = document.getElementById("toggleTimeGrid");
@@ -382,46 +256,85 @@
 
             let selectedTime = null;
             let selectedDate = null;
+            // selectedBranchId đã được khai báo và khởi tạo ở trên
 
-            // Enhanced staff selection function
+
+            // Hàm lọc nhân viên theo Branch ID
+            function filterStaffByBranch(branchId) {
+                const allStaffCards = document.querySelectorAll('.staff-card');
+                const noStaffMessage = document.getElementById('noStaffMessage');
+                let hasVisibleStaff = false;
+
+                allStaffCards.forEach(card => {
+                    const staffBranchId = card.dataset.branchId;
+                    // So sánh staffBranchId (kiểu string) với branchId (cũng kiểu string)
+                    if (branchId && staffBranchId === branchId) {
+                        card.style.display = 'block';
+                        hasVisibleStaff = true;
+                    } else {
+                        card.style.display = 'none';
+                        // Đảm bảo bỏ chọn nhân viên nếu thẻ của họ bị ẩn đi
+                        if (card.classList.contains('selected')) {
+                            card.classList.remove('selected');
+                            const radio = card.querySelector('.staff-radio');
+                            if (radio) radio.checked = false;
+                        }
+                    }
+                });
+
+                // Hiển thị thông báo nếu không có nhân viên hoặc chưa chọn chi nhánh
+                if (branchId && !hasVisibleStaff) {
+                    noStaffMessage.style.display = 'block';
+                    noStaffMessage.innerHTML = '<p>Không có nhân viên nào khả dụng tại cơ sở này.</p>';
+                } else if (!branchId) {
+                    noStaffMessage.style.display = 'block';
+                    noStaffMessage.innerHTML = '<p>Vui lòng chọn cơ sở trước để xem danh sách nhân viên.</p>';
+                } else {
+                    noStaffMessage.style.display = 'none';
+                }
+                checkFormComplete(); // Re-check completeness after staff filtering
+            }
+
+            // Hàm bỏ chọn nhân viên hiện tại
+            function clearStaffSelection() {
+                const allStaffCards = document.querySelectorAll('.staff-card');
+                allStaffCards.forEach(card => {
+                    card.classList.remove('selected');
+                    const radio = card.querySelector('.staff-radio');
+                    if (radio) radio.checked = false;
+                });
+                document.getElementById('hiddenStaffId').value = '';
+                toggleStaffText.textContent = "Chọn nhân viên";
+                checkFormComplete(); // Re-check completeness after clearing staff
+            }
+
+            // Hàm chọn nhân viên
             function selectStaff(cardElement, staffId) {
                 const allCards = document.querySelectorAll('.staff-card');
                 const currentlySelected = cardElement.classList.contains('selected');
 
-                // Remove selection from all cards
                 allCards.forEach(card => {
                     card.classList.remove('selected');
                     const radio = card.querySelector('.staff-radio');
-                    if (radio)
-                        radio.checked = false;
+                    if (radio) radio.checked = false;
                 });
 
-                // Clear hidden field
                 document.getElementById('hiddenStaffId').value = '';
+                toggleStaffText.textContent = "Chọn nhân viên";
 
-                // If card wasn't selected, select it
                 if (!currentlySelected) {
                     cardElement.classList.add('selected');
                     const radio = cardElement.querySelector('.staff-radio');
-                    if (radio)
-                        radio.checked = true;
+                    if (radio) radio.checked = true;
                     document.getElementById('hiddenStaffId').value = staffId;
+                    const staffName = cardElement.querySelector('.staff-name').textContent;
+                    toggleStaffText.textContent = `Đã chọn: ${staffName}`;
                 }
 
-                // Update form validation
                 checkFormComplete();
             }
 
-            // Set default date to today
-            document.addEventListener("DOMContentLoaded", () => {
-                const today = new Date().toISOString().split("T")[0];
-                bookingDate.value = today;
-                selectedDate = today;
-                showAvailableTimes(new Date(today));
-                checkFormComplete();
-            });
-
-            // Set date constraints
+            // Thiết lập ràng buộc ngày
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const maxDate = new Date();
@@ -429,7 +342,7 @@
             bookingDate.min = today.toISOString().split("T")[0];
             bookingDate.max = maxDate.toISOString().split("T")[0];
 
-            // Show available times with Vietnam timezone (UTC+7)
+            // Hiển thị khung giờ khả dụng
             function showAvailableTimes(selectedDate) {
                 const vnTimeZone = 'Asia/Ho_Chi_Minh';
                 const now = new Date().toLocaleString('en-US', {timeZone: vnTimeZone});
@@ -448,13 +361,12 @@
                 container.classList.add("expanded");
                 toggleTimeText.textContent = "Thu gọn khung giờ";
                 container.innerHTML = '';
+                selectedTime = null; // Clear selected time when date changes
 
                 for (let hour = Math.floor(startHour); hour <= Math.floor(endHour); hour++) {
                     for (let minute of [0, 30]) {
-                        if (hour === Math.floor(startHour) && minute < (startHour % 1) * 60)
-                            continue;
-                        if (hour === Math.floor(endHour) && minute > (endHour % 1) * 60)
-                            continue;
+                        if (hour === Math.floor(startHour) && minute < (startHour % 1) * 60) continue;
+                        if (hour === Math.floor(endHour) && minute > (endHour % 1) * 60) continue;
 
                         const label = hour.toString().padStart(2, '0') + ':' + (minute === 0 ? '00' : '30');
                         const timeValue = hour * 60 + minute;
@@ -477,45 +389,50 @@
                         container.appendChild(btn);
                     }
                 }
+                 checkFormComplete(); // Re-check completeness after time slots are rendered
             }
 
+            // Xử lý ngày nghỉ (holiday)
             window.addEventListener('DOMContentLoaded', () => {
                 fetch('<%=request.getContextPath()%>/api/holiday')
-                        .then(response => response.json())
-                        .then(holidayList => {
-                            const dateInput = document.getElementById("date");
-                            if (!dateInput)
-                                return;
+                    .then(response => response.json())
+                    .then(holidayList => {
+                        const dateInput = document.getElementById("bookingDate");
+                        if (!dateInput) return;
 
-                            dateInput.addEventListener("change", function () {
-                                const selectedDate = this.value;
-                                if (holidayList.includes(selectedDate)) {
-                                    alert("Ngày bạn chọn là ngày nghỉ. Vui lòng chọn ngày khác.");
-                                    this.value = "";
-                                }
-                            });
-                        })
-                        .catch(error => console.error("Lỗi khi tải danh sách ngày nghỉ:", error));
+                        dateInput.addEventListener("change", function () {
+                            const selectedDateValue = this.value; // Use a different variable name
+                            if (holidayList.includes(selectedDateValue)) {
+                                alert("Ngày bạn chọn là ngày nghỉ. Vui lòng chọn ngày khác.");
+                                this.value = "";
+                                selectedDate = null; // Clear selectedDate if it's a holiday
+                                showAvailableTimes(new Date()); // Re-render with current date times
+                            }
+                            checkFormComplete();
+                        });
+                    })
+                    .catch(error => console.error("Lỗi khi tải danh sách ngày nghỉ:", error));
             });
 
-
-
-            // Check if selections are complete
+            // Kiểm tra form hoàn chỉnh để bật/tắt nút xác nhận
             function checkFormComplete() {
+                // selectedBranchId đã được khởi tạo từ request attribute hoặc giữ nguyên null/empty
+                const hasSelectedBranch = selectedBranchId !== null && selectedBranchId.trim() !== "";
                 const hasSelectedTime = selectedTime !== null;
                 const hasSelectedStaff = document.querySelector('input[name="staffId"]:checked') !== null;
-                const hasSelectedServices = document.querySelectorAll('input[name="serviceName"]').length > 0;
+                // Check if serviceNamesAttr (from request scope) is present and not empty
+                const hasSelectedServices = "${requestScope.serviceNames}" !== null && "${requestScope.serviceNames}" !== "";
                 const hasSelectedPeople = document.getElementById("numPeople").value !== "";
                 const hasSelectedDate = bookingDate.value !== "";
 
-                if (hasSelectedTime && hasSelectedStaff && hasSelectedServices && hasSelectedPeople && hasSelectedDate) {
+                if (hasSelectedBranch && hasSelectedTime && hasSelectedStaff && hasSelectedServices && hasSelectedPeople && hasSelectedDate) {
                     confirmBtn.disabled = false;
                 } else {
                     confirmBtn.disabled = true;
                 }
             }
 
-            // Date change handler
+            // Xử lý sự kiện thay đổi ngày
             bookingDate.addEventListener("change", () => {
                 selectedDate = bookingDate.value;
                 const selectedDateObj = new Date(bookingDate.value);
@@ -524,22 +441,20 @@
 
                 if (selectedDateMidnight >= today && selectedDateMidnight <= maxDate) {
                     showAvailableTimes(selectedDateObj);
-                    checkFormComplete();
                 } else {
                     alert("Vui lòng chọn ngày trong phạm vi từ hôm nay đến 3 ngày tới.");
                     bookingDate.value = today.toISOString().split("T")[0];
                     selectedDate = today.toISOString().split("T")[0];
                     showAvailableTimes(new Date(today));
-                    checkFormComplete();
                 }
             });
 
-            // Toggle people form
+            // Toggle form số người
             togglePeopleForm.addEventListener("click", () => {
                 peopleForm.style.display = peopleForm.style.display === "none" ? "block" : "none";
             });
 
-            // Toggle time grid
+            // Toggle form khung giờ
             toggleTimeGrid.addEventListener("click", () => {
                 if (container.classList.contains("expanded")) {
                     container.classList.remove("expanded");
@@ -552,41 +467,55 @@
                 }
             });
 
-            // Toggle staff selection
+            // Toggle form chọn nhân viên
             toggleStaffSelection.addEventListener("click", () => {
                 staffSelection.style.display = staffSelection.style.display === "none" ? "block" : "none";
                 toggleStaffText.textContent = staffSelection.style.display === "block" ? "Ẩn danh sách nhân viên" : "Chọn nhân viên";
+
+                if (staffSelection.style.display === "block") {
+                    filterStaffByBranch(selectedBranchId);
+                } else {
+                    document.querySelectorAll('.staff-card').forEach(card => card.style.display = 'none');
+                    document.getElementById('noStaffMessage').style.display = 'block'; // Show "Please select branch" message
+                }
             });
 
-            // Update check form when number of people changes
+            // Cập nhật khi số người thay đổi
             document.getElementById("numPeople").addEventListener("change", () => {
                 checkFormComplete();
             });
 
-            // Confirm booking handler
+            // Xử lý xác nhận đặt lịch (gửi form)
             confirmBtn.addEventListener("click", (e) => {
                 e.preventDefault();
 
                 const form = document.getElementById('bookingForm');
-                const selectedStaffId = document.querySelector('input[name="staffId"]:checked')?.value;
+                const selectedStaffRadio = document.querySelector('input[name="staffId"]:checked');
+                const selectedStaffId = selectedStaffRadio ? selectedStaffRadio.value : '';
 
-                // Set other fields
+                // Gán giá trị vào hidden input
+                document.getElementById('hiddenBranchId').value = selectedBranchId || ''; // Now selectedBranchId is updated when coming from ChooseBranchServlet
                 document.getElementById('hiddenNumberOfPeople').value = document.getElementById('numPeople').value;
-                document.getElementById('hiddenStaffId').value = selectedStaffId || '';
+                document.getElementById('hiddenStaffId').value = selectedStaffId; // Ensure staff ID is set
                 document.getElementById('hiddenAppointmentDate').value = selectedDate || bookingDate.value;
                 document.getElementById('hiddenAppointmentTime').value = selectedTime;
+                
+                // Do NOT set serviceNames and totalPrice here directly from JSP elements
+                // as they are now handled by session in BookingServlet doPost.
+                // The current JSP code has them commented out, which is correct.
 
-                // Debugging: Log form data to ensure values are set
-                console.log('Form Data:');
-                console.log('Number of People:', document.getElementById('hiddenNumberOfPeople').value);
-                console.log('Appointment Date:', document.getElementById('hiddenAppointmentDate').value);
-                console.log('Appointment Time:', document.getElementById('hiddenAppointmentTime').value);
-                console.log('Customer ID:', document.getElementById('hiddenCustomerId').value);
-                console.log('Staff ID:', document.getElementById('hiddenStaffId').value);
-                console.log('Service Names:', Array.from(document.querySelectorAll('input[name="serviceName"]')).map(input => input.value));
-                console.log('Total Price:', document.getElementById('hiddenTotalPrice').value);
+                console.log('Form Data to be sent to BookingServlet POST:');
+                console.log('Branch ID (hidden):', document.getElementById('hiddenBranchId').value);
+                console.log('Number of People (hidden):', document.getElementById('hiddenNumberOfPeople').value);
+                console.log('Appointment Date (hidden):', document.getElementById('hiddenAppointmentDate').value);
+                console.log('Appointment Time (hidden):', document.getElementById('hiddenAppointmentTime').value);
+                console.log('Customer ID (hidden):', document.getElementById('hiddenCustomerId').value);
+                console.log('Staff ID (hidden):', document.getElementById('hiddenStaffId').value);
+                // serviceNames and totalPrice are implicitly handled by session in the backend
+                // console.log('Service Names (Implicit via Session):', "N/A - handled by session");
+                // console.log('Total Price (Implicit via Session):', "N/A - handled by session");
 
-                // Submit the form to BookingServlet
+
                 form.submit();
             });
         </script>

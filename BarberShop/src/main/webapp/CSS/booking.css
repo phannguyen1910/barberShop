@@ -940,3 +940,155 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+.staff-selection {
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .staff-grid {
+                display: flex;
+                gap: 1.5rem;
+                overflow-x: auto;
+                padding: 1rem 0;
+                scrollbar-width: thin;
+                justify-content: center;
+            }
+
+            .staff-card {
+                flex: 0 0 auto;
+                width: 225px;
+                height: 300px;
+                position: relative;
+                cursor: pointer;
+                border-radius: 15px;
+                overflow: hidden;
+                /* Enhanced styling */
+                transition: all 0.3s ease;
+                border: 3px solid transparent;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transform: scale(1);
+            }
+
+            .staff-card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            }
+
+            .staff-card.selected {
+                border: 3px solid #007bff;
+                box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+                transform: scale(1.02);
+            }
+
+            .staff-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                transition: filter 0.3s ease;
+            }
+
+            .staff-card.selected img {
+                filter: brightness(1.1);
+            }
+
+            .staff-name {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                color: white;
+                text-align: center;
+                padding: 0.5rem;
+                font-size: 1.5rem;
+                font-weight: 500;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                transition: all 0.3s ease;
+            }
+
+            .staff-radio {
+                position: absolute;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .staff-card:hover .staff-name {
+                background: rgba(0, 0, 0, 0.8);
+            }
+
+            .staff-card.selected .staff-name {
+                background: rgba(0, 123, 255, 0.9);
+                font-weight: 600;
+            }
+
+            /* Check icon for selected staff */
+            .staff-check-icon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+                background: #28a745;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 16px;
+                opacity: 0;
+                transform: scale(0);
+                transition: all 0.3s ease;
+                z-index: 10;
+            }
+
+            .staff-card.selected .staff-check-icon {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            /* Pulse animation for selected card */
+            .staff-card.selected {
+                animation: selectedPulse 2s infinite;
+            }
+
+            /* Debug Styles */
+            .debug-section {
+                margin: 1rem 0;
+                padding: 1rem;
+                background-color: #f8f9fa;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+
+            @media (max-width: 768px) {
+                .staff-grid {
+                    justify-content: flex-start;
+                }
+
+                .staff-card {
+                    width: 180px;
+                    height: 240px;
+                }
+
+                .staff-name {
+                    font-size: 1.2rem;
+                }
+
+                .staff-check-icon {
+                    width: 25px;
+                    height: 25px;
+                    font-size: 14px;
+                }
+            }
+
+            .time-slot.disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }

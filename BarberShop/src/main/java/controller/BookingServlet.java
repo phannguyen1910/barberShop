@@ -1,6 +1,7 @@
 package controller;
 
 import babershopDAO.AppointmentDAO;
+import babershopDAO.BranchDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.HolidayDAO;
 import babershopDAO.ServiceDAO;
@@ -20,8 +21,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays; // Import this
 import java.util.List;
 import model.Account;
+import model.Branch;
 import model.Service;
 import model.Staff;
 import model.Voucher;
@@ -33,7 +36,6 @@ public class BookingServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -46,73 +48,123 @@ public class BookingServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Retrieve serviceNames and totalPrice from request parameters
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    HttpSession session = request.getSession();
 
-        String error = request.getParameter("error");
-        if (error != null) {
-            request.setAttribute("error", error);
-        }
-
-        String serviceNames = request.getParameter("serviceNames");
-        String totalPriceStr = request.getParameter("totalPrice");
-
-        // Validate and parse totalPrice
-        double totalPrice = 0;
-        try {
-            totalPrice = totalPriceStr != null ? Double.parseDouble(totalPriceStr) : 0;
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Tổng giá không hợp lệ.");
-            totalPrice = 0;
-        }
-        StaffDAO staffDAO = new StaffDAO();
-        // Fetch staff data
-        List<Staff> staffs = staffDAO.getAllStaffs();
-        if (staffs == null) {
-            staffs = new ArrayList<>();
-        }
-
-        // Sanitize staff data to prevent JavaScript errors in booking.jsp
-        List<Staff> listOfStaff = new ArrayList<>();
-        for (Staff staff : staffs) {
-            Staff sanitized = new Staff();
-            sanitized.setId(staff.getId());
-            sanitized.setAccountId(staff.getAccountId());
-            sanitized.setFirstName(escapeJavaScript(staff.getFirstName()));
-            sanitized.setLastName(escapeJavaScript(staff.getLastName()));
-            sanitized.setImg(escapeJavaScript(staff.getImg() != null ? staff.getImg() : ""));
-            listOfStaff.add(sanitized);
-        }
-
-        // Set request attributes
-        request.setAttribute("listOfStaff", listOfStaff);
-        request.setAttribute("serviceNames", serviceNames);
-        request.setAttribute("totalPrice", totalPrice);
-
-        // Forward to booking.jsp
-        request.getRequestDispatcher("/views/booking/booking.jsp").forward(request, response);
+    // 1. Xử lý thông báo lỗi
+    String error = request.getParameter("error");
+    if (error != null) {
+        request.setAttribute("error", error);
     }
 
-    private String escapeJavaScript(String input) {
-        if (input == null) {
+    // 2. Xử lý Chi nhánh đã chọn
+    String selectedBranchIdParam = request.getParameter("selectedBranchId");
+    String selectedBranchNameParam = request.getParameter("selectedBranchName");
+
+    // Lấy giá trị chi nhánh từ session trước
+    String sessionBranchId = (String) session.getAttribute("selectedBranchId");
+    String sessionBranchName = (String) session.getAttribute("selectedBranchName");
+
+    // Nếu có tham số chi nhánh mới từ request, ưu tiên nó và lưu vào session
+    if (selectedBranchIdParam != null && !selectedBranchIdParam.isEmpty()) {
+        session.setAttribute("selectedBranchId", selectedBranchIdParam);
+        session.setAttribute("selectedBranchName", selectedBranchNameParam);
+        // Cập nhật giá trị sẽ dùng trong request attribute
+        request.setAttribute("preSelectedBranchId", selectedBranchIdParam);
+        request.setAttribute("preSelectedBranchName", selectedBranchNameParam);
+        System.out.println("Session updated with new branch: " + selectedBranchNameParam + " (ID: " + selectedBranchIdParam + ")");
+    } else {
+        // Nếu không có tham số mới, sử dụng giá trị từ session
+        request.setAttribute("preSelectedBranchId", sessionBranchId);
+        request.setAttribute("preSelectedBranchName", sessionBranchName);
+        System.out.println("Retrieved from session: " + sessionBranchName + " (ID: " + sessionBranchId + ")");
+    }
+
+    // 3. Xử lý Dịch vụ đã chọn
+    String serviceNamesParam = request.getParameter("serviceNames"); // e.g., "ServiceA,ServiceB"
+    String totalPriceStrParam = request.getParameter("totalPrice");   // e.g., "150000.0"
+
+    // Lấy giá trị dịch vụ từ session trước
+    List<String> sessionServiceNames = (List<String>) session.getAttribute("selectedServiceNames");
+    Double sessionTotalPriceObj = (Double) session.getAttribute("selectedTotalPrice");
+    
+    // Khởi tạo giá trị mặc định nếu chưa có trong session
+    List<String> currentServiceNamesList = (sessionServiceNames != null) ? new ArrayList<>(sessionServiceNames) : new ArrayList<>();
+    double currentTotalPrice = (sessionTotalPriceObj != null) ? sessionTotalPriceObj.doubleValue() : 0.0;
+
+    // Nếu có tham số dịch vụ mới từ request, ưu tiên nó và lưu vào session
+    if (serviceNamesParam != null && !serviceNamesParam.isEmpty()) {
+        currentServiceNamesList = Arrays.asList(serviceNamesParam.split(","));
+        session.setAttribute("selectedServiceNames", new ArrayList<>(currentServiceNamesList)); // Lưu bản sao
+        
+        try {
+            currentTotalPrice = Double.parseDouble(totalPriceStrParam);
+            session.setAttribute("selectedTotalPrice", currentTotalPrice);
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Tổng giá dịch vụ không hợp lệ. Đã đặt lại về 0.");
+            currentTotalPrice = 0.0;
+            session.setAttribute("selectedTotalPrice", 0.0);
+        }
+        System.out.println("Session updated with new services from Request: " + currentServiceNamesList + " (Total: " + currentTotalPrice + ")");
+    } else if (serviceNamesParam != null && serviceNamesParam.isEmpty()) {
+        // Trường hợp người dùng gửi params rỗng, tức là họ bỏ chọn hết dịch vụ
+        currentServiceNamesList = new ArrayList<>(); // Đặt lại là rỗng
+        currentTotalPrice = 0.0; // Đặt lại tổng tiền về 0
+        session.setAttribute("selectedServiceNames", currentServiceNamesList);
+        session.setAttribute("selectedTotalPrice", currentTotalPrice);
+        System.out.println("Session updated: All services removed. (Total: " + currentTotalPrice + ")");
+    } else {
+        // Nếu không có tham số dịch vụ mới từ request, và cũng không có trong session, dùng giá trị mặc định (list rỗng, 0.0)
+        // Các biến currentServiceNamesList và currentTotalPrice đã được khởi tạo từ session hoặc mặc định ở trên
+        System.out.println("No new services from Request. Using session data: " + currentServiceNamesList + " (Total: " + currentTotalPrice + ")");
+    }
+
+    // Đặt các thuộc tính vào request để JSP hiển thị
+    request.setAttribute("serviceNames", String.join(",", currentServiceNamesList)); // Convert list back to comma-separated string
+    request.setAttribute("totalPrice", currentTotalPrice);
+
+    // 4. Lấy danh sách nhân viên
+    StaffDAO staffDAO = new StaffDAO();
+    List<Staff> staffs = staffDAO.getAllStaffs();
+    if (staffs == null) {
+        staffs = new ArrayList<>();
+    }
+
+    List<Staff> listOfStaff = new ArrayList<>();
+    for (Staff staff : staffs) {
+        Staff sanitized = new Staff();
+        sanitized.setId(staff.getId());
+        sanitized.setAccountId(staff.getAccountId());
+        sanitized.setFirstName(escapeJavaScript(staff.getFirstName()));
+        sanitized.setLastName(escapeJavaScript(staff.getLastName()));
+        sanitized.setImg(escapeJavaScript(staff.getImg() != null ? staff.getImg() : ""));
+        sanitized.setBranchId(staff.getBranchId());
+        listOfStaff.add(sanitized);
+    }
+
+    request.setAttribute("listOfStaff", listOfStaff);
+    request.getRequestDispatcher("/views/booking/booking.jsp").forward(request, response);
+}
+
+    private String escapeJavaScript(String text) {
+        if (text == null) {
             return "";
         }
-        return input.replace("\\", "\\\\")
+        return text.replace("\\", "\\\\")
+                .replace("'", "\\'")
                 .replace("\"", "\\\"")
-                .replace("\'", "\\\'")
                 .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
+                .replace("\r", "\\r");
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         try {
-            // Retrieve form parameters from session and request
-            HttpSession session = request.getSession();
+            // Lấy thông tin tài khoản từ session
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
                 request.setAttribute("error", "Vui lòng đăng nhập trước khi đặt lịch!");
@@ -122,18 +174,25 @@ public class BookingServlet extends HttpServlet {
             CustomerDAO customerDAO = new CustomerDAO();
             int customerId = customerDAO.getCustomerIdByAccountId(account.getId());
 
-            // Get form parameters
+            // Lấy các thông số từ form
             int numberOfPeople = Integer.parseInt(request.getParameter("numberOfPeople"));
-            String appointmentDateStr = request.getParameter("appointmentDate"); // e.g., "2025-06-08"
-            String appointmentTimeStr = request.getParameter("appointmentTime"); // e.g., "11:30"
+            String appointmentDateStr = request.getParameter("appointmentDate");
+            String appointmentTimeStr = request.getParameter("appointmentTime");
             int staffId = Integer.parseInt(request.getParameter("staffId"));
-            String[] serviceNames = request.getParameterValues("serviceName");
-            double totalPrice = Double.parseDouble(request.getParameter("totalPrice"));
-
-            // Validate parameters
-            if (serviceNames == null || serviceNames.length == 0) {
+            
+            // Lấy serviceNames và totalPrice từ session, không phải từ request nữa
+            List<String> serviceNamesList = (List<String>) session.getAttribute("selectedServiceNames");
+            if (serviceNamesList == null || serviceNamesList.isEmpty()) {
                 throw new IllegalArgumentException("Vui lòng chọn ít nhất một dịch vụ!");
             }
+            String[] serviceNames = serviceNamesList.toArray(new String[0]);
+            
+            double totalPrice = (Double) session.getAttribute("selectedTotalPrice") != null ? (Double) session.getAttribute("selectedTotalPrice") : 0;
+            if (totalPrice <= 0) { // Should not be 0 unless no services selected
+                throw new IllegalArgumentException("Tổng giá tiền không hợp lệ.");
+            }
+
+            // Validate parameters
             if (numberOfPeople <= 0) {
                 throw new IllegalArgumentException("Số người phải lớn hơn 0!");
             }
@@ -141,7 +200,7 @@ public class BookingServlet extends HttpServlet {
                 throw new IllegalArgumentException("Vui lòng chọn nhân viên!");
             }
 
-            System.out.println(staffId);
+            System.out.println("Booking POST received - Staff ID: " + staffId);
 
             // Initialize DAOs
             ServiceDAO serviceDAO = new ServiceDAO();
@@ -157,62 +216,63 @@ public class BookingServlet extends HttpServlet {
 
             // Parse date and time
             LocalDate appointmentDate = LocalDate.parse(appointmentDateStr);
-            // 🔹 Kiểm tra ngày nghỉ lễ
-            HolidayDAO holidayDAO = new HolidayDAO();
+            // 🔹 Kiểm tra ngày nghỉ lễ (holiday check remains here, potentially using HolidayDAO)
+            HolidayDAO holidayDAO = new HolidayDAO(); // Added this line for clarity if you implement the check
 
             LocalTime appointmentTime = LocalTime.parse(appointmentTimeStr);
             LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String dateTime = appointmentDateTime.format(formatter);
 
-            // Get service IDs from names
-            List<Integer> serviceIds = new ArrayList<>();
-            for (String serviceName : serviceNames) {
-                int serviceId = serviceDAO.getServiceIdByName(serviceName.trim());
-                if (serviceId == -1) {
-                    throw new IllegalArgumentException("Dịch vụ không tồn tại: " + serviceName);
-                }
-                serviceIds.add(serviceId);
+            // Get service objects from names (using the list from session)
+            List<Service> services = serviceDAO.getChoosedService(serviceNames);
+            if (services.isEmpty()) {
+                 throw new IllegalArgumentException("Dịch vụ đã chọn không hợp lệ hoặc không tồn tại.");
             }
 
-            // Validate total price (optional, for consistency)
-            double calculatedTotalPrice = 0;
-            for (String serviceName : serviceNames) {
-                double feeOfService = serviceDAO.getFeeService(serviceName.trim());
-                calculatedTotalPrice += feeOfService * numberOfPeople;
+            // Validate total price (optional, for consistency) - already taken from session
+            // Recalculate to double-check (good practice)
+            double recalculatedTotalPrice = 0;
+            for (Service s : services) {
+                recalculatedTotalPrice += s.getPrice() * numberOfPeople;
             }
-            if (Math.abs(calculatedTotalPrice - totalPrice) < 0.00) { // Allow small floating-point differences
-                throw new IllegalArgumentException("Tổng tiền không khớp với dịch vụ và số người!");
+            // Use a small epsilon for floating point comparison
+            if (Math.abs(recalculatedTotalPrice - totalPrice) > 0.01) { 
+                System.err.println("Price mismatch: Recalculated=" + recalculatedTotalPrice + ", Session=" + totalPrice);
+                throw new IllegalArgumentException("Tổng tiền không khớp với dịch vụ và số người! Vui lòng chọn lại dịch vụ.");
             }
+            
+            // Lấy thông tin voucher
             VoucherDAO voucherDAO = new VoucherDAO();
             List<Voucher> vouchers = voucherDAO.showVoucher();
 
-            for (Voucher v : vouchers) {
-                System.out.println(v.getCode());
-            }
-
-            List<Service> services = serviceDAO.getChoosedService(serviceNames);
-            for (Service s : services) {
-                System.out.println(s.getId() + " " + s.getName());
-            }
+            // Đặt các thuộc tính vào request để chuyển tiếp tới confirmation.jsp
             request.setAttribute("customerId", customerId);
             request.setAttribute("staffId", staffId);
             request.setAttribute("dateTime", dateTime);
             request.setAttribute("staffName", staffFullName);
             request.setAttribute("numberOfPeople", numberOfPeople);
             request.setAttribute("listService", services);
-            request.setAttribute("totalMoney", calculatedTotalPrice);
+            request.setAttribute("totalMoney", recalculatedTotalPrice); // Use recalculated total
             request.setAttribute("vouchers", vouchers);
+            
+            // Xóa các thuộc tính session liên quan đến booking để chuẩn bị cho lần đặt mới
+   
+            session.removeAttribute("selectedBranchName");
+            session.removeAttribute("selectedServiceNames");
+            session.removeAttribute("selectedTotalPrice");
+
             request.getRequestDispatcher("/views/booking/confirmation.jsp").forward(request, response);
         } catch (Exception e) {
+            e.printStackTrace(); // For debugging
             String error = URLEncoder.encode(e.getMessage(), "UTF-8");
-            response.sendRedirect(request.getContextPath() + "/booking.jsp?error=" + error);
+            // Redirect back to BookingServlet, which will now display the error and try to retrieve previous choices from session
+            response.sendRedirect(request.getContextPath() + "/BookingServlet?error=" + error);
         }
     }
 
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles barbershop booking process.";
+    }
 }
