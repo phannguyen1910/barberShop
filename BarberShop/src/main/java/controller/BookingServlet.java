@@ -175,7 +175,6 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             int customerId = customerDAO.getCustomerIdByAccountId(account.getId());
 
             // Lấy các thông số từ form
-            int numberOfPeople = Integer.parseInt(request.getParameter("numberOfPeople"));
             String appointmentDateStr = request.getParameter("appointmentDate");
             String appointmentTimeStr = request.getParameter("appointmentTime");
             int staffId = Integer.parseInt(request.getParameter("staffId"));
@@ -192,10 +191,6 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
                 throw new IllegalArgumentException("Tổng giá tiền không hợp lệ.");
             }
 
-            // Validate parameters
-            if (numberOfPeople <= 0) {
-                throw new IllegalArgumentException("Số người phải lớn hơn 0!");
-            }
             if (staffId <= 0) {
                 throw new IllegalArgumentException("Vui lòng chọn nhân viên!");
             }
@@ -229,19 +224,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             if (services.isEmpty()) {
                  throw new IllegalArgumentException("Dịch vụ đã chọn không hợp lệ hoặc không tồn tại.");
             }
-
-            // Validate total price (optional, for consistency) - already taken from session
-            // Recalculate to double-check (good practice)
-            double recalculatedTotalPrice = 0;
-            for (Service s : services) {
-                recalculatedTotalPrice += s.getPrice() * numberOfPeople;
-            }
-            // Use a small epsilon for floating point comparison
-            if (Math.abs(recalculatedTotalPrice - totalPrice) > 0.01) { 
-                System.err.println("Price mismatch: Recalculated=" + recalculatedTotalPrice + ", Session=" + totalPrice);
-                throw new IllegalArgumentException("Tổng tiền không khớp với dịch vụ và số người! Vui lòng chọn lại dịch vụ.");
-            }
-            
+   
             // Lấy thông tin voucher
             VoucherDAO voucherDAO = new VoucherDAO();
             List<Voucher> vouchers = voucherDAO.showVoucher();
@@ -251,9 +234,8 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             request.setAttribute("staffId", staffId);
             request.setAttribute("dateTime", dateTime);
             request.setAttribute("staffName", staffFullName);
-            request.setAttribute("numberOfPeople", numberOfPeople);
             request.setAttribute("listService", services);
-            request.setAttribute("totalMoney", recalculatedTotalPrice); // Use recalculated total
+            request.setAttribute("totalMoney", totalPrice); // Use recalculated total
             request.setAttribute("vouchers", vouchers);
             
             // Xóa các thuộc tính session liên quan đến booking để chuẩn bị cho lần đặt mới

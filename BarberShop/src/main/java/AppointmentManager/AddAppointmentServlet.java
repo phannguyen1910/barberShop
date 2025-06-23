@@ -1,13 +1,14 @@
 package AppointmentManager;
 
-import babershopDAO.AppointmentDAO; // Thay thế bằng đường dẫn tới AppointmentDAO của bạn
-import babershopDAO.CustomerDAO;   // Thay thế bằng đường dẫn tới CustomerDAO của bạn
-import babershopDAO.ServiceDAO;    // Thay thế bằng đường dẫn tới ServiceDAO của bạn
-import babershopDAO.StaffDAO;      // Thay thế bằng đường dẫn tới StaffDAO của bạn
+import babershopDAO.AppointmentDAO;
+import babershopDAO.CustomerDAO;
+import babershopDAO.ServiceDAO;
+import babershopDAO.StaffDAO;
+import babershopDAO.BranchDAO; // Import BranchDAO
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException; // Để xử lý lỗi JSON parse
+import com.google.gson.JsonSyntaxException;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,30 +16,31 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.BufferedReader; // Để đọc request body
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException; // Để xử lý lỗi parse ngày giờ
-import java.util.ArrayList; // Để khởi tạo List rỗng nếu cần
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors; // Cần thiết cho Java 8+ Stream API (khi dùng asList().stream())
+import java.util.stream.Collectors;
 
-import model.Appointment; // Thay thế bằng đường dẫn tới Model Appointment của bạn
-import model.Customer;    // Thay thế bằng đường dẫn tới Model Customer của bạn
-import model.Service;     // Thay thế bằng đường dẫn tới Model Service của bạn
-import model.Staff;       // Thay thế bằng đường dẫn tới Model Staff của bạn
+import model.Appointment;
+import model.Customer;
+import model.Service;
+import model.Staff;
+import model.Branch; // Import Branch model
 
-@WebServlet(name = "AddAppointmentServlet", urlPatterns = {"/AddAppointmentServlet"}) // Đặt tên và URL pattern nhất quán
+@WebServlet(name = "AddAppointmentServlet", urlPatterns = {"/AddAppointmentServlet"})
 public class AddAppointmentServlet extends HttpServlet {
 
-    private Gson gson = new Gson(); // Khởi tạo Gson một lần duy nhất
+    private Gson gson = new Gson();
     private AppointmentDAO appointmentDAO;
     private CustomerDAO customerDAO;
     private StaffDAO staffDAO;
     private ServiceDAO serviceDAO;
+    private BranchDAO branchDAO; // Declare BranchDAO
 
-    // Phương thức init() được gọi một lần khi Servlet được khởi tạo
     @Override
     public void init() throws ServletException {
         super.init();
@@ -46,46 +48,41 @@ public class AddAppointmentServlet extends HttpServlet {
         customerDAO = new CustomerDAO();
         staffDAO = new StaffDAO();
         serviceDAO = new ServiceDAO();
+        branchDAO = new BranchDAO(); // Initialize BranchDAO
     }
 
-    // Phương thức doGet() để chuẩn bị dữ liệu và forward đến JSP
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy dữ liệu từ các DAO để gửi sang JSP
-        List<Appointment> appointments = appointmentDAO.getAllAppointmentsWithDetails(); // Lấy tất cả lịch hẹn với chi tiết
-        List<Service> services = serviceDAO.getAllService(); // Lấy tất cả dịch vụ
-        List<Customer> customers = customerDAO.getAllCustomerInformation(); // Lấy tất cả thông tin khách hàng (bao gồm SĐT, email từ Account)
-        List<Staff> staffs = staffDAO.getAllStaffs(); // Lấy tất cả thông tin nhân viên
+        List<Appointment> appointments = appointmentDAO.getAllAppointmentsWithDetails();
+        List<Service> services = serviceDAO.getAllService();
+        List<Customer> customers = customerDAO.getAllCustomerInformation();
+        List<Staff> staffs = staffDAO.getAllStaffs();
+        List<Branch> branches = branchDAO.getAllBranches(); // Get all branches
 
-        // Đặt dữ liệu vào request attribute để JSP có thể truy cập
         request.setAttribute("listCustomer", customers);
         request.setAttribute("listStaff", staffs);
         request.setAttribute("listAppointment", appointments);
         request.setAttribute("listService", services);
+        request.setAttribute("branchList", branches); // Add branchList to request scope
 
-        // Forward request đến trang JSP để hiển thị giao diện
         request.getRequestDispatcher("/views/admin/appointmentManagement.jsp").forward(request, response);
     }
 
-    // Phương thức doPost() để nhận dữ liệu từ form thêm lịch hẹn và xử lý lưu vào DB
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Cấu hình phản hồi HTTP là JSON và UTF-8
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter(); // Lấy PrintWriter để ghi phản hồi JSON
-        JsonObject jsonResponse = new JsonObject(); // Đối tượng JSON để xây dựng phản hồi
+        PrintWriter out = response.getWriter();
+        JsonObject jsonResponse = new JsonObject();
 
-        // Log cho mục đích debug trên server console
         System.out.println("\n--- AddAppointmentServlet: Starting POST Request ---");
 
         try {
-            // 1. Đọc toàn bộ JSON body từ request
             StringBuilder sb = new StringBuilder();
-            try (BufferedReader reader = request.getReader()) { // Sử dụng try-with-resources cho BufferedReader
+            try (BufferedReader reader = request.getReader()) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     sb.append(line);
@@ -93,54 +90,53 @@ public class AddAppointmentServlet extends HttpServlet {
             }
             String jsonBody = sb.toString();
 
-            // Log JSON body nhận được để kiểm tra
             System.out.println("Received JSON body: " + jsonBody);
 
-            // 2. Kiểm tra nếu JSON body rỗng hoặc không hợp lệ (trước khi parse)
             if (jsonBody == null || jsonBody.trim().isEmpty()) {
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "JSON body rỗng hoặc không hợp lệ. Vui lòng kiểm tra dữ liệu gửi đi.");
                 System.err.println("Error: JSON body is empty or invalid.");
-                return; // Thoát sớm nếu dữ liệu đầu vào không hợp lệ
+                out.print(gson.toJson(jsonResponse));
+                out.flush();
+                out.close();
+                return;
             }
 
-            // 3. Parse JSON string thành JsonObject
             JsonObject receivedData = null;
             try {
                 receivedData = gson.fromJson(jsonBody, JsonObject.class);
             } catch (JsonSyntaxException e) {
-                // Xử lý lỗi cú pháp JSON
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Lỗi cú pháp JSON: Dữ liệu gửi lên không đúng định dạng JSON.");
                 System.err.println("JSON Parsing Error: " + e.getMessage());
                 e.printStackTrace();
-                return; // Thoát sớm
+                out.print(gson.toJson(jsonResponse));
+                out.flush();
+                out.close();
+                return;
             }
 
-            // 4. Trích xuất và chuyển đổi dữ liệu từ JsonObject
             int customerId;
             int staffId;
             String appointmentTimeStr;
             LocalDateTime appointmentDateTime;
-            int numberOfPeople;
-            List<Integer> serviceIds = new ArrayList<>(); // Khởi tạo List rỗng để tránh NullPointerException
+ 
+            int branchId; // Added
+            List<Integer> serviceIds = new ArrayList<>();
 
             try {
-                // Lấy customerId (kiểm tra sự tồn tại và kiểu dữ liệu)
                 if (receivedData.has("customerId") && receivedData.get("customerId").isJsonPrimitive()) {
                     customerId = receivedData.get("customerId").getAsInt();
                 } else {
                     throw new IllegalArgumentException("Trường 'customerId' bị thiếu hoặc sai định dạng.");
                 }
 
-                // Lấy staffId
                 if (receivedData.has("staffId") && receivedData.get("staffId").isJsonPrimitive()) {
                     staffId = receivedData.get("staffId").getAsInt();
                 } else {
                     throw new IllegalArgumentException("Trường 'staffId' bị thiếu hoặc sai định dạng.");
                 }
 
-                // Lấy appointmentTime (String) và chuyển đổi sang LocalDateTime
                 if (receivedData.has("appointmentTime") && receivedData.get("appointmentTime").isJsonPrimitive()) {
                     appointmentTimeStr = receivedData.get("appointmentTime").getAsString();
                     try {
@@ -152,16 +148,18 @@ public class AddAppointmentServlet extends HttpServlet {
                     throw new IllegalArgumentException("Trường 'appointmentTime' bị thiếu hoặc sai định dạng.");
                 }
 
-                // Lấy numberOfPeople
-                if (receivedData.has("numberOfPeople") && receivedData.get("numberOfPeople").isJsonPrimitive()) {
-                    numberOfPeople = receivedData.get("numberOfPeople").getAsInt();
+    
+             
+
+                // Added parsing for branchId
+                if (receivedData.has("branchId") && receivedData.get("branchId").isJsonPrimitive()) {
+                    branchId = receivedData.get("branchId").getAsInt();
                 } else {
-                    throw new IllegalArgumentException("Trường 'numberOfPeople' bị thiếu hoặc sai định dạng.");
+                    throw new IllegalArgumentException("Trường 'branchId' bị thiếu hoặc sai định dạng.");
                 }
 
-                // Lấy serviceIds (là một mảng JSON)
+
                 if (receivedData.has("serviceIds") && receivedData.get("serviceIds").isJsonArray()) {
-                    // Chuyển đổi JsonArray sang List<Integer> an toàn bằng Stream API
                     serviceIds = receivedData.getAsJsonArray("serviceIds").asList().stream()
                             .map(jsonElement -> jsonElement.getAsInt())
                             .collect(Collectors.toList());
@@ -169,18 +167,14 @@ public class AddAppointmentServlet extends HttpServlet {
                     throw new IllegalArgumentException("Trường 'serviceIds' bị thiếu hoặc sai định dạng.");
                 }
 
-                // Log các giá trị đã parse được
                 System.out.println("Parsed data: CustomerID=" + customerId + ", StaffID=" + staffId
-                        + ", ApptTime=" + appointmentDateTime + ", NumPeople=" + numberOfPeople
+                        + ", ApptTime=" + appointmentDateTime + ", BranchID=" + branchId // Updated log
                         + ", ServiceIDs=" + serviceIds);
 
-                System.out.println("--- AddAppointmentServlet: doPost started ---"); // DEBUG này
-                // ... các dòng parse JSON ...
-                System.out.println("DEBUG: All JSON data parsed successfully. Calling DAO..."); // DEBUG này
-                boolean success = appointmentDAO.addAppointmentByAdmin(customerId, staffId, appointmentDateTime, numberOfPeople, serviceIds);
-                System.out.println("DEBUG: DAO addAppointment returned: " + success); // DEBUG này
+                boolean success = appointmentDAO.addAppointmentByAdmin(customerId, staffId, appointmentDateTime, branchId, serviceIds);
 
-                // 6. Chuẩn bị phản hồi JSON dựa trên kết quả DAO
+                System.out.println("DEBUG: DAO addAppointment returned: " + success);
+
                 if (success) {
                     jsonResponse.addProperty("success", true);
                     jsonResponse.addProperty("message", "Thêm lịch hẹn thành công!");
@@ -192,35 +186,27 @@ public class AddAppointmentServlet extends HttpServlet {
                 }
 
             } catch (IllegalArgumentException e) {
-                // Xử lý lỗi validation dữ liệu (thiếu trường, sai định dạng)
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Dữ liệu đầu vào không hợp lệ: " + e.getMessage());
                 System.err.println("Input Data Validation Error: " + e.getMessage());
                 e.printStackTrace();
             } catch (Exception e) {
-                // Xử lý các lỗi chung khác (ví dụ: lỗi từ DAO như SQLException)
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Lỗi server nội bộ: " + e.getMessage());
                 System.err.println("Server Internal Error (during DAO call or other processing): " + e.getMessage());
-                e.printStackTrace(); // In ra full stack trace để debug
+                e.printStackTrace();
             }
 
         } finally {
-            // Luôn trả về phản hồi JSON cuối cùng
             out.print(gson.toJson(jsonResponse));
-            out.flush(); // Đẩy dữ liệu ra ngay lập tức
-            out.close(); // Đóng PrintWriter
+            out.flush();
+            out.close();
             System.out.println("--- AddAppointmentServlet: Finished POST Request ---\n");
         }
     }
 
-    // Các phương thức life-cycle khác của Servlet (không cần thay đổi)
     @Override
     public String getServletInfo() {
         return "Servlet for adding new appointments";
     }
-
-    // Ghi chú: Phương thức processRequest() mặc định của NetBeans không được gọi
-    // nếu bạn override doGet/doPost. Nó có thể được xóa hoặc giữ nguyên.
-    // protected void processRequest(...) {}
 }

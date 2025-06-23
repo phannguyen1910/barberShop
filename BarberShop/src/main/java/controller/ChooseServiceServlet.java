@@ -8,8 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.net.URLEncoder; // Import for URL encoding
+import jakarta.servlet.http.HttpSession; // Import HttpSession
+import java.net.URLEncoder; 
 import java.util.ArrayList;
+import java.util.Arrays; // Import Arrays for splitting string
 import java.util.List;
 import model.Service;
 
@@ -50,20 +52,39 @@ public class ChooseServiceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy dữ liệu dịch vụ đã chọn từ form (JS đã chuẩn bị sẵn)
+        HttpSession session = request.getSession(); // Lấy session
+        
         String serviceNames = request.getParameter("serviceNames");
-        String totalPrice = request.getParameter("totalPrice");
+        String totalPriceStr = request.getParameter("totalPrice"); // Đổi tên biến để tránh nhầm lẫn
 
         if (serviceNames != null && !serviceNames.isEmpty()) {
-            // Chuyển hướng về BookingServlet, kèm theo danh sách dịch vụ và tổng tiền
-            // Cần encode URL để đảm bảo các ký tự đặc biệt trong tên dịch vụ không gây lỗi
-            response.sendRedirect(request.getContextPath() + "/BookingServlet?" +
-                                  "serviceNames=" + URLEncoder.encode(serviceNames, "UTF-8") +
-                                  "&totalPrice=" + URLEncoder.encode(totalPrice, "UTF-8"));
+            // Chuyển serviceNames thành List<String> và lưu vào session
+            List<String> selectedServiceNamesList = Arrays.asList(serviceNames.split(","));
+            session.setAttribute("selectedServiceNames", new ArrayList<>(selectedServiceNamesList)); // Lưu bản sao
+
+            // Chuyển totalPrice sang Double và lưu vào session
+            try {
+                double totalPrice = Double.parseDouble(totalPriceStr);
+                session.setAttribute("selectedTotalPrice", totalPrice);
+            } catch (NumberFormatException e) {
+                // Xử lý lỗi nếu totalPrice không phải là số hợp lệ
+                System.err.println("Error parsing totalPrice: " + totalPriceStr + ". Setting to 0.0");
+                session.setAttribute("selectedTotalPrice", 0.0);
+            }
+            
+            // Debugging:
+            System.out.println("ChooseServiceServlet doPost - Services saved to session: " + session.getAttribute("selectedServiceNames"));
+            System.out.println("ChooseServiceServlet doPost - Total Price saved to session: " + session.getAttribute("selectedTotalPrice"));
+
+            // Chuyển hướng về BookingServlet (không cần query params vì đã lưu vào session)
+            response.sendRedirect(request.getContextPath() + "/BookingServlet");
         } else {
-            // Xử lý trường hợp không có dịch vụ nào được chọn
+            // Nếu không có dịch vụ nào được chọn, bạn có thể xóa các thuộc tính cũ trong session (nếu có)
+            session.removeAttribute("selectedServiceNames");
+            session.removeAttribute("selectedTotalPrice");
+            
             response.sendRedirect(request.getContextPath() + "/BookingServlet?error=" + 
-                                  URLEncoder.encode("Vui lòng chọn ít nhất một dịch vụ.", "UTF-8"));
+                                    URLEncoder.encode("Vui lòng chọn ít nhất một dịch vụ.", "UTF-8"));
         }
     }
 

@@ -43,156 +43,161 @@ public class AppointmentDAO {
         return null;
     }
 
-    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime,
-                              int numberOfPeople, List<Integer> serviceIds, float totalAmount, int branchId) {
-    String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status, branchId) VALUES (?, ?, ?, ?, 'Pending', ?)";
-    String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
+    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, List<Integer> serviceIds, float totalAmount, int branchId) {
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) VALUES (?, ?, ?, 'Pending', ?)";
+        String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
-    Connection con = null;
-    try {
-        con = getConnect();
-        con.setAutoCommit(false);
+        System.out.println(customerId + " " + staffId + " " + appointmentTime + " " + totalAmount + " " + branchId);
+        for (int s : serviceIds) {
+            System.out.println(s);
+        }
 
-        try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, customerId);
-            ps.setInt(2, staffId);
-            ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
-            ps.setInt(4, numberOfPeople);
-            ps.setInt(5, branchId);
-            ps.executeUpdate(); // ✅ Sửa lỗi ở đây
+        Connection con = null;
+        try {
+            con = getConnect();
+            con.setAutoCommit(false);
 
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    int appointmentId = rs.getInt(1);
-                    System.out.println("✅ Appointment ID created: " + appointmentId);
+            try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, customerId);
+                ps.setInt(2, staffId);
+                ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
+                ps.setInt(4, branchId);
+                ps.executeUpdate(); // ✅ Sửa lỗi ở đây
 
-                    if (!serviceIds.isEmpty()) {
-                        try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
-                            for (Integer serviceId : serviceIds) {
-                                ps2.setInt(1, appointmentId);
-                                ps2.setInt(2, serviceId);
-                                ps2.addBatch();
-                            }
-                            int[] affectedRows = ps2.executeBatch();
-                            for (int affected : affectedRows) {
-                                if (affected == 0) {
-                                    con.rollback();
-                                    return false;
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int appointmentId = rs.getInt(1);
+                        System.out.println("✅ Appointment ID created: " + appointmentId);
+
+                        if (!serviceIds.isEmpty()) {
+                            try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
+                                for (Integer serviceId : serviceIds) {
+                                    ps2.setInt(1, appointmentId);
+                                    ps2.setInt(2, serviceId);
+                                    ps2.addBatch();
+                                }
+                                int[] affectedRows = ps2.executeBatch();
+                                for (int affected : affectedRows) {
+                                    if (affected == 0) {
+                                        con.rollback();
+                                        return false;
+                                    }
                                 }
                             }
                         }
-                    }
+                        
+                        InvoiceDAO invoiceDAO = new InvoiceDAO();
+                        boolean invoiceInserted = invoiceDAO.insertInvoice(con, totalAmount, appointmentTime, appointmentId);
+                        if (!invoiceInserted) {
+                            con.rollback();
+                            return false;
+                        }
 
-                    InvoiceDAO invoiceDAO = new InvoiceDAO();
-                    boolean invoiceInserted = invoiceDAO.insertInvoice(con, totalAmount, appointmentTime, appointmentId);
-                    if (!invoiceInserted) {
+                        con.commit();
+                        return true;
+                    } else {
                         con.rollback();
                         return false;
                     }
-
-                    con.commit();
-                    return true;
-                } else {
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ SQLException: " + e.getMessage());
+            e.printStackTrace();
+            if (con != null) {
+                try {
                     con.rollback();
-                    return false;
+                } catch (SQLException ex) {
+                    System.err.println("❌ Rollback failed: " + ex.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }
-    } catch (SQLException e) {
-        System.err.println("❌ SQLException: " + e.getMessage());
-        e.printStackTrace();
-        if (con != null) {
-            try {
-                con.rollback();
-            } catch (SQLException ex) {
-                System.err.println("❌ Rollback failed: " + ex.getMessage());
-            }
-        }
-        return false;
-    } finally {
-        if (con != null) {
-            try { con.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
     }
-}
 
-
-    public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
-
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, numberOfPeople, status) OUTPUT INSERTED.ID VALUES (?, ?, ?, ?, 'Pending')";
-
-        // SQL Server: cú pháp dấu ngoặc vuông [] là đúng
+    // Inside your AppointmentDAO class
+    public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int branchId, List<Integer> serviceIds) {
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Pending', ?)";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
         Connection con = null;
         PreparedStatement ps = null;
-        ResultSet rs = null; // ResultSet cho ID được sinh ra
-        PreparedStatement ps2 = null; // PreparedStatement cho Appointment_Service
+        ResultSet rs = null;
+        PreparedStatement ps2 = null;
 
         try {
-            con = getConnect(); // Lấy kết nối
-            con.setAutoCommit(false); // Bắt đầu transaction
+            con = getConnect();
+            con.setAutoCommit(false);
 
-            // === THAY ĐỔI QUAN TRỌNG TẠI ĐÂY ===
-            // Thay vì executeUpdate(), sử dụng execute() và sau đó lấy ResultSet
-            ps = con.prepareStatement(sql1); // KHÔNG cần Statement.RETURN_GENERATED_KEYS khi dùng OUTPUT clause
-
+            ps = con.prepareStatement(sql1);
             ps.setInt(1, customerId);
             ps.setInt(2, staffId);
-            ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
-            ps.setInt(4, numberOfPeople);
+            ps.setTimestamp(3, java.sql.Timestamp.valueOf(appointmentTime));
+            ps.setInt(4, branchId);
 
-            // Thực thi câu lệnh. execute() trả về true nếu có ResultSet, false nếu không
             boolean hasResultSet = ps.execute();
 
-            int appointmentId = -1; // Khởi tạo ID
+            int appointmentId = -1;
 
-            // === Lấy ID được sinh ra tự động ===
-            if (hasResultSet) { // Kiểm tra xem có ResultSet được tạo ra không
-                rs = ps.getResultSet(); // Lấy ResultSet từ mệnh đề OUTPUT
+            if (hasResultSet) {
+                rs = ps.getResultSet();
                 if (rs.next()) {
-                    appointmentId = rs.getInt(1); // Lấy ID đầu tiên từ ResultSet
+                    appointmentId = rs.getInt(1);
                     System.out.println("✅ Appointment ID created: " + appointmentId);
                 } else {
                     System.err.println("❌ Không thể lấy ID của Appointment vừa chèn. ResultSet từ OUTPUT trống.");
                     con.rollback();
                     return false;
                 }
-            } else { // Nếu execute() trả về false (không có ResultSet)
+            } else {
                 System.err.println("❌ INSERT không tạo ra ResultSet từ OUTPUT mệnh đề.");
                 con.rollback();
                 return false;
             }
 
-            // Kiểm tra nếu ID hợp lệ
             if (appointmentId == -1) {
                 System.err.println("❌ Appointment ID vẫn là -1 sau khi cố gắng lấy. Có lỗi trong quá trình lấy ID.");
                 con.rollback();
                 return false;
             }
 
-            // === Thêm các dịch vụ vào Appointment_Service (sử dụng Batch Update) ===
             if (!serviceIds.isEmpty()) {
-                ps2 = con.prepareStatement(sql2); // Chuẩn bị statement cho dịch vụ
+                ps2 = con.prepareStatement(sql2);
                 for (Integer serviceId : serviceIds) {
                     ps2.setInt(1, appointmentId);
                     ps2.setInt(2, serviceId);
-                    ps2.addBatch(); // Thêm vào batch
+                    ps2.addBatch();
                 }
-                int[] affectedRowsService = ps2.executeBatch(); // Thực thi tất cả các lệnh trong batch
+                int[] affectedRowsService = ps2.executeBatch();
 
-                // Kiểm tra kết quả của batch update
                 for (int affected : affectedRowsService) {
-                    if (affected == 0) { // Nếu có bất kỳ insert nào trong batch thất bại
+                    if (affected == 0) {
                         System.err.println("❌ Một dịch vụ không thể thêm (serviceId có thể không tồn tại hoặc lỗi khác trong batch).");
-                        con.rollback(); // Rollback toàn bộ transaction
+                        con.rollback();
                         return false;
                     }
                 }
                 System.out.println("✅ Thêm " + serviceIds.size() + " dịch vụ thành công cho Appointment ID: " + appointmentId);
             }
+            
+            InvoiceDAO invoiceDAO = new InvoiceDAO();
+            float totalAmount = calculateAmount(serviceIds);
+            System.out.println(totalAmount);
+            boolean invoiceInserted = invoiceDAO.insertInvoice(con, totalAmount, appointmentTime, appointmentId);
+            if (!invoiceInserted) {
+                con.rollback();
+                return false;
+            }
 
-            con.commit(); // Commit transaction nếu mọi thứ thành công
+            con.commit();
             return true;
 
         } catch (SQLException e) {
@@ -214,7 +219,6 @@ public class AppointmentDAO {
         } catch (Exception e) {
             System.err.println("❌ Lỗi không xác định trong addAppointment: " + e.getMessage());
             e.printStackTrace();
-            // Nếu có lỗi không phải SQLException, cũng nên cố gắng rollback transaction
             if (con != null) {
                 try {
                     System.err.println("Attempting to rollback transaction due to generic Exception.");
@@ -226,7 +230,6 @@ public class AppointmentDAO {
             }
             return false;
         } finally {
-            // Đóng tất cả tài nguyên trong finally block
             try {
                 if (rs != null) {
                     rs.close();
@@ -258,49 +261,111 @@ public class AppointmentDAO {
         }
     }
 
-    public boolean editAppointmentService(int appointmentId, int[] serviceIds, String status) throws SQLException {
-        String sqlUpdateAppointment = "UPDATE Appointment SET status = ? WHERE id = ?";
-        String sqlDeleteServices = "DELETE FROM Appointment_Service WHERE AppointmentId = ?";
-        String sqlInsertService = "INSERT INTO Appointment_Service (ServiceId, AppointmentId) VALUES (?, ?)";
+public boolean editAppointmentService(int appointmentId, int[] serviceIds, String status) throws SQLException {
+    String sqlUpdateAppointment = "UPDATE Appointment SET status = ? WHERE id = ?";
+    String sqlDeleteServices = "DELETE FROM Appointment_Service WHERE AppointmentId = ?";
+    String sqlInsertService = "INSERT INTO Appointment_Service (ServiceId, AppointmentId) VALUES (?, ?)";
+    String sqlEditInvoice = "UPDATE Invoice SET totalAmount = ?, status = ? WHERE AppointmentId = ?";
 
-        try (Connection con = getConnect()) {
-            // Bắt đầu transaction
-            con.setAutoCommit(false);
+    try (Connection con = getConnect()) {
+        con.setAutoCommit(false);
 
-            try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdateAppointment); PreparedStatement psDelete = con.prepareStatement(sqlDeleteServices); PreparedStatement psInsert = con.prepareStatement(sqlInsertService)) {
+        try (
+            PreparedStatement psUpdate = con.prepareStatement(sqlUpdateAppointment);
+            PreparedStatement psDelete = con.prepareStatement(sqlDeleteServices);
+            PreparedStatement psInsert = con.prepareStatement(sqlInsertService);
+            PreparedStatement psEditInvoice = con.prepareStatement(sqlEditInvoice)
+        ) {
+            // 1. Cập nhật trạng thái cuộc hẹn
+            psUpdate.setString(1, status);
+            psUpdate.setInt(2, appointmentId);
+            psUpdate.executeUpdate();
 
-                psUpdate.setString(1, status);
-                psUpdate.setInt(2, appointmentId);
-                psUpdate.executeUpdate();
+            // 2. Xoá các dịch vụ cũ
+            psDelete.setInt(1, appointmentId);
+            psDelete.executeUpdate();
 
-                psDelete.setInt(1, appointmentId);
-                psDelete.executeUpdate();
-
-                // 3. Thêm lại các dịch vụ mới được chọn
-                for (int serviceId : serviceIds) {
-                    psInsert.setInt(1, serviceId);
-                    psInsert.setInt(2, appointmentId);
-                    psInsert.addBatch();
-                }
-                psInsert.executeBatch();
-
-                con.commit();
-                return true;
-
-            } catch (SQLException e) {
-
-                con.rollback();
-                System.err.println("Transaction is being rolled back. Error: " + e.getMessage());
-
-                throw e;
+            // 3. Thêm lại dịch vụ mới
+            for (int serviceId : serviceIds) {
+                psInsert.setInt(1, serviceId);
+                psInsert.setInt(2, appointmentId);
+                psInsert.addBatch();
             }
+            psInsert.executeBatch();
+
+            // 4. Cập nhật hóa đơn
+            float totalAmount = calculateAmount2(serviceIds);
+            psEditInvoice.setFloat(1, totalAmount);
+
+            String invoiceStatus;
+            switch (status) {
+                case "Completed":
+                    invoiceStatus = "Paid";
+                    break;
+                case "Confirmed":
+                    invoiceStatus = "Paid Deposit";
+                    break;
+                case "Canceled":
+                    invoiceStatus = "Canceled";
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid appointment status: " + status);
+            }
+            psEditInvoice.setString(2, invoiceStatus);
+            psEditInvoice.setInt(3, appointmentId);
+            psEditInvoice.executeUpdate();
+
+            con.commit();
+            return true;
+
+        } catch (SQLException e) {
+            con.rollback();
+            System.err.println("Transaction rollback. Error: " + e.getMessage());
+            throw e;
+        }
+    }
+}
+
+    
+    
+    public float calculateAmount2(int[] serviceIds) {
+    if (serviceIds == null || serviceIds.length == 0) {
+        return 0;
+    }
+
+    float totalAmount = 0;
+    StringBuilder sqlBuilder = new StringBuilder("SELECT price FROM Service WHERE id IN (");
+
+    for (int i = 0; i < serviceIds.length; i++) {
+        sqlBuilder.append("?");
+        if (i < serviceIds.length - 1) {
+            sqlBuilder.append(",");
+        }
+    }
+    sqlBuilder.append(")");
+
+    String sql = sqlBuilder.toString();
+
+    try (Connection con = getConnect(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+        for (int i = 0; i < serviceIds.length; i++) {
+            pstmt.setInt(i + 1, serviceIds[i]);
         }
 
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            totalAmount += rs.getFloat("price");
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi truy vấn giá dịch vụ: " + e.getMessage());
     }
+
+    return totalAmount;
+}
+
 
     public List<Appointment> getAllAppointmentsWithDetails() {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT id, customerId, staffId, appointmentTime, status, numberOfPeople FROM Appointment";
+        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId FROM Appointment";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -312,7 +377,7 @@ public class AppointmentDAO {
                 appointment.setStaffId(rs.getInt("staffId"));
                 appointment.setAppointmentTime(rs.getObject("appointmentTime", LocalDateTime.class));
                 appointment.setStatus(rs.getString("status"));
-                appointment.setNumberOfPeople(rs.getInt("numberOfPeople"));
+                appointment.setBranchId(rs.getInt("branchId"));
 
                 // Lấy tên khách hàng
                 Customer customer = customerDAO.getCustomerById(appointment.getCustomerId());
@@ -363,6 +428,41 @@ public class AppointmentDAO {
         return appointmentServices;
     }
 
+   public float calculateAmount(List<Integer> serviceIds) {
+    if (serviceIds == null || serviceIds.isEmpty()) {
+        return 0;
+    }
+
+    float totalAmount = 0;
+    StringBuilder sqlBuilder = new StringBuilder("SELECT price FROM Service WHERE id IN (");
+
+    for (int i = 0; i < serviceIds.size(); i++) {
+        sqlBuilder.append("?");
+        if (i < serviceIds.size() - 1) {
+            sqlBuilder.append(",");
+        }
+    }
+    sqlBuilder.append(")");
+
+    String sql = sqlBuilder.toString();
+
+    try (Connection con = getConnect(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+        for (int i = 0; i < serviceIds.size(); i++) {
+            pstmt.setInt(i + 1, serviceIds.get(i));
+        }
+
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            totalAmount += rs.getFloat("price");
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi truy vấn giá dịch vụ: " + e.getMessage());
+    }
+
+    return totalAmount;
+}
+
+
     public float getFeeOfAppointment(int appointmentId) {
         String sql = "SELECT totalAmount FROM Invoice WHERE appointmentId = ?";
         try (Connection con = getConnect()) {
@@ -374,7 +474,6 @@ public class AppointmentDAO {
                 float totalAmount = rs.getFloat(1);
                 return totalAmount;
             }
-
         } catch (Exception e) {
         }
         return 0;
@@ -413,8 +512,8 @@ public class AppointmentDAO {
                 int customerId = rs.getInt("customerId");
                 int staff = rs.getInt("staffId");
                 String status = rs.getString("status");
-                int numberOfPeople = rs.getInt("numberOfpeople");
-                Appointment appointment = new Appointment(id, customerId, staff, appointment_time, status, numberOfPeople);
+                int branchId = rs.getInt("branchId");
+                Appointment appointment = new Appointment(id, customerId, staff, appointment_time, status);
                 appointments.add(appointment);
                 return appointments;
             }
@@ -422,19 +521,6 @@ public class AppointmentDAO {
             System.out.println(e);
         }
         return null;
-    }
-
-    public void insertAppointment(String appointmentTime, int customerId, int staffId) {
-        String sql = "INSERT INTO Appointment (appointment_time, customer_id, staff_id, ) VALUES (?,?,?)";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, appointmentTime);
-            ps.setInt(2, customerId);
-            ps.setInt(3, staffId);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 
     public boolean updateAppointmentStatus(int id, String status) {

@@ -133,7 +133,6 @@
                     <h5>Thông tin đặt lịch</h5>
                     <div class="info-grid">
                         <div class="info-item"><span>Nhân viên:</span> <span>${staffName}</span></div>
-                        <div class="info-item"><span>Số người:</span> <span>${numberOfPeople}</span></div>
                         <div class="info-item"><span>Ngày & Giờ:</span> <span>${dateTime}</span></div>
                     </div>
                 </div>
@@ -147,9 +146,6 @@
                                 <div class="service-item">
                                     <div>
                                         <div class="service-name">${service.name}</div>
-                                    </div>
-                                    <div class="service-price">
-                                        <fmt:formatNumber value="${service.price * numberOfPeople}" type="number" groupingUsed="true" /> VNĐ
                                     </div>
                                 </div>
                             </c:forEach>
@@ -202,7 +198,6 @@
                     <input type="hidden" name="customerId" value="${customerId}" />
                     <input type="hidden" name="staffId" value="${staffId}" />
                     <input type="hidden" name="appointmentTime" value="${dateTime}" />
-                    <input type="hidden" name="numberOfPeople" value="${numberOfPeople}"/>
                     <c:forEach var="service" items="${listService}">
                         <input type="hidden" name="serviceIds" value="${service.id}" />
                     </c:forEach>

@@ -9,7 +9,6 @@ public class Appointment {
     private int staffId;
     private LocalDateTime appointmentTime;
     private String status;
-    private int numberOfPeople;
     private String customerName;
     private String services;
     private double totalAmount;
@@ -21,13 +20,12 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, int numberOfPeople, String customerName, String services, double totalAmount, int branchId) {
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount, int branchId) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
         this.appointmentTime = appointmentTime;
         this.status = status;
-        this.numberOfPeople = numberOfPeople;
         this.customerName = customerName;
         this.services = services;
         this.totalAmount = totalAmount;
@@ -61,13 +59,12 @@ public class Appointment {
         this.totalAmount = totalAmount;
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, int numberOfPeople) {
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
         this.appointmentTime = appointmentTime;
         this.status = status;
-        this.numberOfPeople = numberOfPeople;
     }
 
     // Getters and Setters
@@ -109,14 +106,6 @@ public class Appointment {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public int getNumberOfPeople() {
-        return numberOfPeople;
-    }
-
-    public void setNumberOfPeople(int numberOfPeople) {
-        this.numberOfPeople = numberOfPeople;
     }
 
     public String getCustomerName() {

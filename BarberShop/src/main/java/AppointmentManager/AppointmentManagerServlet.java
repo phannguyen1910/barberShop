@@ -2,6 +2,7 @@ package AppointmentManager;
 
 import babershopDAO.AccountDAO;
 import babershopDAO.AppointmentDAO;
+import babershopDAO.BranchDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.ServiceDAO;
 import babershopDAO.StaffDAO;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Appointment;
 import model.AppointmentService;
+import model.Branch;
 import model.Customer;
 import model.Service;
 import model.Staff;
@@ -55,14 +57,17 @@ public class AppointmentManagerServlet extends HttpServlet {
         ServiceDAO serviceDAO = new ServiceDAO();
         CustomerDAO customerDAO = new CustomerDAO();
         StaffDAO staffDAO = new StaffDAO();
+        BranchDAO branchDAO = new BranchDAO();
         List <Appointment> appointments = appointmentDAO.getAllAppointmentsWithDetails();
         List <Service> services = serviceDAO.getAllService();
         List <Customer> customers  = customerDAO.getAllCustomerInformation();
         List <Staff> staffs = staffDAO.getAllStaffs();
+        List <Branch> branchs = branchDAO.getAllBranches();
         request.setAttribute("listCustomer", customers);
         request.setAttribute("listStaff", staffs);
         request.setAttribute("listAppointment", appointments);
         request.setAttribute("listService", services);
+        request.setAttribute("branchList", branchs);
         request.getRequestDispatcher("/views/admin/appointmentManagement.jsp").forward(request, response);
     }
 
