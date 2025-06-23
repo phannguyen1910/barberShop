@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import babershopDAO.ServiceDAO;
@@ -12,7 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession; // Import HttpSession
+import java.net.URLEncoder; 
 import java.util.ArrayList;
+import java.util.Arrays; // Import Arrays for splitting string
 import java.util.List;
 import model.Service;
 
@@ -24,7 +23,6 @@ public class ChooseServiceServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -37,14 +35,14 @@ public class ChooseServiceServlet extends HttpServlet {
         }
     }
 
-  
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ServiceDAO serviceDAO = new ServiceDAO();
         List <Service> services = serviceDAO.getAllService();
+        // The debug print loop is fine, but you might want to remove it in production
         for(Service s : services){
-            System.out.println(s.getName());
+            System.out.println("Service: " + s.getName());
         }
         request.setAttribute("services", services);
         request.getRequestDispatcher("/views/service/services.jsp").forward(request, response);
@@ -54,12 +52,44 @@ public class ChooseServiceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(); // Lấy session
+        
+        String serviceNames = request.getParameter("serviceNames");
+        String totalPriceStr = request.getParameter("totalPrice"); // Đổi tên biến để tránh nhầm lẫn
+
+        if (serviceNames != null && !serviceNames.isEmpty()) {
+            // Chuyển serviceNames thành List<String> và lưu vào session
+            List<String> selectedServiceNamesList = Arrays.asList(serviceNames.split(","));
+            session.setAttribute("selectedServiceNames", new ArrayList<>(selectedServiceNamesList)); // Lưu bản sao
+
+            // Chuyển totalPrice sang Double và lưu vào session
+            try {
+                double totalPrice = Double.parseDouble(totalPriceStr);
+                session.setAttribute("selectedTotalPrice", totalPrice);
+            } catch (NumberFormatException e) {
+                // Xử lý lỗi nếu totalPrice không phải là số hợp lệ
+                System.err.println("Error parsing totalPrice: " + totalPriceStr + ". Setting to 0.0");
+                session.setAttribute("selectedTotalPrice", 0.0);
+            }
+            
+            // Debugging:
+            System.out.println("ChooseServiceServlet doPost - Services saved to session: " + session.getAttribute("selectedServiceNames"));
+            System.out.println("ChooseServiceServlet doPost - Total Price saved to session: " + session.getAttribute("selectedTotalPrice"));
+
+            // Chuyển hướng về BookingServlet (không cần query params vì đã lưu vào session)
+            response.sendRedirect(request.getContextPath() + "/BookingServlet");
+        } else {
+            // Nếu không có dịch vụ nào được chọn, bạn có thể xóa các thuộc tính cũ trong session (nếu có)
+            session.removeAttribute("selectedServiceNames");
+            session.removeAttribute("selectedTotalPrice");
+            
+            response.sendRedirect(request.getContextPath() + "/BookingServlet?error=" + 
+                                    URLEncoder.encode("Vui lòng chọn ít nhất một dịch vụ.", "UTF-8"));
+        }
     }
 
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles service selection.";
+    }
 }

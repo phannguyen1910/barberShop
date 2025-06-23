@@ -544,7 +544,7 @@
                     <div class="d-flex gap-2 align-items-center">
                         <div class="text-warning d-none d-lg-block me-3">
                             <i class="fas fa-user-shield me-1"></i>
-                             <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
+                            <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
                         </div>
                         <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
                             <i class="fas fa-sign-out-alt me-1"></i>
@@ -577,19 +577,19 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/customerManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/admin/view-customers" class="nav-link">
                             <i class="fas fa-users"></i>
                             <span>Quản lý Khách hàng</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/staffManagement.jsp" class="nav-link active">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link ">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -613,15 +613,21 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Quản lý Nhượng quyền</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Lịch làm nhân viên</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Quản lí ngày nghỉ</span>
                         </a>
                     </div>
                 </div>

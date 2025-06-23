@@ -1,69 +1,82 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Sekiro
- */
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Payment {
     private int id;
-    private int invoiceId;
-    private float amount;
-    private String paymentMethod;
-    private Date paymentDate;
+    private int bookingId;
+    private String transactionNo;
+    private double amount;
+    private String method;
+    private String status;
+    private Timestamp payTime;
 
-    // Constructor
-    public Payment(int invoiceId, float amount, String paymentMethod, Date paymentDate) {
-        this.invoiceId = invoiceId;
+    // Constructors
+    public Payment() {}
+
+    public Payment(int bookingId, String transactionNo, double amount, String method, String status) {
+        this.bookingId = bookingId;
+        this.transactionNo = transactionNo;
         this.amount = amount;
-        this.paymentMethod = paymentMethod;
-        this.paymentDate = paymentDate;
+        this.method = method;
+        this.status = status;
     }
 
-    // Getters and Setters
+    // Getters
     public int getId() {
         return id;
     }
 
+    public int getBookingId() {
+        return bookingId;
+    }
+
+    public String getTransactionNo() {
+        return transactionNo;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Timestamp getPayTime() {
+        return payTime;
+    }
+
+    // Setters
     public void setId(int id) {
         this.id = id;
     }
 
-    public int getInvoiceId() {
-        return invoiceId;
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
     }
 
-    public void setInvoiceId(int invoiceId) {
-        this.invoiceId = invoiceId;
+    public void setTransactionNo(String transactionNo) {
+        this.transactionNo = transactionNo;
     }
 
-    public float getAmount() {
-        return amount;
-    }
-
-    public void setAmount(float amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
+    public void setMethod(String method) {
+        this.method = method;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public Date getPaymentDate() {
-        return paymentDate;
-    }
-
-    public void setPaymentDate(Date paymentDate) {
-        this.paymentDate = paymentDate;
+    public void setPayTime(Timestamp payTime) {
+        this.payTime = payTime;
     }
 }
-

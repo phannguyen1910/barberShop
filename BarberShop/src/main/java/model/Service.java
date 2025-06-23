@@ -14,6 +14,9 @@ public class Service {
     public Service(String name1, double price, int duration1, String description1) {
     }
 
+    public Service() {
+    }
+
     public Service(int id, String name, float price, int duration, String description, String[] image) {
         this.id = id;
         this.name = name;

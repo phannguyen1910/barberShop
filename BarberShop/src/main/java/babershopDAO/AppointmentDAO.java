@@ -9,6 +9,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +26,7 @@ public class AppointmentDAO {
 
     private ServiceDAO serviceDAO = new ServiceDAO();
     private CustomerDAO customerDAO = new CustomerDAO();
+    private InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     public static Connection getConnect() {
         try {
@@ -40,27 +43,348 @@ public class AppointmentDAO {
         return null;
     }
 
+    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, List<Integer> serviceIds, float totalAmount, int branchId) {
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) VALUES (?, ?, ?, 'Pending', ?)";
+        String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
+
+        System.out.println(customerId + " " + staffId + " " + appointmentTime + " " + totalAmount + " " + branchId);
+        for (int s : serviceIds) {
+            System.out.println(s);
+        }
+
+        Connection con = null;
+        try {
+            con = getConnect();
+            con.setAutoCommit(false);
+
+            try (PreparedStatement ps = con.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, customerId);
+                ps.setInt(2, staffId);
+                ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
+                ps.setInt(4, branchId);
+                ps.executeUpdate(); // ✅ Sửa lỗi ở đây
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int appointmentId = rs.getInt(1);
+                        System.out.println("✅ Appointment ID created: " + appointmentId);
+
+                        if (!serviceIds.isEmpty()) {
+                            try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
+                                for (Integer serviceId : serviceIds) {
+                                    ps2.setInt(1, appointmentId);
+                                    ps2.setInt(2, serviceId);
+                                    ps2.addBatch();
+                                }
+                                int[] affectedRows = ps2.executeBatch();
+                                for (int affected : affectedRows) {
+                                    if (affected == 0) {
+                                        con.rollback();
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        InvoiceDAO invoiceDAO = new InvoiceDAO();
+                        boolean invoiceInserted = invoiceDAO.insertInvoice(con, totalAmount, appointmentTime, appointmentId);
+                        if (!invoiceInserted) {
+                            con.rollback();
+                            return false;
+                        }
+
+                        con.commit();
+                        return true;
+                    } else {
+                        con.rollback();
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ SQLException: " + e.getMessage());
+            e.printStackTrace();
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("❌ Rollback failed: " + ex.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // Inside your AppointmentDAO class
+    public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int branchId, List<Integer> serviceIds) {
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Pending', ?)";
+        String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
+
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        PreparedStatement ps2 = null;
+
+        try {
+            con = getConnect();
+            con.setAutoCommit(false);
+
+            ps = con.prepareStatement(sql1);
+            ps.setInt(1, customerId);
+            ps.setInt(2, staffId);
+            ps.setTimestamp(3, java.sql.Timestamp.valueOf(appointmentTime));
+            ps.setInt(4, branchId);
+
+            boolean hasResultSet = ps.execute();
+
+            int appointmentId = -1;
+
+            if (hasResultSet) {
+                rs = ps.getResultSet();
+                if (rs.next()) {
+                    appointmentId = rs.getInt(1);
+                    System.out.println("✅ Appointment ID created: " + appointmentId);
+                } else {
+                    System.err.println("❌ Không thể lấy ID của Appointment vừa chèn. ResultSet từ OUTPUT trống.");
+                    con.rollback();
+                    return false;
+                }
+            } else {
+                System.err.println("❌ INSERT không tạo ra ResultSet từ OUTPUT mệnh đề.");
+                con.rollback();
+                return false;
+            }
+
+            if (appointmentId == -1) {
+                System.err.println("❌ Appointment ID vẫn là -1 sau khi cố gắng lấy. Có lỗi trong quá trình lấy ID.");
+                con.rollback();
+                return false;
+            }
+
+            if (!serviceIds.isEmpty()) {
+                ps2 = con.prepareStatement(sql2);
+                for (Integer serviceId : serviceIds) {
+                    ps2.setInt(1, appointmentId);
+                    ps2.setInt(2, serviceId);
+                    ps2.addBatch();
+                }
+                int[] affectedRowsService = ps2.executeBatch();
+
+                for (int affected : affectedRowsService) {
+                    if (affected == 0) {
+                        System.err.println("❌ Một dịch vụ không thể thêm (serviceId có thể không tồn tại hoặc lỗi khác trong batch).");
+                        con.rollback();
+                        return false;
+                    }
+                }
+                System.out.println("✅ Thêm " + serviceIds.size() + " dịch vụ thành công cho Appointment ID: " + appointmentId);
+            }
+            
+            InvoiceDAO invoiceDAO = new InvoiceDAO();
+            float totalAmount = calculateAmount(serviceIds);
+            System.out.println(totalAmount);
+            boolean invoiceInserted = invoiceDAO.insertInvoice(con, totalAmount, appointmentTime, appointmentId);
+            if (!invoiceInserted) {
+                con.rollback();
+                return false;
+            }
+
+            con.commit();
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi chèn dữ liệu vào CSDL: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            e.printStackTrace();
+
+            if (con != null) {
+                try {
+                    System.err.println("Attempting to rollback transaction due to SQLException.");
+                    con.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Lỗi khi rollback: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi không xác định trong addAppointment: " + e.getMessage());
+            e.printStackTrace();
+            if (con != null) {
+                try {
+                    System.err.println("Attempting to rollback transaction due to generic Exception.");
+                    con.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Lỗi khi rollback: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ps2 != null) {
+                    ps2.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+public boolean editAppointmentService(int appointmentId, int[] serviceIds, String status) throws SQLException {
+    String sqlUpdateAppointment = "UPDATE Appointment SET status = ? WHERE id = ?";
+    String sqlDeleteServices = "DELETE FROM Appointment_Service WHERE AppointmentId = ?";
+    String sqlInsertService = "INSERT INTO Appointment_Service (ServiceId, AppointmentId) VALUES (?, ?)";
+    String sqlEditInvoice = "UPDATE Invoice SET totalAmount = ?, status = ? WHERE AppointmentId = ?";
+
+    try (Connection con = getConnect()) {
+        con.setAutoCommit(false);
+
+        try (
+            PreparedStatement psUpdate = con.prepareStatement(sqlUpdateAppointment);
+            PreparedStatement psDelete = con.prepareStatement(sqlDeleteServices);
+            PreparedStatement psInsert = con.prepareStatement(sqlInsertService);
+            PreparedStatement psEditInvoice = con.prepareStatement(sqlEditInvoice)
+        ) {
+            // 1. Cập nhật trạng thái cuộc hẹn
+            psUpdate.setString(1, status);
+            psUpdate.setInt(2, appointmentId);
+            psUpdate.executeUpdate();
+
+            // 2. Xoá các dịch vụ cũ
+            psDelete.setInt(1, appointmentId);
+            psDelete.executeUpdate();
+
+            // 3. Thêm lại dịch vụ mới
+            for (int serviceId : serviceIds) {
+                psInsert.setInt(1, serviceId);
+                psInsert.setInt(2, appointmentId);
+                psInsert.addBatch();
+            }
+            psInsert.executeBatch();
+
+            // 4. Cập nhật hóa đơn
+            float totalAmount = calculateAmount2(serviceIds);
+            psEditInvoice.setFloat(1, totalAmount);
+
+            String invoiceStatus;
+            switch (status) {
+                case "Completed":
+                    invoiceStatus = "Paid";
+                    break;
+                case "Confirmed":
+                    invoiceStatus = "Paid Deposit";
+                    break;
+                case "Canceled":
+                    invoiceStatus = "Canceled";
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid appointment status: " + status);
+            }
+            psEditInvoice.setString(2, invoiceStatus);
+            psEditInvoice.setInt(3, appointmentId);
+            psEditInvoice.executeUpdate();
+
+            con.commit();
+            return true;
+
+        } catch (SQLException e) {
+            con.rollback();
+            System.err.println("Transaction rollback. Error: " + e.getMessage());
+            throw e;
+        }
+    }
+}
+
+    
+    
+    public float calculateAmount2(int[] serviceIds) {
+    if (serviceIds == null || serviceIds.length == 0) {
+        return 0;
+    }
+
+    float totalAmount = 0;
+    StringBuilder sqlBuilder = new StringBuilder("SELECT price FROM Service WHERE id IN (");
+
+    for (int i = 0; i < serviceIds.length; i++) {
+        sqlBuilder.append("?");
+        if (i < serviceIds.length - 1) {
+            sqlBuilder.append(",");
+        }
+    }
+    sqlBuilder.append(")");
+
+    String sql = sqlBuilder.toString();
+
+    try (Connection con = getConnect(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+        for (int i = 0; i < serviceIds.length; i++) {
+            pstmt.setInt(i + 1, serviceIds[i]);
+        }
+
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            totalAmount += rs.getFloat("price");
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi truy vấn giá dịch vụ: " + e.getMessage());
+    }
+
+    return totalAmount;
+}
+
+
     public List<Appointment> getAllAppointmentsWithDetails() {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT id, customerId, staffId, appointmentTime, status, numberOfPeople FROM Appointment";
+        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId FROM Appointment";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+
                 Appointment appointment = new Appointment();
                 appointment.setId(rs.getInt("id"));
                 appointment.setCustomerId(rs.getInt("customerId"));
                 appointment.setStaffId(rs.getInt("staffId"));
                 appointment.setAppointmentTime(rs.getObject("appointmentTime", LocalDateTime.class));
                 appointment.setStatus(rs.getString("status"));
-                appointment.setNumberOfPeople(rs.getInt("numberOfPeople"));
+                appointment.setBranchId(rs.getInt("branchId"));
 
                 // Lấy tên khách hàng
                 Customer customer = customerDAO.getCustomerById(appointment.getCustomerId());
                 if (customer != null) {
                     appointment.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
                 }
-                
+
                 float totalAmount = getFeeOfAppointment(appointment.getId());
                 appointment.setTotalAmount(totalAmount);
 
@@ -86,7 +410,7 @@ public class AppointmentDAO {
         return appointments;
     }
 
-    private List<AppointmentService> getAppointmentServicesByAppointmentId(int appointmentId) {
+    public List<AppointmentService> getAppointmentServicesByAppointmentId(int appointmentId) {
         List<AppointmentService> appointmentServices = new ArrayList<>();
         String sql = "SELECT appointmentId, serviceId FROM Appointment_Service WHERE appointmentId = ?";
         try (Connection con = getConnect(); PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -104,7 +428,42 @@ public class AppointmentDAO {
         return appointmentServices;
     }
 
-    private float getFeeOfAppointment(int appointmentId) {
+   public float calculateAmount(List<Integer> serviceIds) {
+    if (serviceIds == null || serviceIds.isEmpty()) {
+        return 0;
+    }
+
+    float totalAmount = 0;
+    StringBuilder sqlBuilder = new StringBuilder("SELECT price FROM Service WHERE id IN (");
+
+    for (int i = 0; i < serviceIds.size(); i++) {
+        sqlBuilder.append("?");
+        if (i < serviceIds.size() - 1) {
+            sqlBuilder.append(",");
+        }
+    }
+    sqlBuilder.append(")");
+
+    String sql = sqlBuilder.toString();
+
+    try (Connection con = getConnect(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+        for (int i = 0; i < serviceIds.size(); i++) {
+            pstmt.setInt(i + 1, serviceIds.get(i));
+        }
+
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            totalAmount += rs.getFloat("price");
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi truy vấn giá dịch vụ: " + e.getMessage());
+    }
+
+    return totalAmount;
+}
+
+
+    public float getFeeOfAppointment(int appointmentId) {
         String sql = "SELECT totalAmount FROM Invoice WHERE appointmentId = ?";
         try (Connection con = getConnect()) {
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -115,7 +474,6 @@ public class AppointmentDAO {
                 float totalAmount = rs.getFloat(1);
                 return totalAmount;
             }
-
         } catch (Exception e) {
         }
         return 0;
@@ -154,8 +512,8 @@ public class AppointmentDAO {
                 int customerId = rs.getInt("customerId");
                 int staff = rs.getInt("staffId");
                 String status = rs.getString("status");
-                int numberOfPeople = rs.getInt("numberOfpeople");
-                Appointment appointment = new Appointment(id, customerId, staff, appointment_time, status, numberOfPeople);
+                int branchId = rs.getInt("branchId");
+                Appointment appointment = new Appointment(id, customerId, staff, appointment_time, status);
                 appointments.add(appointment);
                 return appointments;
             }
@@ -165,34 +523,18 @@ public class AppointmentDAO {
         return null;
     }
 
-    public void insertAppointment(String appointmentTime, int customerId, int staffId) {
-        String sql = "INSERT INTO Appointment (appointment_time, customer_id, staff_id, ) VALUES (?,?,?)";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, appointmentTime);
-            ps.setInt(2, customerId);
-            ps.setInt(3, staffId);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);
+    public boolean updateAppointmentStatus(int id, String status) {
+        String sql = "UPDATE appointments SET status = ? WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, id);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
-    
-    
-    public boolean updateAppointmentStatus(int id, String status) {
-    String sql = "UPDATE appointments SET status = ? WHERE id = ?";
-    try (Connection con = getConnect();
-         PreparedStatement stmt = con.prepareStatement(sql)) {
-        stmt.setString(1, status);
-        stmt.setInt(2, id);
-        int rowsAffected = stmt.executeUpdate();
-        return rowsAffected > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
-    }
-}
-    
 
     public void updateAppointment(int id, int staffId) {
 
@@ -319,4 +661,44 @@ public class AppointmentDAO {
         System.out.println(numberOfPeople);
         return amount;
     }
+
+    public List<Voucher> showVoucher() {
+        String sql = "SELECT code, value, expiryDate, status FROM Voucher";
+        List<Voucher> vouchers = new ArrayList<>();
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                String code = rs.getString("code");
+                float value = rs.getFloat("value");
+
+                LocalDate expiryDate = rs.getDate("expiryDate").toLocalDate(); // Dùng kiểu Date an toàn hơn
+
+                String status = rs.getString("status");
+                Voucher voucher = new Voucher(code, value, expiryDate, status);
+                vouchers.add(voucher);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace(); // hoặc log
+        }
+        return vouchers; // Luôn trả về danh sách, có thể rỗng nếu lỗi
+    }
+    // Trong AppointmentDAO.java
+
+    public int getLastInsertedAppointmentId() {
+        String sql = "SELECT TOP 1 id FROM Appointment ORDER BY id DESC";
+
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1; // Trả -1 nếu có lỗi hoặc không tìm thấy
+    }
+
 }

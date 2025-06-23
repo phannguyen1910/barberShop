@@ -134,6 +134,26 @@ public static Account getAccountById(int id) {
         return null;
     }
 
+public static Account getAllAccount() {
+        String sql = "SELECT email, phoneNumber, status FROM [Account] WHERE phoneNumber = ? and status = 1 and role = 'Customer'";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phoneNumber");
+                int status = rs.getInt("status");
+                return new Account(email, phoneNumber, status) {};
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+
+
+
     public String changePassword(String email, String currentPassword, String newPassword) {
         String sql1 = "SELECT password FROM Account WHERE email = ?";
         String sql2 = "UPDATE Account SET password = ? WHERE email = ?";

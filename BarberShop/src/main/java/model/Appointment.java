@@ -9,10 +9,10 @@ public class Appointment {
     private int staffId;
     private LocalDateTime appointmentTime;
     private String status;
-    private int numberOfPeople;
-    private String customerName; // Thêm để lưu tên khách hàng
+    private String customerName;
     private String services;
-    private float totalAmount;
+    private double totalAmount;
+    private int branchId;
 
     public Appointment(LocalDateTime appointment_time, int customerId1, int staff) {
     }
@@ -20,7 +20,19 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, float totalAmount) {
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount, int branchId) {
+        this.id = id;
+        this.customerId = customerId;
+        this.staffId = staffId;
+        this.appointmentTime = appointmentTime;
+        this.status = status;
+        this.customerName = customerName;
+        this.services = services;
+        this.totalAmount = totalAmount;
+        this.branchId = branchId;
+    }
+
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
@@ -31,21 +43,28 @@ public class Appointment {
         this.totalAmount = totalAmount;
     }
 
-    public float getTotalAmount() {
+    public int getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(int branchId) {
+        this.branchId = branchId;
+    }
+
+    public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(float totalAmount) {
+    public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, int numberOfPeople) {
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
         this.appointmentTime = appointmentTime;
         this.status = status;
-        this.numberOfPeople = numberOfPeople;
     }
 
     // Getters and Setters
@@ -73,7 +92,6 @@ public class Appointment {
         this.staffId = staffId;
     }
 
-    
     public LocalDateTime getAppointmentTime() {
         return appointmentTime;
     }
@@ -88,14 +106,6 @@ public class Appointment {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public int getNumberOfPeople() {
-        return numberOfPeople;
-    }
-
-    public void setNumberOfPeople(int numberOfPeople) {
-        this.numberOfPeople = numberOfPeople;
     }
 
     public String getCustomerName() {

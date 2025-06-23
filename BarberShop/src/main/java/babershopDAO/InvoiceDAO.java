@@ -10,12 +10,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Invoice;
-import model.Service;
 
 public class InvoiceDAO {
     public static Connection getConnect() {
@@ -53,6 +54,7 @@ public class InvoiceDAO {
         }
         return null;
     }
+    
 
     public static List<Invoice> getAllInvoice() {
         List<Invoice> invoices = new ArrayList<>();
@@ -77,20 +79,36 @@ public class InvoiceDAO {
         return null;
     }
 
-    public static void insertInvoice(double amount, String paymentStatus, LocalDate receivedDate, int appointmentId, Integer voucherId) {
-        String sql = "INSERT INTO Invloice (amount, paymentStatus, receivedDate, appointmentId, voucherId) VALUES (?,?,?,?,?)";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setDouble(1, amount);
-            ps.setString(2,paymentStatus );
-            String formattedDate = receivedDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-            ps.setString(3, formattedDate);
-            ps.setInt(4, appointmentId);
-            ps.setInt(4, voucherId);
-            ps.executeUpdate();
+     public boolean insertInvoice(Connection con, float totalAmount, LocalDateTime receivedDate, int appointmentId) throws SQLException {
+    String sql = "INSERT INTO Invoice (totalAmount, receivedDate, appointmentId) VALUES (?, ?, ?)";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setFloat(1, totalAmount);
+        ps.setTimestamp(2, Timestamp.valueOf(receivedDate));
+        ps.setInt(3, appointmentId);
+
+        return ps.executeUpdate() > 0;
+    }
+}
+
+     
+    public boolean insertInvoice(int appointmentId, String transactionNo, double amount, String method, String status, LocalDateTime payTime) {
+        String sql = "INSERT INTO Payment (booking_id, transaction_no, amount, method, status, pay_time) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = AppointmentDAO.getConnect();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, appointmentId);
+            ps.setString(2, transactionNo);
+            ps.setDouble(3, amount);
+            ps.setString(4, method);
+            ps.setString(5, status);
+            ps.setTimestamp(6, Timestamp.valueOf(payTime));
+
+            return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
+        return false;
     }
 
 }

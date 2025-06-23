@@ -92,6 +92,30 @@
                 border-top: 2px solid #ffd700;
                 padding-top: 1.5rem;
             }
+            .deposit-section {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+            .deposit-section label {
+                margin-left: 0.5rem;
+                font-size: 1rem;
+                color: #1a1a1a;
+            }
+            .payment-button {
+                width: 100%;
+                background: #ccc;
+                border: none;
+                padding: 1rem;
+                border-radius: 8px;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+            .payment-button.enabled {
+                background: #ffd700;
+                cursor: pointer;
+                opacity: 1;
+            }
         </style>
     </head>
     <body>
@@ -109,7 +133,6 @@
                     <h5>Thông tin đặt lịch</h5>
                     <div class="info-grid">
                         <div class="info-item"><span>Nhân viên:</span> <span>${staffName}</span></div>
-                        <div class="info-item"><span>Số người:</span> <span>${numberOfPeople}</span></div>
                         <div class="info-item"><span>Ngày & Giờ:</span> <span>${dateTime}</span></div>
                     </div>
                 </div>
@@ -123,9 +146,6 @@
                                 <div class="service-item">
                                     <div>
                                         <div class="service-name">${service.name}</div>
-                                    </div>
-                                    <div class="service-price">
-                                        <fmt:formatNumber value="${service.price * numberOfPeople}" type="number" groupingUsed="true" /> VNĐ
                                     </div>
                                 </div>
                             </c:forEach>
@@ -174,18 +194,22 @@
                 </div>
 
                 <!-- Form đặt lịch -->
-                <form action="${pageContext.request.contextPath}/PaymentServlet" method="post" id="bookingForm">
-                    <input type="hidden" name="customerId" value="${customerId}">
-                    <input type="hidden" name="staffId" value="${param.staffId}">
-                    <input type="hidden" name="numberOfPeople" value="${numberOfPeople}">
-                    <input type="hidden" name="appointmentDateTime" value="${dateTime}">
-                    <input type="hidden" name="finalAmount" id="finalAmountInput" value="${totalMoney}">
-                    <input type="hidden" name="voucherCode" id="voucherCodeInput" value="">
-                    <div class="booking-actions">
-                        <a href="${pageContext.request.contextPath}/views/booking/booking.jsp" class="btn-back">Quay lại</a>
-                        <button type="submit" class="btn-booking">Xác nhận đặt lịch</button>
+                <form action="ConfirmationServlet" method="post">
+                    <input type="hidden" name="customerId" value="${customerId}" />
+                    <input type="hidden" name="staffId" value="${staffId}" />
+                    <input type="hidden" name="appointmentTime" value="${dateTime}" />
+                    <c:forEach var="service" items="${listService}">
+                        <input type="hidden" name="serviceIds" value="${service.id}" />
+                    </c:forEach>
+                    <input type="hidden" name="totalBill" value="${totalMoney}" />
+
+                    <div class="deposit-section">
+                        <input type="checkbox" id="depositConfirm" onchange="togglePaymentButton()">
+                        <label for="depositConfirm">Vui lòng đặt cọc 50.000đ để xác nhận đặt lịch</label>
                     </div>
+                    <button type="submit" id="paymentButton" class="payment-button" disabled>Thanh toán bằng VNPAY</button>
                 </form>
+
             </div>
         </div>
 
@@ -218,9 +242,29 @@
         </footer>
 
         <script>
-       let originalTotal = ${totalMoney};
-       let selectedVoucherCode = null;
-       let selectedVoucherDiscount = 0;
+
+            let originalTotal = ${totalMoney};
+            let selectedVoucherCode = null;
+            let selectedVoucherDiscount = 0;
+
+            
+
+            function formatNumber(num) {
+                return new Intl.NumberFormat('vi-VN').format(num);
+            }
+
+            function togglePaymentButton() {
+                const checkbox = document.getElementById('depositConfirm');
+                const paymentButton = document.getElementById('paymentButton');
+                if (checkbox.checked) {
+                    paymentButton.classList.add('enabled');
+                    paymentButton.disabled = false;
+                } else {
+                    paymentButton.classList.remove('enabled');
+                    paymentButton.disabled = true;
+                }
+            }
+  
 
        function toggleVoucherList() {
            const voucherList = document.getElementById('voucherList');

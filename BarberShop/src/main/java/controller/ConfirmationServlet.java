@@ -1,58 +1,70 @@
-
 package controller;
 
 import babershopDAO.AppointmentDAO;
-import babershopDAO.StaffDAO;
+import babershopDAO.InvoiceDAO;
+import babershopDAO.ServiceDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import model.Service;
 import model.Voucher;
 
-
 @WebServlet(name = "ConfirmationServlet", urlPatterns = {"/ConfirmationServlet"})
 public class ConfirmationServlet extends HttpServlet {
 
-
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ConfirmationServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ConfirmationServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-
-       @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    }
-
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        String message = appointmentDAO.Booking(customerId, staffId, dateTime, numberOfPeople, serviceIds);
-//        if ("Booking successful".equals(message)) {
+        HttpSession session = request.getSession();
+        int customerId = Integer.parseInt(request.getParameter("customerId"));
+        int staffId = Integer.parseInt(request.getParameter("staffId"));
+        String appointmentTime = request.getParameter("appointmentTime");
+        String[] serviceIdParams = request.getParameterValues("serviceIds");
+        float totalAmount = Float.parseFloat(request.getParameter("totalBill"));
+        String branchIdStr = (String) session.getAttribute("selectedBranchId");
+        int branchId = Integer.parseInt(branchIdStr);
+        List<Integer> serviceIds = new ArrayList<>();
+        if (serviceIdParams != null) {
+            for (String s : serviceIdParams) {
+                Integer id = Integer.parseInt(s);
+                serviceIds.add(id);
+                System.out.println(id);
+            }
+
+        }else{
+            System.out.println("Khong co list ids");
+        }
+        ServiceDAO serviceDAO = new ServiceDAO();
+        double amount = 0;
+        List<Service> listService = new ArrayList<>();
+        for (int id : serviceIds) {
+            amount += serviceDAO.getServicePriceById(id);
+            Service service = serviceDAO.getServiceById(id);
+            if (service != null) {
+                listService.add(service);
+            }
+        }
+
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        LocalDateTime dateTime = LocalDateTime.parse(appointmentTime, outputFormatter);
+
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+
+        boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, serviceIds, totalAmount, branchId);
+        if (check == true) {
+            request.getRequestDispatcher("Payment").forward(request, response);
+        } else {
+            request.getRequestDispatcher("BookingServlet").forward(request, response);
+        }
+
     }
-
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

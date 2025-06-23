@@ -14,6 +14,248 @@
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
         <style>
+            /* Reset và base styles */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Noto Sans', sans-serif;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                min-height: 100vh;
+            }
+
+            /* Main container */
+            .main-container {
+                padding: 40px 20px;
+                min-height: 100vh;
+            }
+
+            /* Header section */
+            .header {
+                text-align: center;
+                margin-bottom: 60px;
+                padding: 0 20px;
+            }
+
+            .main-title {
+                font-size: 3.5rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 1rem;
+                letter-spacing: -2px;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+                color: #666;
+                margin-bottom: 2rem;
+                line-height: 1.6;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* Search container */
+            .search-container {
+                position: relative;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .search-input {
+                width: 100%;
+                padding: 15px 20px 15px 50px;
+                border: 2px solid #ddd;
+                border-radius: 30px;
+                font-size: 1.1rem;
+                color: #333;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+            }
+
+            .search-input:focus {
+                border-color: #d4a017;
+                box-shadow: 0 6px 15px rgba(212, 160, 23, 0.2);
+                outline: none;
+            }
+
+            .search-icon {
+                position: absolute;
+                left: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1.2rem;
+                color: #999;
+            }
+
+            /* Service section */
+            .service-section {
+                max-width: 1200px;
+                margin: 60px auto;
+                padding: 0 20px;
+            }
+
+            .section-header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #2c2c2c;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .section-description {
+                font-size: 1.1rem;
+                color: #666;
+                line-height: 1.6;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+
+            /* Services grid */
+            .services-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 40px;
+            }
+
+            /* Service card */
+            .service-card {
+                background: linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%);
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                transition: transform 0.4s ease, box-shadow 0.4s ease;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                min-height: 450px; /* Ensures consistent height */
+            }
+
+            .service-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            .service-header-section {
+                padding: 25px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .service-info {
+                flex-grow: 1;
+            }
+
+            .service-title {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 0.8rem;
+                line-height: 1.3;
+            }
+
+            .service-description {
+                font-size: 0.95rem;
+                color: #777;
+                line-height: 1.5;
+                min-height: 60px; /* Ensure description space */
+            }
+
+            .service-price {
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: #d4a017;
+                white-space: nowrap; /* Prevent price from wrapping */
+            }
+
+            .service-images {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+                padding: 0 25px 15px;
+            }
+
+            .service-image {
+                width: 100%;
+                padding-bottom: 75%; /* 4:3 aspect ratio */
+                position: relative;
+                overflow: hidden;
+                border-radius: 10px;
+            }
+
+            .service-image img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+
+            .service-card:hover .service-image img {
+                transform: scale(1.05);
+            }
+
+            .service-duration {
+                font-size: 0.9rem;
+                color: #888;
+                text-align: right;
+                padding: 0 25px 15px;
+            }
+
+            .add-to-cart {
+                width: calc(100% - 50px); /* Adjust for padding */
+                padding: 12px 20px;
+                margin: 0 25px 25px;
+                background: #d4a017;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 1.1em;
+                cursor: pointer;
+                transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+                box-shadow: 0 4px 15px rgba(212, 160, 23, 0.3);
+            }
+
+            .add-to-cart:hover {
+                background: #b88f14;
+                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(212, 160, 23, 0.4);
+            }
+
+            .add-to-cart:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 8px rgba(212, 160, 23, 0.2);
+            }
+
+            .add-to-cart.in-cart {
+                background: #28a745; /* Green for "In Cart" */
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            }
+
+            .add-to-cart.in-cart:hover {
+                background: #218838;
+                box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            }
             .cart-summary {
                 position: sticky;
                 bottom: 20px;
@@ -91,21 +333,6 @@
                 box-shadow: 0 2px 6px rgba(212, 160, 23, 0.3);
             }
 
-            .add-to-cart {
-                transition: background 0.3s, color 0.3s;
-                background: #d4a017;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 15px;
-                cursor: pointer;
-            }
-
-            .add-to-cart.in-cart {
-                background: #28a745;
-                color: white;
-            }
-
             .footer {
                 background: #1a1a1a;
                 color: #fff;
@@ -171,7 +398,7 @@
             }
 
             .main-container {
-                padding-bottom: 120px;
+                padding-bottom: 120px; /* Add padding to accommodate sticky cart */
             }
         </style>
     </head>
@@ -209,17 +436,17 @@
                                     </div>
                                     <div class="service-images">
                                         <div class="service-image">
-                                            <img src="${not empty service.image[0] ? service.image[0] : pageContext.request.contextPath.concat('/image/image_service/default_haircut.png')}" alt="${service.name}">
+                                            <img src="${not empty service.image[0] ? pageContext.request.contextPath.concat(service.image[0]) : pageContext.request.contextPath.concat('/image/image_service/default_haircut.png')}" alt="${service.name}">
                                         </div>
                                         <div class="service-image">
-                                            <img src="${not empty service.image[1] ? service.image[1] : pageContext.request.contextPath.concat('/image/image_service/default_haircut_sub1.png')}" alt="${service.name}">
+                                            <img src="${not empty service.image[1] ? pageContext.request.contextPath.concat(service.image[1]) : pageContext.request.contextPath.concat('/image/image_service/default_haircut_sub1.png')}" alt="${service.name}">
                                         </div>
                                         <div class="service-image">
-                                            <img src="${not empty service.image[2] ? service.image[2] : pageContext.request.contextPath.concat('/image/image_service/default_haircut_sub2.png')}" alt="${service.name}">
+                                            <img src="${not empty service.image[2] ? pageContext.request.contextPath.concat(service.image[2]) : pageContext.request.contextPath.concat('/image/image_service/default_haircut_sub2.png')}" alt="${service.name}">
                                         </div>
                                     </div>
                                     <div class="service-duration">${service.duration} Phút</div>
-                                    <button class="add-to-cart" data-service-id="${service.id}" data-service-name="${service.name.replace('\'', '\\\'')}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="haircut">Thêm Vào Đơn</button>
+                                    <button class="add-to-cart" data-service-id="${service.id}" data-service-name="${fn:escapeXml(service.name)}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="haircut">Thêm Vào Đơn</button>
                                 </div>
                             </c:forEach>
                         </c:when>
@@ -230,6 +457,9 @@
                 </div>
             </section>
 
+            <%-- IMPORTANT: Ideally, all service sections should be dynamic from the database, not hardcoded.
+                 For now, I'm keeping the hardcoded sections as they were, but you should aim to make them dynamic
+                 by adding a 'category' or 'type' column to your Service model and fetching/grouping them in the Servlet. --%>
             <section class="service-section">
                 <div class="section-header">
                     <h2 class="section-title">✂️ Uốn Định Hình Nếp Tóc</h2>
@@ -250,7 +480,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/uon_tieu_chuan_sub2.png" alt="Tạo kiểu"></div>
                         </div>
                         <div class="service-duration">90 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Uốn tiêu chuẩn" data-service-price="379000" data-service-type="haircut">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-1" data-service-name="Uốn tiêu chuẩn" data-service-price="379000" data-service-type="perm">Thêm Vào Đơn</button>
                     </div>
                     <div class="service-card">
                         <div class="service-header-section">
@@ -266,7 +496,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/uon_cao_cap_sub2.png" alt="Tạo kiểu"></div>
                         </div>
                         <div class="service-duration">120 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Uốn cao cấp" data-service-price="499000" data-service-type="haircut">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-2" data-service-name="Uốn cao cấp" data-service-price="499000" data-service-type="perm">Thêm Vào Đơn</button>
                     </div>
                 </div>
             </section>
@@ -291,7 +521,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/nhuom_tieu_chuan_sub2.png" alt="Tạo kiểu"></div>
                         </div>
                         <div class="service-duration">30 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Nhuộm tiêu chuẩn" data-service-price="199000" data-service-type="haircut">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-3" data-service-name="Nhuộm tiêu chuẩn" data-service-price="199000" data-service-type="color">Thêm Vào Đơn</button>
                     </div>
                     <div class="service-card">
                         <div class="service-header-section">
@@ -307,7 +537,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/nhuom_cao_cap_sub2.png" alt="Tạo kiểu"></div>
                         </div>
                         <div class="service-duration">45 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Nhuộm cao cấp" data-service-price="329000" data-service-type="haircut">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-4" data-service-name="Nhuộm cao cấp" data-service-price="329000" data-service-type="color">Thêm Vào Đơn</button>
                     </div>
                 </div>
             </section>
@@ -332,7 +562,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/massageCombo1_sub2.png" alt="Massage"></div>
                         </div>
                         <div class="service-duration">20 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Gội Combo 1" data-service-price="50000" data-service-type="spa">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-5" data-service-name="Gội Combo 1" data-service-price="50000" data-service-type="spa">Thêm Vào Đơn</button>
                     </div>
                     <div class="service-card">
                         <div class="service-header-section">
@@ -348,7 +578,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/massageCombo1_main.png" alt="Spa mặt"></div>
                         </div>
                         <div class="service-duration">30 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Gội Combo 2" data-service-price="159000" data-service-type="spa">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-6" data-service-name="Gội Combo 2" data-service-price="159000" data-service-type="spa">Thêm Vào Đơn</button>
                     </div>
                     <div class="service-card">
                         <div class="service-header-section">
@@ -364,7 +594,7 @@
                             <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/massageCombo3_sub2.png" alt="Spa mặt"></div>
                         </div>
                         <div class="service-duration">35 Phút</div>
-                        <button class="add-to-cart" data-service-id="0" data-service-name="Gội Combo 3" data-service-price="219000" data-service-type="spa">Thêm Vào Đơn</button>
+                        <button class="add-to-cart" data-service-id="-7" data-service-name="Gội Combo 3" data-service-price="219000" data-service-type="spa">Thêm Vào Đơn</button>
                     </div>
                 </div>
             </section>
@@ -374,21 +604,23 @@
                     <h2 class="section-title">👂 Dịch Vụ Lấy Ráy Tai</h2>
                     <p class="section-description">Dịch vụ lấy ráy tai an toàn, sạch sẽ, mang lại cảm giác thoải mái và dễ chịu</p>
                 </div>
-                <div class="service-card">
-                    <div class="service-header-section">
-                        <div class="service-info">
-                            <h3 class="service-title">Lấy Ráy Tai Combo</h3>
-                            <p class="service-description">Lấy ráy tai chuyên sâu, kết hợp massage tai nhẹ nhàng, mang lại cảm giác thư giãn</p>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-header-section">
+                            <div class="service-info">
+                                <h3 class="service-title">Lấy Ráy Tai Combo</h3>
+                                <p class="service-description">Lấy ráy tai chuyên sâu, kết hợp massage tai nhẹ nhàng, mang lại cảm giác thư giãn</p>
+                            </div>
+                            <div class="service-price">70,000 VNĐ</div>
                         </div>
-                        <div class="service-price">70,000 VNĐ</div>
+                        <div class="service-images">
+                            <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/layRayTai_main.png" alt="Ear Cleaning"></div>
+                            <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/layRayTai_sub1.png" alt="Ear Cleaning"></div>
+                            <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/layRayTai_sub2.png" alt="Ear Cleaning"></div>
+                        </div>
+                        <div class="service-duration">30 Phút</div>
+                        <button class="add-to-cart" data-service-id="-8" data-service-name="Lấy Ráy Tai Combo" data-service-price="70000" data-service-type="earcleaning">Thêm Vào Đơn</button>
                     </div>
-                    <div class="service-images">
-                        <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/layRayTai_main.png" alt="Ear Cleaning"></div>
-                        <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/layRayTai_sub1.png" alt="Ear Cleaning"></div>
-                        <div class="service-image"><img src="${pageContext.request.contextPath}/image/image_service/layRayTai_sub2.png" alt="Ear Cleaning"></div>
-                    </div>
-                    <div class="service-duration">30 Phút</div>
-                    <button class="add-to-cart" data-service-id="0" data-service-name="Lấy Ráy Tai Combo" data-service-price="70000" data-service-type="earcleaning">Thêm Vào Đơn</button>
                 </div>
             </section>
 
@@ -419,14 +651,15 @@
                 </div>
             </footer>
         </div>
-        
+
         <div class="cart-summary">
             <div class="cart-title">Tổng Hóa Đơn<span class="cart-item-count" id="cartItemCount">0</span></div>
             <div class="cart-total" id="cartTotal">0 VNĐ</div>
             <button class="checkout-btn" onclick="checkout()">Xong</button>
         </div>
 
-        <form id="bookingForm" action="${pageContext.request.contextPath}/BookingServlet" method="GET" style="display: none;">
+        <%-- Form gửi dữ liệu dịch vụ đã chọn về ChooseServiceServlet (hoặc BookingServlet) --%>
+        <form id="serviceSelectionForm" action="${pageContext.request.contextPath}/ChooseServiceServlet" method="POST" style="display: none;">
             <input type="hidden" name="serviceNames" id="serviceNamesInput">
             <input type="hidden" name="totalPrice" id="totalPriceInput">
         </form>
@@ -434,22 +667,54 @@
         <script>
             let cart = [];
 
+            // Function to load cart from session storage (if available)
+            function loadCartFromSession() {
+                const storedCart = sessionStorage.getItem('selectedServicesCart');
+                if (storedCart) {
+                    try {
+                        cart = JSON.parse(storedCart);
+                        // Ensure buttons reflect current cart state
+                        cart.forEach(item => {
+                            const button = document.querySelector(`.add-to-cart[data-service-name='${item.name}`); // Use escape for single quote
+                            if (button) {
+                                button.classList.add('in-cart');
+                                button.textContent = 'Đã Thêm';
+                            }
+                        });
+                        updateCartSummary();
+                    } catch (e) {
+                        console.error("Failed to parse cart from session storage:", e);
+                        cart = []; // Reset cart if parsing fails
+                    }
+                }
+            }
+
+            // Function to save cart to session storage
+            function saveCartToSession() {
+                sessionStorage.setItem('selectedServicesCart', JSON.stringify(cart));
+            }
+
             function addToCart(serviceId, serviceName, servicePrice, serviceType) {
                 const button = event.target;
-                const isInCart = cart.some(item => item.id === serviceId && item.name === serviceName);
+                // Use serviceId and serviceName for uniqueness, as serviceId might be 0 for hardcoded ones
+                const isInCart = cart.some(item => item.name === serviceName);
 
                 if (isInCart) {
-                    cart = cart.filter(item => !(item.id === serviceId && item.name === serviceName));
+                    cart = cart.filter(item => item.name !== serviceName);
                     button.classList.remove('in-cart');
                     button.textContent = 'Thêm Vào Đơn';
                 } else {
+                    // It's better to get the actual ID from the database for hardcoded services.
+                    // For now, if serviceId is 0 (hardcoded default), you might use serviceName as the primary identifier.
+                    // If your backend assigns unique IDs to all services, ensure those IDs are passed to data-service-id.
                     cart.push({ id: serviceId, name: serviceName, price: servicePrice, type: serviceType });
                     button.classList.add('in-cart');
                     button.textContent = 'Đã Thêm';
                 }
 
                 updateCartSummary();
-                console.log('Cart updated:', cart); // Debug cart content
+                saveCartToSession(); // Save cart to session storage after every change
+                console.log('Cart updated:', cart);
             }
 
             function updateCartSummary() {
@@ -474,25 +739,47 @@
                 document.getElementById('serviceNamesInput').value = serviceNames.join(',');
                 document.getElementById('totalPriceInput').value = totalPrice;
 
-                // Thêm log để debug
-                console.log('Sending data to BookingServlet:');
+                console.log('Sending data to ChooseServiceServlet POST:');
                 console.log('serviceNames:', serviceNames.join(','));
                 console.log('totalPrice:', totalPrice);
 
-                // Gửi form
-                document.getElementById('bookingForm').submit();
+                // Gửi form tới ChooseServiceServlet (sẽ xử lý và redirect về BookingServlet)
+                document.getElementById('serviceSelectionForm').submit();
             }
 
             // Khởi tạo event listeners
             document.addEventListener('DOMContentLoaded', () => {
+                loadCartFromSession(); // Load cart on page load
+
                 document.querySelectorAll('.add-to-cart').forEach(button => {
-                    button.addEventListener('click', () => {
+                    button.addEventListener('click', (event) => { // Pass event to addToCart
                         const serviceId = parseInt(button.getAttribute('data-service-id'));
                         const serviceName = button.getAttribute('data-service-name');
                         const servicePrice = parseInt(button.getAttribute('data-service-price'));
                         const serviceType = button.getAttribute('data-service-type');
                         addToCart(serviceId, serviceName, servicePrice, serviceType);
                     });
+                });
+                
+                // Live search functionality
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('keyup', () => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    document.querySelectorAll('.service-card').forEach(card => {
+                        const serviceTitle = card.querySelector('.service-title').textContent.toLowerCase();
+                        if (serviceTitle.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+
+                 // Ensure image paths are correct for dynamically loaded images (from backend)
+                document.querySelectorAll('.service-image img').forEach(img => {
+                    if (img.src.includes('null') || img.src.trim() === '') {
+                        img.src = '${pageContext.request.contextPath}/image/image_service/default_haircut.png';
+                    }
                 });
             });
         </script>
