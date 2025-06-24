@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* [Existing styles remain unchanged] */
+        /* [Existing CSS remains unchanged] */
         .custom-navbar {
             background: rgba(29, 29, 27, 0.95) !important;
             backdrop-filter: blur(10px);
@@ -279,15 +279,16 @@
         }
 
         .search-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            display: flex;
+            justify-content: space-between;
             align-items: end;
+            gap: 20px;
         }
 
         .search-group {
             display: flex;
             flex-direction: column;
+            flex: 1;
         }
 
         .search-group label {
@@ -432,7 +433,7 @@
             }
 
             .search-row {
-                grid-template-columns: 1fr;
+                flex-direction: column;
             }
 
             .table-container {
@@ -447,6 +448,18 @@
             .revenue-table td {
                 padding: 10px 8px;
             }
+        }
+
+        /* Làm sáng màu chữ trong dropdown */
+        .search-select, 
+        .search-select option {
+            color: #FFFFFF; /* Màu trắng sáng cho văn bản */
+            background-color: #333333; /* Nền tối cho dropdown */
+        }
+
+        .search-select option:checked {
+            background-color: #FFD700; /* Màu vàng nhạt cho mục được chọn */
+            color: #000000; /* Màu đen để tương phản */
         }
     </style>
 </head>
@@ -562,20 +575,11 @@
             <div class="search-section">
                 <div class="search-row">
                     <div class="search-group">
-                        <label>Xem theo</label>
-                        <select id="viewType" name="viewType" class="search-select" onchange="toggleViewOptions()">
-                            <option value="day" ${param.viewType == 'day' ? 'selected' : ''}>Ngày</option>
-                            <option value="month" ${param.viewType == 'month' ? 'selected' : ''}>Tháng</option>
-                            <option value="year" ${param.viewType == 'year' ? 'selected' : ''}>Năm</option>
-                            <option value="quarter" ${param.viewType == 'quarter' ? 'selected' : ''}>Quý</option>
-                        </select>
+                        <label>Tìm kiếm theo ngày:</label>
+                        <input type="date" id="searchDay" name="periodValue" value="${param.periodValue}" class="search-input" max="2025-06-24">
                     </div>
-                    <div class="search-group" id="dayFilter">
-                        <label>Chọn Ngày</label>
-                        <input type="date" id="searchDay" name="periodValue" value="${param.periodValue}" class="search-input">
-                    </div>
-                    <div class="search-group" id="monthFilter" style="display: none;">
-                        <label>Chọn Tháng</label>
+                    <div class="search-group">
+                        <label>Tìm kiếm theo tháng:</label>
                         <select id="searchMonth" name="periodValue" class="search-select">
                             <option value="1" ${param.periodValue == '1' ? 'selected' : ''}>Tháng 1</option>
                             <option value="2" ${param.periodValue == '2' ? 'selected' : ''}>Tháng 2</option>
@@ -591,26 +595,18 @@
                             <option value="12" ${param.periodValue == '12' ? 'selected' : ''}>Tháng 12</option>
                         </select>
                     </div>
-                    <div class="search-group" id="monthYearFilter" style="display: none;">
-                        <label>Chọn Năm</label>
-                        <input type="number" id="searchMonthYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm">
+                    <div class="search-group">
+                        <label>Tìm kiếm theo năm:</label>
+                        <input type="number" id="searchYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm" min="2000" max="2025">
                     </div>
-                    <div class="search-group" id="yearFilter" style="display: none;">
-                        <label>Chọn Năm</label>
-                        <input type="number" id="searchYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm">
-                    </div>
-                    <div class="search-group" id="quarterFilter" style="display: none;">
-                        <label>Chọn Quý</label>
+                    <div class="search-group">
+                        <label>Tìm kiếm theo quý:</label>
                         <select id="searchQuarter" name="periodValue" class="search-select">
                             <option value="Q1" ${param.periodValue == 'Q1' ? 'selected' : ''}>Quý 1 (Tháng 1-3)</option>
                             <option value="Q2" ${param.periodValue == 'Q2' ? 'selected' : ''}>Quý 2 (Tháng 4-6)</option>
                             <option value="Q3" ${param.periodValue == 'Q3' ? 'selected' : ''}>Quý 3 (Tháng 7-9)</option>
                             <option value="Q4" ${param.periodValue == 'Q4' ? 'selected' : ''}>Quý 4 (Tháng 10-12)</option>
                         </select>
-                    </div>
-                    <div class="search-group" id="quarterYearFilter" style="display: none;">
-                        <label>Chọn Năm</label>
-                        <input type="number" id="searchQuarterYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm">
                     </div>
                     <div class="search-group">
                         <button type="button" class="btn btn-primary" onclick="submitForm()">
@@ -667,14 +663,13 @@
                 <table class="revenue-table">
                     <thead>
                         <tr>
-                            <th id="periodColumn">Ngày</th>
+                            <th id="periodColumn">Thời gian</th>
                             <th>Tổng Doanh thu</th>
                             <th>Số Lịch hẹn</th>
                             <th>Doanh thu Trung bình/Lịch hẹn</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:set var="viewType" value="${not empty param.viewType ? param.viewType : 'day'}" />
                         <c:choose>
                             <c:when test="${empty groupedInvoices or fn:length(groupedInvoices) == 0}">
                                 <tr><td colspan="4" style="text-align: center; color: #ccc;">Không có dữ liệu doanh thu.</td></tr>
@@ -711,61 +706,64 @@
                     }
                 }
 
-                // Toggle view options without submitting immediately
-                function toggleViewOptions() {
-                    const viewType = document.getElementById('viewType').value;
-                    document.getElementById('dayFilter').style.display = viewType === 'day' ? 'block' : 'none';
-                    document.getElementById('monthFilter').style.display = viewType === 'month' ? 'block' : 'none';
-                    document.getElementById('monthYearFilter').style.display = viewType === 'month' ? 'block' : 'none';
-                    document.getElementById('yearFilter').style.display = viewType === 'year' ? 'block' : 'none';
-                    document.getElementById('quarterFilter').style.display = viewType === 'quarter' ? 'block' : 'none';
-                    document.getElementById('quarterYearFilter').style.display = viewType === 'quarter' ? 'block' : 'none';
-                    document.getElementById('periodColumn').textContent = viewType === 'day' ? 'Ngày' : viewType === 'month' ? 'Tháng' : viewType === 'year' ? 'Năm' : 'Quý';
-                }
-
                 // Submit form with selected values
                 function submitForm() {
                     const form = document.getElementById('filterForm');
-                    const viewType = document.getElementById('viewType').value;
-                    let periodValue = '';
-                    let year = '';
+                    const searchDay = document.getElementById('searchDay').value;
+                    const searchMonth = document.getElementById('searchMonth').value;
+                    const searchYear = document.getElementById('searchYear').value;
+                    const searchQuarter = document.getElementById('searchQuarter').value;
 
-                    if (viewType === 'day') {
-                        periodValue = document.getElementById('searchDay').value;
-                    } else if (viewType === 'month') {
-                        periodValue = document.getElementById('searchMonth').value;
-                        year = document.getElementById('searchMonthYear').value || '';
-                    } else if (viewType === 'year') {
-                        year = document.getElementById('searchYear').value || '';
-                    } else if (viewType === 'quarter') {
-                        periodValue = document.getElementById('searchQuarter').value;
-                        year = document.getElementById('searchQuarterYear').value || '';
+                    let viewType = '';
+                    let periodValue = '';
+                    let year = searchYear || ''; // Default to empty if not provided
+
+                    // Prioritize filters based on user input, only one filter at a time
+                    if (searchDay) {
+                        viewType = 'day';
+                        periodValue = searchDay;
+                    } else if (searchMonth && searchYear) {
+                        viewType = 'month';
+                        periodValue = searchMonth;
+                        year = searchYear;
+                    } else if (searchYear && !searchMonth && !searchDay) {
+                        viewType = 'year';
+                        year = searchYear;
+                    } else if (searchQuarter && searchYear) {
+                        viewType = 'quarter';
+                        periodValue = searchQuarter;
+                        year = searchYear;
+                    } else {
+                        viewType = 'all'; // Default to all data
                     }
 
+                    // Enhanced debugging
+                    console.log('Submitted values - viewType:', viewType, 'periodValue:', periodValue, 'year:', year);
+
+                    // Clear form and populate with current values
                     form.innerHTML = `
                         <input type="hidden" name="viewType" value="${viewType}">
                         <input type="hidden" name="periodValue" value="${periodValue}">
                         <input type="hidden" name="year" value="${year}">
                     `;
+
+                    // Submit the form
                     form.submit();
                 }
 
                 // Reset filters
                 function resetFilters() {
-                    document.getElementById('viewType').value = 'day';
                     document.getElementById('searchDay').value = '';
                     document.getElementById('searchMonth').value = '1';
-                    document.getElementById('searchMonthYear').value = '2025';
-                    document.getElementById('searchYear').value = '2025';
+                    document.getElementById('searchYear').value = '';
                     document.getElementById('searchQuarter').value = 'Q1';
-                    document.getElementById('searchQuarterYear').value = '2025';
-                    toggleViewOptions();
                     submitForm(); // Submit after reset
                 }
 
                 // Load initial state
                 window.onload = function () {
-                    toggleViewOptions(); // Initialize display without submitting
+                    const today = new Date('2025-06-24').toISOString().split('T')[0]; // Current date
+                    document.getElementById('searchDay').max = today;
                 };
             </script>
         </body>

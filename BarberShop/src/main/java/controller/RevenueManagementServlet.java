@@ -33,25 +33,62 @@ public class RevenueManagementServlet extends HttpServlet {
         String periodValue = request.getParameter("periodValue");
         String year = request.getParameter("year");
 
+        System.out.println("Received parameters - viewType: " + viewType + ", periodValue: " + periodValue + ", year: " + year);
+
         List<Invoice> invoices = new ArrayList<>();
 
         try {
-            if (viewType == null || viewType.isEmpty()) {
+            if (viewType == null || viewType.isEmpty() || "all".equalsIgnoreCase(viewType)) {
+                // Fetch all invoices if no filter or "all" is specified
                 invoices = invoiceDAO.getAllInvoice();
+                System.out.println("Fetching all invoices. Count: " + invoices.size());
             } else {
-                // Fetch only Paid and Paid Deposit invoices
-                invoices = invoiceDAO.getInvoicesByPeriod(viewType, periodValue, year);
-                List<Invoice> depositInvoices = invoiceDAO.getDepositInvoicesByPeriod(viewType, periodValue, year);
+                // Validate and parse parameters
+                int yearInt = year != null && !year.isEmpty() ? Integer.parseInt(year) : LocalDateTime.now().getYear();
+                switch (viewType.toLowerCase()) {
+                    case "day":
+                        if (periodValue != null && !periodValue.isEmpty()) {
+                            invoices = invoiceDAO.getInvoicesByPeriod("day", periodValue, String.valueOf(yearInt));
+                            System.out.println("Fetching invoices by day: " + periodValue + ", year: " + yearInt);
+                        }
+                        break;
+                    case "month":
+                        if (periodValue != null && !periodValue.isEmpty()) {
+                            invoices = invoiceDAO.getInvoicesByPeriod("month", periodValue, String.valueOf(yearInt));
+                            System.out.println("Fetching invoices by month: " + periodValue + ", year: " + yearInt);
+                        }
+                        break;
+                    case "year":
+                        invoices = invoiceDAO.getInvoicesByPeriod("year", year, null);
+                        System.out.println("Fetching invoices by year: " + year);
+                        break;
+                    case "quarter":
+                        if (periodValue != null && !periodValue.isEmpty()) {
+                            invoices = invoiceDAO.getInvoicesByPeriod("quarter", periodValue, String.valueOf(yearInt));
+                            System.out.println("Fetching invoices by quarter: " + periodValue + ", year: " + yearInt);
+                        }
+                        break;
+                    default:
+                        invoices = invoiceDAO.getAllInvoice();
+                        System.out.println("Default case: Fetching all invoices.");
+                        break;
+                }
+
+                // Fetch deposit invoices with the same filter
+                List<Invoice> depositInvoices = new ArrayList<>();
+                if (!invoices.isEmpty() || viewType != null) {
+                    depositInvoices = invoiceDAO.getDepositInvoicesByPeriod(viewType, periodValue, String.valueOf(yearInt));
+                    System.out.println("Fetching deposit invoices. Count: " + depositInvoices.size());
+                }
                 invoices.addAll(depositInvoices);
             }
 
-            // Ensure groupedInvoices is always initialized
+            // Group invoices
             Map<String, Map<String, Object>> groupedInvoices = new HashMap<>();
             if (!invoices.isEmpty()) {
-                groupedInvoices = groupInvoices(invoices, viewType != null ? viewType : "day");
+                groupedInvoices = groupInvoices(invoices, viewType != null && !viewType.isEmpty() ? viewType : "day");
+                System.out.println("Grouped invoices count: " + groupedInvoices.size());
             }
-
-            // Set attribute even if empty
             request.setAttribute("groupedInvoices", groupedInvoices);
 
             // Forward to JSP
@@ -62,6 +99,12 @@ public class RevenueManagementServlet extends HttpServlet {
                 System.err.println("Dispatcher is null for /views/admin/revenueManagement.jsp");
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "JSP file not found");
             }
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid year format: " + e.getMessage());
+            response.setContentType("text/html");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("Lỗi: Năm không hợp lệ.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             System.err.println("Error in RevenueManagementServlet: " + e.getMessage());
             e.printStackTrace();
@@ -114,7 +157,7 @@ public class RevenueManagementServlet extends HttpServlet {
         if (date == null) {
             return null;
         }
-        switch (viewType) {
+        switch (viewType.toLowerCase()) {
             case "day":
                 return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
             case "month":

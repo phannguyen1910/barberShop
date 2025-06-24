@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Invoice;
@@ -23,7 +21,7 @@ public class InvoiceDAO {
         try {
             Class.forName(DRIVERNAME);
         } catch (ClassNotFoundException e) {
-            System.out.println("Error loading driver" + e);
+            System.out.println("Error loading driver: " + e);
         }
         try {
             Connection con = DriverManager.getConnection(DBURL, USERDB, PASSDB);
@@ -87,7 +85,7 @@ public class InvoiceDAO {
 
     public boolean insertInvoice(int appointmentId, String transactionNo, double amount, String method, String status, LocalDateTime payTime) {
         String sql = "INSERT INTO Payment (booking_id, transaction_no, amount, method, status, pay_time) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = AppointmentDAO.getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, appointmentId);
             ps.setString(2, transactionNo);
             ps.setDouble(3, amount);
@@ -104,28 +102,52 @@ public class InvoiceDAO {
     public static List<Invoice> getInvoicesByPeriod(String periodType, String periodValue, String year) {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT totalAmount, status, receivedDate, appointmentId FROM Invoice WHERE status = 'Paid'";
-        if ("day".equals(periodType)) {
-            sql += " AND CAST(receivedDate AS DATE) = ?";
-        } else if ("month".equals(periodType)) {
-            sql += " AND MONTH(receivedDate) = ? AND YEAR(receivedDate) = ?";
-        } else if ("year".equals(periodType)) {
-            sql += " AND YEAR(receivedDate) = ?";
-        } else if ("quarter".equals(periodType)) {
-            sql += " AND DATEPART(QUARTER, receivedDate) = ? AND YEAR(receivedDate) = ?";
+        boolean hasFilter = false;
+
+        if ("day".equalsIgnoreCase(periodType)) {
+            sql += " AND DATE(receivedDate) = ?";
+            hasFilter = true;
+        } else if ("month".equalsIgnoreCase(periodType)) {
+            if (periodValue != null && year != null) {
+                sql += " AND MONTH(receivedDate) = ? AND YEAR(receivedDate) = ?";
+                hasFilter = true;
+            }
+        } else if ("year".equalsIgnoreCase(periodType)) {
+            if (year != null) {
+                sql += " AND YEAR(receivedDate) = ?";
+                hasFilter = true;
+            }
+        } else if ("quarter".equalsIgnoreCase(periodType)) {
+            if (periodValue != null && year != null) {
+                int quarter = getQuarterNumber(periodValue);
+                int startMonth = (quarter - 1) * 3 + 1;
+                int endMonth = startMonth + 2;
+                sql += " AND MONTH(receivedDate) BETWEEN ? AND ? AND YEAR(receivedDate) = ?";
+                hasFilter = true;
+            }
         }
 
+        if (!hasFilter) {
+            System.out.println("No valid filter, returning all invoices.");
+            return getAllInvoice();
+        }
+
+        System.out.println("Executing SQL: " + sql + " with periodValue: " + periodValue + ", year: " + year);
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
-            if ("day".equals(periodType)) {
+            if ("day".equalsIgnoreCase(periodType)) {
                 ps.setString(1, periodValue);
-            } else if ("month".equals(periodType)) {
+            } else if ("month".equalsIgnoreCase(periodType)) {
                 ps.setInt(1, Integer.parseInt(periodValue));
                 ps.setInt(2, Integer.parseInt(year));
-            } else if ("year".equals(periodType)) {
+            } else if ("year".equalsIgnoreCase(periodType)) {
                 ps.setInt(1, Integer.parseInt(year));
-            } else if ("quarter".equals(periodType)) {
+            } else if ("quarter".equalsIgnoreCase(periodType)) {
                 int quarter = getQuarterNumber(periodValue);
-                ps.setInt(1, quarter);
-                ps.setInt(2, Integer.parseInt(year));
+                int startMonth = (quarter - 1) * 3 + 1;
+                int endMonth = startMonth + 2;
+                ps.setInt(1, startMonth);
+                ps.setInt(2, endMonth);
+                ps.setInt(3, Integer.parseInt(year));
             }
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -137,6 +159,7 @@ public class InvoiceDAO {
                     int appointmentId = rs.getInt("appointmentId");
                     invoices.add(new Invoice(totalAmount, status, receivedDate, appointmentId));
                 }
+                System.out.println("Fetched invoices count: " + invoices.size());
             }
         } catch (Exception e) {
             System.out.println("Error fetching invoices: " + e.getMessage());
@@ -147,39 +170,64 @@ public class InvoiceDAO {
     public static List<Invoice> getDepositInvoicesByPeriod(String periodType, String periodValue, String year) {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT totalAmount, status, receivedDate, appointmentId FROM Invoice WHERE status = 'Paid Deposit'";
-        if ("day".equals(periodType)) {
-            sql += " AND CAST(receivedDate AS DATE) = ?";
-        } else if ("month".equals(periodType)) {
-            sql += " AND MONTH(receivedDate) = ? AND YEAR(receivedDate) = ?";
-        } else if ("year".equals(periodType)) {
-            sql += " AND YEAR(receivedDate) = ?";
-        } else if ("quarter".equals(periodType)) {
-            sql += " AND DATEPART(QUARTER, receivedDate) = ? AND YEAR(receivedDate) = ?";
+        boolean hasFilter = false;
+
+        if ("day".equalsIgnoreCase(periodType)) {
+            sql += " AND DATE(receivedDate) = ?";
+            hasFilter = true;
+        } else if ("month".equalsIgnoreCase(periodType)) {
+            if (periodValue != null && year != null) {
+                sql += " AND MONTH(receivedDate) = ? AND YEAR(receivedDate) = ?";
+                hasFilter = true;
+            }
+        } else if ("year".equalsIgnoreCase(periodType)) {
+            if (year != null) {
+                sql += " AND YEAR(receivedDate) = ?";
+                hasFilter = true;
+            }
+        } else if ("quarter".equalsIgnoreCase(periodType)) {
+            if (periodValue != null && year != null) {
+                int quarter = getQuarterNumber(periodValue);
+                int startMonth = (quarter - 1) * 3 + 1;
+                int endMonth = startMonth + 2;
+                sql += " AND MONTH(receivedDate) BETWEEN ? AND ? AND YEAR(receivedDate) = ?";
+                hasFilter = true;
+            }
         }
 
+        if (!hasFilter) {
+            System.out.println("No valid filter for deposit invoices, returning empty list.");
+            return new ArrayList<>();
+        }
+
+        System.out.println("Executing SQL for deposit: " + sql + " with periodValue: " + periodValue + ", year: " + year);
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
-            if ("day".equals(periodType)) {
+            if ("day".equalsIgnoreCase(periodType)) {
                 ps.setString(1, periodValue);
-            } else if ("month".equals(periodType)) {
+            } else if ("month".equalsIgnoreCase(periodType)) {
                 ps.setInt(1, Integer.parseInt(periodValue));
                 ps.setInt(2, Integer.parseInt(year));
-            } else if ("year".equals(periodType)) {
+            } else if ("year".equalsIgnoreCase(periodType)) {
                 ps.setInt(1, Integer.parseInt(year));
-            } else if ("quarter".equals(periodType)) {
+            } else if ("quarter".equalsIgnoreCase(periodType)) {
                 int quarter = getQuarterNumber(periodValue);
-                ps.setInt(1, quarter);
-                ps.setInt(2, Integer.parseInt(year));
+                int startMonth = (quarter - 1) * 3 + 1;
+                int endMonth = startMonth + 2;
+                ps.setInt(1, startMonth);
+                ps.setInt(2, endMonth);
+                ps.setInt(3, Integer.parseInt(year));
             }
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    double totalAmount = rs.getDouble("totalAmount"); // Sử dụng giá trị thực từ database
+                    double totalAmount = rs.getDouble("totalAmount");
                     String status = rs.getString("status");
                     Timestamp timestamp = rs.getTimestamp("receivedDate");
                     LocalDateTime receivedDate = timestamp != null ? timestamp.toLocalDateTime() : null;
                     int appointmentId = rs.getInt("appointmentId");
                     invoices.add(new Invoice(totalAmount, status, receivedDate, appointmentId));
                 }
+                System.out.println("Fetched deposit invoices count: " + invoices.size());
             }
         } catch (Exception e) {
             System.out.println("Error fetching deposit invoices: " + e.getMessage());
@@ -188,7 +236,7 @@ public class InvoiceDAO {
     }
 
     private static int getQuarterNumber(String quarter) {
-        switch (quarter) {
+        switch (quarter.toUpperCase()) {
             case "Q1": return 1;
             case "Q2": return 2;
             case "Q3": return 3;
