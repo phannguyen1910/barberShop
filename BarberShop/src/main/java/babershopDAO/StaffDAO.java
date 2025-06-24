@@ -9,8 +9,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import model.Appointment;
 import model.Customer;
 import model.Staff;
 
@@ -290,5 +293,42 @@ public class StaffDAO {
 
         return list;
     }
+    
+    public List <Appointment> appointmentOfStaff(int staffId){
+        String sql = "SELECT id, customerId, appointmentTime, status FROM Appointment WHERE staffId = ?";
+        String sq2 = "SELECT s.name FROM Appointment_Service as inner join Service s on as.serviceId = s.id WHERE as.apppointmentId = ?";
+         List<Appointment> appointments = new ArrayList<>();
+        String serviceName = null; 
 
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, staffId); 
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int appointmentId = rs.getInt("id");
+                int customerId = rs.getInt("customerId");
+                String appointmentTime = rs.getString("appointmentTime");
+                LocalDateTime appointment_time = LocalDateTime.parse(appointmentTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                String status = rs.getString("status");
+                PreparedStatement ps2 = con.prepareStatement(sq2);
+                ps2.setInt(1, appointmentId);
+                ResultSet rs2 = ps2.executeQuery();
+                while(rs2.next()){
+                    serviceName += rs.getString("s.name") +", ";
+                }
+                Appointment appointment = new Appointment(staffId, customerId, staffId, appointment_time, status);
+                appointments.add(appointment);
+            }
+            return appointments;
+            
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi không xác định: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
+    
+   
 }

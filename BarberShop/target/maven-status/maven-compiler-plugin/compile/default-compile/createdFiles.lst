@@ -48,6 +48,7 @@ controller\BanStaffServlet.class
 controller\AddStaffServlet.class
 controller\SendOTPServlet$1.class
 controller\ScheduleServlet.class
+controller\StaffAppointment.class
 model\Account.class
 model\Validation.class
 controller\ForgetPassword.class
