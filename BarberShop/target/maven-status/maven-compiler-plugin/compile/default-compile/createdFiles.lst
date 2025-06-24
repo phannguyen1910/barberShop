@@ -15,6 +15,7 @@ constant\Iconstant.class
 model\Voucher.class
 model\Customer.class
 babershopDAO\AppointmentDAO.class
+controller\RevenueManagementServlet.class
 payment\Config.class
 babershopDatabase\databaseInfo.class
 controller\EditProfileServlet.class

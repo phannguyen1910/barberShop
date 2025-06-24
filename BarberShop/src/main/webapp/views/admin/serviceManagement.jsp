@@ -509,7 +509,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
                         </a>

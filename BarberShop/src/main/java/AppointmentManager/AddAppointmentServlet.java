@@ -159,13 +159,13 @@ public class AddAppointmentServlet extends HttpServlet {
                 }
 
 
-//                if (receivedData.has("serviceIds") && receivedData.get("serviceIds").isJsonArray()) {
-//                    serviceIds = receivedData.getAsJsonArray("serviceIds").asList().stream()
-//                            .map(jsonElement -> jsonElement.getAsInt())
-//                            .collect(Collectors.toList());
-//                } else {
-//                    throw new IllegalArgumentException("Trường 'serviceIds' bị thiếu hoặc sai định dạng.");
-//                }
+                if (receivedData.has("serviceIds") && receivedData.get("serviceIds").isJsonArray()) {
+                    serviceIds = receivedData.getAsJsonArray("serviceIds").asList().stream()
+                            .map(jsonElement -> jsonElement.getAsInt())
+                            .collect(Collectors.toList());
+                } else {
+                    throw new IllegalArgumentException("Trường 'serviceIds' bị thiếu hoặc sai định dạng.");
+                }
 
                 System.out.println("Parsed data: CustomerID=" + customerId + ", StaffID=" + staffId
                         + ", ApptTime=" + appointmentDateTime + ", BranchID=" + branchId // Updated log
