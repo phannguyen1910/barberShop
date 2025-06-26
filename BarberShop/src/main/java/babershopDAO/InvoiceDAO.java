@@ -10,7 +10,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,7 @@ public class InvoiceDAO {
         }
         return null;
     }
+    
 
     public static List<Invoice> getAllInvoice() {
         List<Invoice> invoices = new ArrayList<>();
@@ -91,6 +94,25 @@ public class InvoiceDAO {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+    public boolean insertInvoice(int appointmentId, String transactionNo, double amount, String method, String status, LocalDateTime payTime) {
+        String sql = "INSERT INTO Payment (booking_id, transaction_no, amount, method, status, pay_time) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = AppointmentDAO.getConnect();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, appointmentId);
+            ps.setString(2, transactionNo);
+            ps.setDouble(3, amount);
+            ps.setString(4, method);
+            ps.setString(5, status);
+            ps.setTimestamp(6, Timestamp.valueOf(payTime));
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

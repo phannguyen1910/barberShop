@@ -12,7 +12,7 @@ public class Appointment {
     private int numberOfPeople;
     private String customerName; // Thêm để lưu tên khách hàng
     private String services;
-    private float totalAmount;
+    private double totalAmount;
 
     public Appointment(LocalDateTime appointment_time, int customerId1, int staff) {
     }
@@ -20,7 +20,7 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, float totalAmount) {
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
@@ -31,11 +31,11 @@ public class Appointment {
         this.totalAmount = totalAmount;
     }
 
-    public float getTotalAmount() {
+    public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(float totalAmount) {
+    public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
 

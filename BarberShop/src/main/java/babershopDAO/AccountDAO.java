@@ -85,7 +85,7 @@ public class AccountDAO {
         try (Connection conn = getConnect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setString(2, phoneNumber != null ? phoneNumber : "");
-            stmt.setString(3, "google-auth"); // Gán giá trị mặc đinhj cho password khi đăng nhập = gg
+            stmt.setString(3, "google-auth"); // Gán giá trị mặc định cho password khi đăng nhập = gg
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -115,7 +115,7 @@ public class AccountDAO {
         return null;
     }
 
-public static Account getAccountById(int id) {
+    public static Account getAccountById(int id) {
         String sql = "SELECT id, email, phoneNumber, password, role FROM [Account] WHERE id = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -144,17 +144,13 @@ public static Account getAccountById(int id) {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // Kiểm tra nếu mật khẩu cũ không đúng
                 if (rs.getString(1).equals(currentPassword)) {
-                    System.out.println(currentPassword);
-                    // Kiểm tra mật khẩu mới khác với mật khẩu cũ
                     if (currentPassword.equals(newPassword)) {
                         return "Mật khẩu mới cần khác với mật khẩu hiện tại";
                     } else {
-                        // Cập nhật mật khẩu mới
                         try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
-                            ps2.setString(1, newPassword); // Thay đổi mật khẩu
-                            ps2.setString(2, email); // Điều kiện cập nhật
+                            ps2.setString(1, newPassword);
+                            ps2.setString(2, email);
                             if (ps2.executeUpdate() > 0) {
                                 return null; // Cập nhật thành công
                             } else {
@@ -177,23 +173,23 @@ public static Account getAccountById(int id) {
         }
     }
 
-    public String editProfile(int idAcount, String firstName, String lastName, String phoneNumber) {
+    public String editProfile(int idAccount, String firstName, String lastName, String phoneNumber) {
         String sqlGetRole = "SELECT role FROM Account WHERE id=?";
         String sqlUpdatePhone = "UPDATE Account SET phoneNumber=? WHERE id=?";
-        String sqlUpdateCustomer = "UPDATE Customer SET firstName=?, lastName=? WHERE accountID=?";
-        String sqlUpdateStaff = "UPDATE Staff SET firstName=?, lastName=? WHERE accountID=?";
-        String sqlUpdateAdmin = "UPDATE Admin SET firstName=?, lastName=? WHERE accountID=?";
+        String sqlUpdateCustomer = "UPDATE Customer SET firstName=?, lastName=? WHERE accountId=?";
+        String sqlUpdateStaff = "UPDATE Staff SET firstName=?, lastName=? WHERE accountId=?";
+        String sqlUpdateAdmin = "UPDATE Admin SET firstName=?, lastName=? WHERE accountId=?";
 
         try (Connection con = getConnect(); PreparedStatement psGetRole = con.prepareStatement(sqlGetRole)) {
-
-            psGetRole.setInt(1, idAcount);
+            psGetRole.setInt(1, idAccount);
             try (ResultSet rs = psGetRole.executeQuery()) {
                 if (rs.next()) {
                     String role = rs.getString("role");
 
+                    // Cập nhật phoneNumber
                     try (PreparedStatement psUpdatePhone = con.prepareStatement(sqlUpdatePhone)) {
-                        psUpdatePhone.setString(1, phoneNumber);
-                        psUpdatePhone.setInt(2, idAcount);
+                        psUpdatePhone.setString(1, (phoneNumber != null && !phoneNumber.trim().isEmpty()) ? phoneNumber : "");
+                        psUpdatePhone.setInt(2, idAccount);
                         psUpdatePhone.executeUpdate();
                     }
 
@@ -212,9 +208,9 @@ public static Account getAccountById(int id) {
 
                     if (updateSQL != null) {
                         try (PreparedStatement psUpdate = con.prepareStatement(updateSQL)) {
-                            psUpdate.setString(1, firstName);
-                            psUpdate.setString(2, lastName);
-                            psUpdate.setInt(3, idAcount);
+                            psUpdate.setString(1, firstName != null ? firstName : "");
+                            psUpdate.setString(2, lastName != null ? lastName : "");
+                            psUpdate.setInt(3, idAccount);
                             int check = psUpdate.executeUpdate();
                             return (check > 0) ? "Change profile successful" : "Không thể edit profile";
                         }
@@ -227,14 +223,13 @@ public static Account getAccountById(int id) {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Lỗi khi cập nhật thông tin";
+            return "Lỗi khi cập nhật thông tin: " + e.getMessage();
         }
     }
 
     public String checkRole(int accountId) {
         String sql = "Select role from Account where id=?";
         try (Connection con = getConnect()) {
-
             PreparedStatement ps1 = con.prepareStatement(sql);
             ps1.setInt(1, accountId);
             ResultSet rs = ps1.executeQuery();
@@ -243,7 +238,6 @@ public static Account getAccountById(int id) {
                 return role;
             }
         } catch (Exception e) {
-
         }
         return "Khong tim thay role";
     }
@@ -259,13 +253,12 @@ public static Account getAccountById(int id) {
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                String phoneNumber = rs.getString("phoneNUmber");
+                String phoneNumber = rs.getString("phoneNumber"); // Sửa lỗi typo "phoneNUmber"
                 Customer customer = new Customer(email, phoneNumber, password, "Customer", 1, firstName, lastName);
                 customers.add(customer);
             }
             return customers;
         } catch (Exception e) {
-
         }
         return null;
     }
@@ -281,13 +274,12 @@ public static Account getAccountById(int id) {
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                String phoneNumber = rs.getString("phoneNUmber");
-                Staff staff = new Staff(firstName, lastName, email, phoneNumber, password, email, 1);
+                String phoneNumber = rs.getString("phoneNumber"); // Sửa lỗi typo "phoneNUmber"
+                Staff staff = new Staff(firstName, lastName, email, phoneNumber, password, "Staff", 1);
                 staffs.add(staff);
             }
             return staffs;
         } catch (Exception e) {
-
         }
         return null;
     }
@@ -303,18 +295,25 @@ public static Account getAccountById(int id) {
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                String phoneNumber = rs.getString("phoneNUmber");
-                Admin admin = new Admin(email, phoneNumber, password, email, 1, firstName, lastName);
+                String phoneNumber = rs.getString("phoneNumber"); // Sửa lỗi typo "phoneNUmber"
+                Admin admin = new Admin(1, firstName, lastName, email, phoneNumber, password, "Admin", 1);
                 admins.add(admin);
             }
             return admins;
         } catch (Exception e) {
-
         }
         return null;
     }
-    
-    
-    
 
+    public Customer getCustomerByAccountId(Integer accountId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public Staff getStaffByAccountId(Integer accountId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public Admin getAdminByAccountId(Integer accountId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

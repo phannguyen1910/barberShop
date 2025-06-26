@@ -108,38 +108,43 @@ public class ServiceDAO {
         return null;
     }
 
-    public List<Service> getAllService() {
-        List<Service> services = new ArrayList<>();
-        String sql = "Select * from Service";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                float price = rs.getFloat("price");
-                int duration = rs.getInt("duration");
-                String description = rs.getString("description");
-                String image = rs.getString("image");
-                String[] images = image.split(",");
-                Service service = new Service(id, name, price, duration, description, images);
-                services.add(service);
-            }
-            return services;
-        } catch (Exception e) {
-            System.out.println(e);
+public List<Service> getAllService() {
+    List<Service> services = new ArrayList<>();
+    String sql = "SELECT * FROM Service";
+    try (Connection con = getConnect()) {
+        if (con == null) {
+            System.out.println("Kết nối cơ sở dữ liệu thất bại");
+            return null;
         }
+        PreparedStatement ps = con.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            float price = rs.getFloat("price");
+            int duration = rs.getInt("duration");
+            String description = rs.getString("description");
+            String image = rs.getString("image"); // Lấy cột image dưới dạng String
+            Service service = new Service(id, name, price, duration, description, image);
+            services.add(service);
+            System.out.println("Đã thêm dịch vụ: " + name + ", Image: " + image);
+        }
+        return services;
+    } catch (Exception e) {
+        System.out.println("Lỗi trong getAllService: " + e.getMessage());
         return null;
     }
+}
 
-    public void insertService(String name, double price, int duration, String description) {
-        String sql = "INSERT INTO Service (name, price, duration, description) VALUES (?,?,?,?)";
+    public void insertService(String name, double price, int duration, String description, String image) {
+        String sql = "INSERT INTO Service (name, price, duration, description,image) VALUES (?,?,?,?,?)";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, name);
             ps.setDouble(2, price);
             ps.setInt(3, duration);
             ps.setString(4, description);
+            ps.setString(5, image);
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e);
@@ -190,5 +195,43 @@ public class ServiceDAO {
         }
         return null;
     }
+    public double getServicePriceById(int serviceId) {
+    String sql = "SELECT price FROM Service WHERE id = ?";
+    try (Connection con = AppointmentDAO.getConnect();  // dùng chung connection nếu ServiceDAO không có riêng
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, serviceId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("price");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+
+    public Service getServiceById(int id) {
+    String sql = "SELECT id, name, price FROM Service WHERE id = ?";
+    try (Connection con = AppointmentDAO.getConnect();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Service service = new Service();
+            service.setId(rs.getInt("id"));
+            service.setName(rs.getString("name"));
+            service.setPrice(rs.getFloat("price"));
+            return service;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+    
+    
+
 
 }

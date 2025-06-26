@@ -7,14 +7,17 @@ public class Service {
     private float price;
     private int duration;
     private String description;
-    private String [] image;
+    private String image;
 
     // Constructor
 
     public Service(String name1, double price, int duration1, String description1) {
     }
 
-    public Service(int id, String name, float price, int duration, String description, String[] image) {
+    public Service() {
+    }
+
+    public Service(int id, String name, float price, int duration, String description, String image) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -23,7 +26,7 @@ public class Service {
         this.image = image;
     }
 
-    public Service(String name, float price, int duration, String description, String[] image) {
+    public Service(String name, float price, int duration, String description, String image) {
         this.name = name;
         this.price = price;
         this.duration = duration;
@@ -87,13 +90,15 @@ public class Service {
         this.description = description;
     }
 
-    public String[] getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(String[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
+
+   
     
     
 }

@@ -42,7 +42,7 @@ public class ChooseServiceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ServiceDAO serviceDAO = new ServiceDAO();
-        List <Service> services = serviceDAO.getAllService();
+       List <Service> services  = serviceDAO.getAllService();
         for(Service s : services){
             System.out.println(s.getName());
         }
