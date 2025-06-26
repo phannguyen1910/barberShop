@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Invoice;
+import model.Branch;
+import com.google.gson.Gson;
 
 @WebServlet("/RevenueManagementServlet")
 public class RevenueManagementServlet extends HttpServlet {
@@ -29,69 +32,80 @@ public class RevenueManagementServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String viewType = request.getParameter("viewType");
+        String ajax = request.getParameter("ajax");
+        if ("true".equals(ajax)) {
+            processAjaxRequest(request, response);
+            return;
+        }
+
         String periodValue = request.getParameter("periodValue");
         String year = request.getParameter("year");
+        String branchId = request.getParameter("branchId");
 
-        System.out.println("Received parameters - viewType: " + viewType + ", periodValue: " + periodValue + ", year: " + year);
+        System.out.println("Received parameters - periodValue: " + periodValue + ", year: " + year + ", branchId: " + branchId);
 
         List<Invoice> invoices = new ArrayList<>();
-
         try {
-            if (viewType == null || viewType.isEmpty() || "all".equalsIgnoreCase(viewType)) {
-                // Fetch all invoices if no filter or "all" is specified
-                invoices = invoiceDAO.getAllInvoice();
-                System.out.println("Fetching all invoices. Count: " + invoices.size());
-            } else {
-                // Validate and parse parameters
-                int yearInt = year != null && !year.isEmpty() ? Integer.parseInt(year) : LocalDateTime.now().getYear();
-                switch (viewType.toLowerCase()) {
-                    case "day":
-                        if (periodValue != null && !periodValue.isEmpty()) {
-                            invoices = invoiceDAO.getInvoicesByPeriod("day", periodValue, String.valueOf(yearInt));
-                            System.out.println("Fetching invoices by day: " + periodValue + ", year: " + yearInt);
-                        }
-                        break;
-                    case "month":
-                        if (periodValue != null && !periodValue.isEmpty()) {
-                            invoices = invoiceDAO.getInvoicesByPeriod("month", periodValue, String.valueOf(yearInt));
-                            System.out.println("Fetching invoices by month: " + periodValue + ", year: " + yearInt);
-                        }
-                        break;
-                    case "year":
-                        invoices = invoiceDAO.getInvoicesByPeriod("year", year, null);
-                        System.out.println("Fetching invoices by year: " + year);
-                        break;
-                    case "quarter":
-                        if (periodValue != null && !periodValue.isEmpty()) {
-                            invoices = invoiceDAO.getInvoicesByPeriod("quarter", periodValue, String.valueOf(yearInt));
-                            System.out.println("Fetching invoices by quarter: " + periodValue + ", year: " + yearInt);
-                        }
-                        break;
-                    default:
-                        invoices = invoiceDAO.getAllInvoice();
-                        System.out.println("Default case: Fetching all invoices.");
-                        break;
-                }
+            periodValue = periodValue == null ? "" : periodValue.trim();
+            year = year == null ? "" : year.trim();
+            branchId = branchId == null ? "" : branchId.trim();
 
-                // Fetch deposit invoices with the same filter
-                List<Invoice> depositInvoices = new ArrayList<>();
-                if (!invoices.isEmpty() || viewType != null) {
-                    depositInvoices = invoiceDAO.getDepositInvoicesByPeriod(viewType, periodValue, String.valueOf(yearInt));
-                    System.out.println("Fetching deposit invoices. Count: " + depositInvoices.size());
-                }
-                invoices.addAll(depositInvoices);
+            String month = "";
+            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
+                String[] parts = periodValue.split("-");
+                year = parts[0];
+                month = parts[1];
             }
 
-            // Group invoices
+            // Xác định logic lọc
+            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("day", periodValue, "", branchId.isEmpty() ? null : branchId);
+                System.out.println("Fetched invoices by day: " + periodValue + ", branchId: " + branchId + ", count: " + invoices.size());
+            } else if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
+                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("month", periodValue, year, branchId.isEmpty() ? null : branchId);
+                System.out.println("Fetched invoices by month: " + month + "/" + year + ", branchId: " + branchId + ", count: " + invoices.size());
+            } else if (!year.isEmpty()) {
+                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("year", "", year, branchId.isEmpty() ? null : branchId);
+                System.out.println("Fetched invoices by year: " + year + ", branchId: " + branchId + ", count: " + invoices.size());
+            } else if (!branchId.isEmpty()) {
+                invoices = invoiceDAO.getAllInvoiceByBranch(branchId);
+                System.out.println("Fetched invoices by branchId only: " + branchId + ", count: " + invoices.size());
+            } else {
+                invoices = invoiceDAO.getAllInvoiceByBranch(null);
+                System.out.println("Fetched all invoices, count: " + invoices.size());
+            }
+
+            List<Invoice> depositInvoices = new ArrayList<>();
+            if (!invoices.isEmpty()) {
+                String effectivePeriodType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
+                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
+                        : !year.isEmpty() ? "year" : "";
+                depositInvoices = invoiceDAO.getDepositInvoicesByPeriodAndBranch(effectivePeriodType, periodValue, year, branchId.isEmpty() ? null : branchId);
+                System.out.println("Fetched deposit invoices, branchId: " + branchId + ", count: " + depositInvoices.size());
+            }
+            invoices.addAll(depositInvoices);
+
             Map<String, Map<String, Object>> groupedInvoices = new HashMap<>();
             if (!invoices.isEmpty()) {
-                groupedInvoices = groupInvoices(invoices, viewType != null && !viewType.isEmpty() ? viewType : "day");
+                String viewType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
+                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
+                        : !year.isEmpty() ? "year"
+                        : !branchId.isEmpty() ? "branch" : "all";
+                groupedInvoices = groupInvoices(invoices, viewType);
                 System.out.println("Grouped invoices count: " + groupedInvoices.size());
+            } else {
+                System.out.println("No invoices found for the given filter.");
             }
             request.setAttribute("groupedInvoices", groupedInvoices);
 
-            // Forward to JSP
+            String periodColumn = getPeriodColumnLabel(!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
+                    : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
+                    : !year.isEmpty() ? "year" : "all");
+            request.setAttribute("periodColumn", periodColumn);
+
+            List<Branch> branches = invoiceDAO.getAllBranches();
+            request.setAttribute("branches", branches);
+
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/revenueManagement.jsp");
             if (dispatcher != null) {
                 dispatcher.forward(request, response);
@@ -115,6 +129,89 @@ public class RevenueManagementServlet extends HttpServlet {
         }
     }
 
+    protected void processAjaxRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String periodValue = request.getParameter("periodValue");
+        String year = request.getParameter("year");
+        String branchId = request.getParameter("branchId");
+
+        System.out.println("AJAX Received parameters - periodValue: " + periodValue + ", year: " + year + ", branchId: " + branchId);
+
+        List<Invoice> invoices = new ArrayList<>();
+        try {
+            periodValue = periodValue == null ? "" : periodValue.trim();
+            year = year == null ? "" : year.trim();
+            branchId = branchId == null ? "" : branchId.trim();
+
+            String month = "";
+            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
+                String[] parts = periodValue.split("-");
+                year = parts[0];
+                month = parts[1];
+            }
+
+            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("day", periodValue, "", branchId.isEmpty() ? null : branchId);
+            } else if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
+                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("month", periodValue, year, branchId.isEmpty() ? null : branchId);
+            } else if (!year.isEmpty()) {
+                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("year", "", year, branchId.isEmpty() ? null : branchId);
+            } else if (!branchId.isEmpty()) {
+                invoices = invoiceDAO.getAllInvoiceByBranch(branchId);
+            } else {
+                invoices = invoiceDAO.getAllInvoiceByBranch(null);
+            }
+
+            List<Invoice> depositInvoices = new ArrayList<>();
+            if (!invoices.isEmpty()) {
+                String effectivePeriodType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
+                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
+                        : !year.isEmpty() ? "year" : "";
+                depositInvoices = invoiceDAO.getDepositInvoicesByPeriodAndBranch(effectivePeriodType, periodValue, year, branchId.isEmpty() ? null : branchId);
+            }
+            invoices.addAll(depositInvoices);
+
+            Map<String, Map<String, Object>> groupedInvoices = new HashMap<>();
+            if (!invoices.isEmpty()) {
+                String viewType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
+                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
+                        : !year.isEmpty() ? "year"
+                        : !branchId.isEmpty() ? "branch" : "all";
+                groupedInvoices = groupInvoices(invoices, viewType);
+            }
+
+            // Chuyển đổi dữ liệu thành JSON
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("groupedInvoices", groupedInvoices);
+            responseData.put("periodColumn", getPeriodColumnLabel(!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
+                    : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
+                    : !year.isEmpty() ? "year" : "all"));
+            responseData.put("totalRevenue", calculateTotalRevenue(groupedInvoices));
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            out.print(new Gson().toJson(responseData));
+            out.flush();
+        } catch (Exception e) {
+            System.err.println("Error in AJAX request: " + e.getMessage());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Lỗi khi tải dữ liệu: " + e.getMessage());
+            PrintWriter out = response.getWriter();
+            out.print(new Gson().toJson(error));
+            out.flush();
+        }
+    }
+
+    private double calculateTotalRevenue(Map<String, Map<String, Object>> groupedInvoices) {
+        double total = 0;
+        for (Map<String, Object> data : groupedInvoices.values()) {
+            total += (double) data.getOrDefault("revenue", 0.0);
+        }
+        return total;
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
@@ -125,19 +222,13 @@ public class RevenueManagementServlet extends HttpServlet {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
         for (Invoice invoice : invoices) {
-            if (invoice != null) {
+            if (invoice != null && invoice.getReceivedDate() != null) {
                 LocalDateTime receivedDate = invoice.getReceivedDate();
-                if (receivedDate == null) {
-                    System.err.println("ReceivedDate is null for invoice: " + invoice);
-                    continue;
-                }
-
-                // Adjust totalAmount based on status
                 double adjustedAmount = invoice.getTotalAmount();
                 if ("Paid Deposit".equals(invoice.getStatus())) {
-                    adjustedAmount = 50000.0; // Set to 50,000 VND for Paid Deposit
+                    adjustedAmount = 50000.0;
                 } else if (!"Paid".equals(invoice.getStatus())) {
-                    continue; // Skip invoices with other statuses
+                    continue;
                 }
 
                 String key = getKey(receivedDate, viewType);
@@ -147,9 +238,10 @@ public class RevenueManagementServlet extends HttpServlet {
                     data.put("revenue", (data.get("revenue") != null ? (Double) data.get("revenue") : 0.0) + adjustedAmount);
                     data.put("count", (data.get("count") != null ? (Integer) data.get("count") : 0) + 1);
                 }
+            } else {
+                System.err.println("Skipping invalid invoice: " + invoice);
             }
         }
-
         return grouped;
     }
 
@@ -157,7 +249,8 @@ public class RevenueManagementServlet extends HttpServlet {
         if (date == null) {
             return null;
         }
-        switch (viewType.toLowerCase()) {
+        viewType = viewType == null ? "day" : viewType.toLowerCase();
+        switch (viewType) {
             case "day":
                 return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
             case "month":
@@ -167,9 +260,24 @@ public class RevenueManagementServlet extends HttpServlet {
             case "quarter":
                 int month = date.getMonthValue();
                 String quarter = (month <= 3 ? "Q1" : month <= 6 ? "Q2" : month <= 9 ? "Q3" : "Q4");
-                return quarter + " " + date.format(DateTimeFormatter.ofPattern("yyyy"));
+                return quarter + "/" + date.format(DateTimeFormatter.ofPattern("yyyy"));
             default:
                 return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        }
+    }
+
+    private String getPeriodColumnLabel(String viewType) {
+        switch (viewType) {
+            case "day":
+                return "Ngày";
+            case "month":
+                return "Tháng/Năm";
+            case "year":
+                return "Năm";
+            case "quarter":
+                return "Quý/Năm";
+            default:
+                return "Thời gian";
         }
     }
 }

@@ -451,7 +451,7 @@
         }
 
         /* Làm sáng màu chữ trong dropdown */
-        .search-select, 
+        .search-select,
         .search-select option {
             color: #FFFFFF; /* Màu trắng sáng cho văn bản */
             background-color: #333333; /* Nền tối cho dropdown */
@@ -576,50 +576,36 @@
                 <div class="search-row">
                     <div class="search-group">
                         <label>Tìm kiếm theo ngày:</label>
-                        <input type="date" id="searchDay" name="periodValue" value="${param.periodValue}" class="search-input" max="2025-06-24">
+                        <input type="date" id="searchDay" name="periodValue" value="${param.periodValue}" class="search-input" onchange="submitForm()">
                     </div>
                     <div class="search-group">
                         <label>Tìm kiếm theo tháng:</label>
-                        <select id="searchMonth" name="periodValue" class="search-select">
-                            <option value="1" ${param.periodValue == '1' ? 'selected' : ''}>Tháng 1</option>
-                            <option value="2" ${param.periodValue == '2' ? 'selected' : ''}>Tháng 2</option>
-                            <option value="3" ${param.periodValue == '3' ? 'selected' : ''}>Tháng 3</option>
-                            <option value="4" ${param.periodValue == '4' ? 'selected' : ''}>Tháng 4</option>
-                            <option value="5" ${param.periodValue == '5' ? 'selected' : ''}>Tháng 5</option>
-                            <option value="6" ${param.periodValue == '6' ? 'selected' : ''}>Tháng 6</option>
-                            <option value="7" ${param.periodValue == '7' ? 'selected' : ''}>Tháng 7</option>
-                            <option value="8" ${param.periodValue == '8' ? 'selected' : ''}>Tháng 8</option>
-                            <option value="9" ${param.periodValue == '9' ? 'selected' : ''}>Tháng 9</option>
-                            <option value="10" ${param.periodValue == '10' ? 'selected' : ''}>Tháng 10</option>
-                            <option value="11" ${param.periodValue == '11' ? 'selected' : ''}>Tháng 11</option>
-                            <option value="12" ${param.periodValue == '12' ? 'selected' : ''}>Tháng 12</option>
-                        </select>
+                        <input type="month" id="searchMonthYear" name="periodValue" value="${param.periodValue}" class="search-input" onchange="submitForm()">
                     </div>
                     <div class="search-group">
                         <label>Tìm kiếm theo năm:</label>
-                        <input type="number" id="searchYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm" min="2000" max="2025">
+                        <input type="number" id="searchYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm" min="2000" max="2025" onchange="submitForm()">
                     </div>
                     <div class="search-group">
-                        <label>Tìm kiếm theo quý:</label>
-                        <select id="searchQuarter" name="periodValue" class="search-select">
-                            <option value="Q1" ${param.periodValue == 'Q1' ? 'selected' : ''}>Quý 1 (Tháng 1-3)</option>
-                            <option value="Q2" ${param.periodValue == 'Q2' ? 'selected' : ''}>Quý 2 (Tháng 4-6)</option>
-                            <option value="Q3" ${param.periodValue == 'Q3' ? 'selected' : ''}>Quý 3 (Tháng 7-9)</option>
-                            <option value="Q4" ${param.periodValue == 'Q4' ? 'selected' : ''}>Quý 4 (Tháng 10-12)</option>
+                        <label>Tìm kiếm theo chi nhánh:</label>
+                        <select id="searchBranch" name="branchId" class="search-select" onchange="submitForm()">
+                            <option value="">-- Chọn chi nhánh --</option>
+                            <c:forEach var="branch" items="${branches}">
+                                <option value="${branch.id}" ${param.branchId == branch.id ? 'selected' : ''}>${branch.name} (${branch.city})</option>
+                            </c:forEach>
                         </select>
                     </div>
                     <div class="search-group">
-                        <button type="button" class="btn btn-primary" onclick="submitForm()">
-                            <i class="fas fa-search"></i>
-                            Xem Doanh thu
+                        <button type="button" class="btn btn-secondary" onclick="resetFilters()">
+                            <i class="fas fa-trash"></i>
+                            Xóa
                         </button>
                     </div>
                 </div>
             </div>
             <form id="filterForm" method="GET" action="${pageContext.request.contextPath}/RevenueManagementServlet">
-                <!-- Các input ẩn sẽ được điền bằng JavaScript -->
+                <!-- Hidden inputs will be populated by JavaScript -->
             </form>
-
             <div class="stats-card">
                 <div class="stats-icon">
                     <i class="fas fa-money-bill-wave"></i>
@@ -663,7 +649,7 @@
                 <table class="revenue-table">
                     <thead>
                         <tr>
-                            <th id="periodColumn">Thời gian</th>
+                            <th id="periodColumn">${periodColumn != null ? periodColumn : 'Thời gian'}</th>
                             <th>Tổng Doanh thu</th>
                             <th>Số Lịch hẹn</th>
                             <th>Doanh thu Trung bình/Lịch hẹn</th>
@@ -698,73 +684,53 @@
                 </table>
             </div>
             <script>
-                // Toggle sidebar for mobile
-                function toggleSidebar() {
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar) {
-                        sidebar.classList.toggle('active');
-                    }
-                }
-
-                // Submit form with selected values
                 function submitForm() {
                     const form = document.getElementById('filterForm');
                     const searchDay = document.getElementById('searchDay').value;
-                    const searchMonth = document.getElementById('searchMonth').value;
+                    const searchMonthYear = document.getElementById('searchMonthYear').value;
                     const searchYear = document.getElementById('searchYear').value;
-                    const searchQuarter = document.getElementById('searchQuarter').value;
+                    const searchBranch = document.getElementById('searchBranch').value;
 
-                    let viewType = '';
-                    let periodValue = '';
-                    let year = searchYear || ''; // Default to empty if not provided
+                    let periodValue = searchDay || searchMonthYear || '';
+                    let year = searchYear || (searchMonthYear ? searchMonthYear.split('-')[0] : '');
+                    let branchId = searchBranch || '';
 
-                    // Prioritize filters based on user input, only one filter at a time
-                    if (searchDay) {
-                        viewType = 'day';
-                        periodValue = searchDay;
-                    } else if (searchMonth && searchYear) {
-                        viewType = 'month';
-                        periodValue = searchMonth;
-                        year = searchYear;
-                    } else if (searchYear && !searchMonth && !searchDay) {
-                        viewType = 'year';
-                        year = searchYear;
-                    } else if (searchQuarter && searchYear) {
-                        viewType = 'quarter';
-                        periodValue = searchQuarter;
-                        year = searchYear;
-                    } else {
-                        viewType = 'all'; // Default to all data
-                    }
+                    console.log('Submitting - periodValue:', periodValue, 'year:', year, 'branchId:', branchId);
 
-                    // Enhanced debugging
-                    console.log('Submitted values - viewType:', viewType, 'periodValue:', periodValue, 'year:', year);
-
-                    // Clear form and populate with current values
                     form.innerHTML = `
-                        <input type="hidden" name="viewType" value="${viewType}">
-                        <input type="hidden" name="periodValue" value="${periodValue}">
-                        <input type="hidden" name="year" value="${year}">
-                    `;
-
-                    // Submit the form
+                <input type="hidden" name="periodValue" value="${periodValue}">
+                <input type="hidden" name="year" value="${year}">
+                <input type="hidden" name="branchId" value="${branchId}">
+            `;
                     form.submit();
                 }
 
-                // Reset filters
                 function resetFilters() {
                     document.getElementById('searchDay').value = '';
-                    document.getElementById('searchMonth').value = '1';
+                    document.getElementById('searchMonthYear').value = '';
                     document.getElementById('searchYear').value = '';
-                    document.getElementById('searchQuarter').value = 'Q1';
-                    submitForm(); // Submit after reset
+                    document.getElementById('searchBranch').value = '';
+                    const form = document.getElementById('filterForm');
+                    form.innerHTML = `
+                <input type="hidden" name="periodValue" value="">
+                <input type="hidden" name="year" value="">
+                <input type="hidden" name="branchId" value="">
+            `;
+                    form.submit();
                 }
 
-                // Load initial state
                 window.onload = function () {
-                    const today = new Date('2025-06-24').toISOString().split('T')[0]; // Current date
+                    const today = new Date().toISOString().split('T')[0];
                     document.getElementById('searchDay').max = today;
+                    // Loại bỏ giới hạn max cho searchMonthYear
                 };
+
+                function toggleSidebar() {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.toggle('active');
+                }
             </script>
-        </body>
+        </main>
+    </div>
+</body>
 </html>
