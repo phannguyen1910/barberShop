@@ -43,7 +43,7 @@
         <h2>Payment Successful!</h2>
         <p>Your payment has been processed successfully.</p>
         <p>Thank you for using our service.</p>
-        <a href="booking-history.jsp">← Back to Booking History</a>
+        <a href="views/common/home  .jsp">← Trở về trang chủ </a>
     </div>
 </body>
 </html>

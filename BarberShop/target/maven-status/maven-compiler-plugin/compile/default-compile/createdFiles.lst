@@ -33,6 +33,7 @@ babershopDAO\HolidayDAO.class
 controller\RegisterServlet.class
 babershopDAO\WorkScheduleDAO.class
 babershopDAO\InvoiceDAO.class
+babershopDAO\PaymentDAO.class
 payment\PaymentServlet.class
 babershopDAO\BranchDAO.class
 AppointmentManager\AddAppointmentServlet.class

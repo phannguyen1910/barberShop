@@ -757,6 +757,14 @@
                                             <label class="form-label">Ảnh đại diện</label>
                                             <input type="file" class="form-control" name="img">
                                         </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Chi nhánh</label>
+                                            <select class="form-select" name="branchId" required>
+                                                <c:forEach var="branch" items="${branchList}">
+                                                    <option value="${branch.id}">${branch.name}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -813,6 +821,16 @@
                                     <option value="role" ${sort == 'role' ? 'selected' : ''}>Vai trò</option>
                                 </select>
                             </div>
+                            <div class="search-group">
+                                <label for="branchFilter">Lọc theo chi nhánh</label>
+                                <select id="branchFilter" name="branchId" class="search-select" onchange="this.form.submit()">
+                                    <option value="">Tất cả chi nhánh</option>
+                                    <c:forEach var="b" items="${branchList}">
+                                        <option value="${b.id}" ${branchId == b.id ? 'selected' : ''}>${b.name}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+
                             <div class="search-group" style="align-self: flex-end;">
                                 <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                             </div>
@@ -848,13 +866,14 @@
                                 <tr>
                                     <td class="staff-id">#${staff.id}</td>
                                     <td>
-                                        <img src="${pageContext.request.contextPath}/image/staff/${staff.img}" 
+                                        <img src="${pageContext.request.contextPath}/${staff.img}" 
                                              onerror="this.src='${pageContext.request.contextPath}/image/staff/default-avatar.png'" 
                                              class="staff-avatar" alt="Avatar" />
                                     </td>
                                     <td class="staff-name">${staff.firstName} ${staff.lastName}</td>
                                     <td class="staff-email">${staff.email}</td>
                                     <td class="staff-phone">${staff.phoneNumber}</td>
+                                    <td class="staff-branch">${staff.branchId}</td>
                                     <td class="staff-role">${staff.role}</td>
                                     <td>
                                         <c:choose>

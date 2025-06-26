@@ -79,7 +79,7 @@ public class InvoiceDAO {
         return null;
     }
 
-     public boolean insertInvoice(Connection con, float totalAmount, LocalDateTime receivedDate, int appointmentId) throws SQLException {
+    public boolean insertInvoice(Connection con, float totalAmount, LocalDateTime receivedDate, int appointmentId) throws SQLException {
     String sql = "INSERT INTO Invoice (totalAmount, receivedDate, appointmentId) VALUES (?, ?, ?)";
     try (PreparedStatement ps = con.prepareStatement(sql)) {
         ps.setFloat(1, totalAmount);
