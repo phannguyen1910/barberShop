@@ -1,6 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class Appointment {
 
@@ -43,6 +45,18 @@ public class Appointment {
         this.totalAmount = totalAmount;
     }
 
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, int branchId) {
+        this.id = id;
+        this.customerId = customerId;
+        this.staffId = staffId;
+        this.appointmentTime = appointmentTime;
+        this.status = status;
+        this.customerName = customerName;
+        this.services = services;
+        this.branchId = branchId;
+    }
+    
+  
     public int getBranchId() {
         return branchId;
     }
@@ -122,6 +136,16 @@ public class Appointment {
 
     public void setServices(String services) {
         this.services = services;
+    }
+    
+        public Date getAppointmentDateAsUtilDate() {
+        if (this.appointmentTime == null) {
+            return null;
+        }
+        // Convert LocalDateTime to java.util.Date
+        // You might need to specify a ZoneId if your application operates across time zones.
+        // For simplicity, using system default.
+        return Date.from(this.appointmentTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
 }
