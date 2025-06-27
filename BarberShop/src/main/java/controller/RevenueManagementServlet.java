@@ -38,70 +38,34 @@ public class RevenueManagementServlet extends HttpServlet {
             return;
         }
 
-        String periodValue = request.getParameter("periodValue");
-        String year = request.getParameter("year");
         String branchId = request.getParameter("branchId");
-
-        System.out.println("Received parameters - periodValue: " + periodValue + ", year: " + year + ", branchId: " + branchId);
+        System.out.println("Received parameters - branchId: " + branchId);
 
         List<Invoice> invoices = new ArrayList<>();
         try {
-            periodValue = periodValue == null ? "" : periodValue.trim();
-            year = year == null ? "" : year.trim();
             branchId = branchId == null ? "" : branchId.trim();
 
-            String month = "";
-            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
-                String[] parts = periodValue.split("-");
-                year = parts[0];
-                month = parts[1];
-            }
-
-            // Xác định logic lọc
-            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("day", periodValue, "", branchId.isEmpty() ? null : branchId);
-                System.out.println("Fetched invoices by day: " + periodValue + ", branchId: " + branchId + ", count: " + invoices.size());
-            } else if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
-                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("month", periodValue, year, branchId.isEmpty() ? null : branchId);
-                System.out.println("Fetched invoices by month: " + month + "/" + year + ", branchId: " + branchId + ", count: " + invoices.size());
-            } else if (!year.isEmpty()) {
-                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("year", "", year, branchId.isEmpty() ? null : branchId);
-                System.out.println("Fetched invoices by year: " + year + ", branchId: " + branchId + ", count: " + invoices.size());
-            } else if (!branchId.isEmpty()) {
+            if (!branchId.isEmpty()) {
                 invoices = invoiceDAO.getAllInvoiceByBranch(branchId);
-                System.out.println("Fetched invoices by branchId only: " + branchId + ", count: " + invoices.size());
+                System.out.println("Fetched invoices by branchId: " + branchId + ", count: " + invoices.size());
             } else {
                 invoices = invoiceDAO.getAllInvoiceByBranch(null);
                 System.out.println("Fetched all invoices, count: " + invoices.size());
             }
 
-            List<Invoice> depositInvoices = new ArrayList<>();
-            if (!invoices.isEmpty()) {
-                String effectivePeriodType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
-                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
-                        : !year.isEmpty() ? "year" : "";
-                depositInvoices = invoiceDAO.getDepositInvoicesByPeriodAndBranch(effectivePeriodType, periodValue, year, branchId.isEmpty() ? null : branchId);
-                System.out.println("Fetched deposit invoices, branchId: " + branchId + ", count: " + depositInvoices.size());
-            }
+            List<Invoice> depositInvoices = invoiceDAO.getDepositInvoicesByPeriodAndBranch("", "", "", branchId.isEmpty() ? null : branchId);
             invoices.addAll(depositInvoices);
+            System.out.println("Fetched deposit invoices, count: " + depositInvoices.size());
 
             Map<String, Map<String, Object>> groupedInvoices = new HashMap<>();
             if (!invoices.isEmpty()) {
-                String viewType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
-                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
-                        : !year.isEmpty() ? "year"
-                        : !branchId.isEmpty() ? "branch" : "all";
-                groupedInvoices = groupInvoices(invoices, viewType);
+                groupedInvoices = groupInvoices(invoices, "day");
                 System.out.println("Grouped invoices count: " + groupedInvoices.size());
             } else {
                 System.out.println("No invoices found for the given filter.");
             }
             request.setAttribute("groupedInvoices", groupedInvoices);
-
-            String periodColumn = getPeriodColumnLabel(!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
-                    : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
-                    : !year.isEmpty() ? "year" : "all");
-            request.setAttribute("periodColumn", periodColumn);
+            request.setAttribute("periodColumn", "Ngày");
 
             List<Branch> branches = invoiceDAO.getAllBranches();
             request.setAttribute("branches", branches);
@@ -113,12 +77,6 @@ public class RevenueManagementServlet extends HttpServlet {
                 System.err.println("Dispatcher is null for /views/admin/revenueManagement.jsp");
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "JSP file not found");
             }
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid year format: " + e.getMessage());
-            response.setContentType("text/html");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("Lỗi: Năm không hợp lệ.");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             System.err.println("Error in RevenueManagementServlet: " + e.getMessage());
             e.printStackTrace();
@@ -130,70 +88,45 @@ public class RevenueManagementServlet extends HttpServlet {
     }
 
     protected void processAjaxRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String periodValue = request.getParameter("periodValue");
-        String year = request.getParameter("year");
         String branchId = request.getParameter("branchId");
-
-        System.out.println("AJAX Received parameters - periodValue: " + periodValue + ", year: " + year + ", branchId: " + branchId);
+        System.out.println("AJAX Received parameters - branchId: " + branchId);
 
         List<Invoice> invoices = new ArrayList<>();
         try {
-            periodValue = periodValue == null ? "" : periodValue.trim();
-            year = year == null ? "" : year.trim();
             branchId = branchId == null ? "" : branchId.trim();
 
-            String month = "";
-            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
-                String[] parts = periodValue.split("-");
-                year = parts[0];
-                month = parts[1];
-            }
-
-            if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("day", periodValue, "", branchId.isEmpty() ? null : branchId);
-            } else if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
-                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("month", periodValue, year, branchId.isEmpty() ? null : branchId);
-            } else if (!year.isEmpty()) {
-                invoices = invoiceDAO.getInvoicesByPeriodAndBranch("year", "", year, branchId.isEmpty() ? null : branchId);
-            } else if (!branchId.isEmpty()) {
+            if (!branchId.isEmpty()) {
                 invoices = invoiceDAO.getAllInvoiceByBranch(branchId);
             } else {
                 invoices = invoiceDAO.getAllInvoiceByBranch(null);
             }
 
-            List<Invoice> depositInvoices = new ArrayList<>();
-            if (!invoices.isEmpty()) {
-                String effectivePeriodType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
-                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
-                        : !year.isEmpty() ? "year" : "";
-                depositInvoices = invoiceDAO.getDepositInvoicesByPeriodAndBranch(effectivePeriodType, periodValue, year, branchId.isEmpty() ? null : branchId);
-            }
+            List<Invoice> depositInvoices = invoiceDAO.getDepositInvoicesByPeriodAndBranch("", "", "", branchId.isEmpty() ? null : branchId);
             invoices.addAll(depositInvoices);
 
             Map<String, Map<String, Object>> groupedInvoices = new HashMap<>();
             if (!invoices.isEmpty()) {
-                String viewType = !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
-                        : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
-                        : !year.isEmpty() ? "year"
-                        : !branchId.isEmpty() ? "branch" : "all";
-                groupedInvoices = groupInvoices(invoices, viewType);
+                groupedInvoices = groupInvoices(invoices, "day");
             }
 
-            // Chuyển đổi dữ liệu thành JSON
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("groupedInvoices", groupedInvoices);
-            responseData.put("periodColumn", getPeriodColumnLabel(!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}") ? "day"
-                    : !periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}") ? "month"
-                    : !year.isEmpty() ? "year" : "all"));
+            responseData.put("periodColumn", "Ngày");
             responseData.put("totalRevenue", calculateTotalRevenue(groupedInvoices));
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             PrintWriter out = response.getWriter();
-            out.print(new Gson().toJson(responseData));
+            Gson gson = new Gson();
+            if (responseData == null) {
+                responseData = new HashMap<>();
+                responseData.put("error", "No data available");
+            }
+            out.print(gson.toJson(responseData));
             out.flush();
         } catch (Exception e) {
             System.err.println("Error in AJAX request: " + e.getMessage());
+            e.printStackTrace();
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             Map<String, String> error = new HashMap<>();
