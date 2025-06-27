@@ -1,6 +1,5 @@
 package model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Invoice {
@@ -11,7 +10,11 @@ public class Invoice {
     private int appointmentId;
     private String status;
 
-    public Invoice(double amount, String paymentStatus1, LocalDate receivedDate1, int appointmentId1, Integer voucherId) {
+    public Invoice(float totalAmount, String status, LocalDateTime receivedDate, int appointmentId) {
+        this.totalAmount =  totalAmount;
+        this.status = status;
+        this.receivedDate = receivedDate;
+        this.appointmentId = appointmentId;
     }
 
     public Invoice(int id, float totalAmount, LocalDateTime receivedDate, int appointmentId, String status) {
@@ -28,6 +31,7 @@ public class Invoice {
         this.receivedDate = receivedDate;
     }
 
+
     // Getters and Setters
     public int getId() {
         return id;
@@ -37,9 +41,6 @@ public class Invoice {
         this.id = id;
     }
 
-    public double getAmount() {
-        return totalAmount;
-    }
 
     public float getTotalAmount() {
         return totalAmount;
@@ -72,5 +73,4 @@ public class Invoice {
     public void setAppointmentId(int appointmentId) {
         this.appointmentId = appointmentId;
     }
-
 }

@@ -446,17 +446,16 @@
             <i class="fas fa-bars"></i>
         </button>
 
+      
         <div class="dashboard-layout">
-            <!-- Sidebar -->
             <nav class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <div class="logo">
                         <i class="fas fa-cut"></i>
                     </div>
-                    <div class="logo-text">Cut & Style</div>
+                    <div class="logo-text">BarberShop Pro</div>
                     <div class="logo-subtitle">Admin Dashboard</div>
                 </div>
-
                 <div class="nav-menu">
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
@@ -501,7 +500,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
                         </a>
