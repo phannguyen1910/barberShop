@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Appointment;
@@ -293,42 +294,93 @@ public class StaffDAO {
 
         return list;
     }
-    
-    public List <Appointment> appointmentOfStaff(int staffId){
-        String sql = "SELECT id, customerId, appointmentTime, status FROM Appointment WHERE staffId = ?";
-        String sq2 = "SELECT s.name FROM Appointment_Service as inner join Service s on as.serviceId = s.id WHERE as.apppointmentId = ?";
-         List<Appointment> appointments = new ArrayList<>();
-        String serviceName = null; 
+
+    public List<Appointment> appointmentOfStaff(int staffId) {
+        String sql
+                = "SELECT a.id, a.customerId, a.appointmentTime, a.status, a.branchId, "
+                + "       c.firstName, c.lastName "
+                + "FROM Appointment a "
+                + "INNER JOIN Customer c ON a.customerId = c.id "
+                + "WHERE a.staffId = ? "
+                + "  AND a.status = 'Confirmed' "
+                + "  AND a.appointmentTime >= CAST(GETDATE() AS DATE) "
+                + "  AND a.appointmentTime < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));";
+
+        String sq2 = " SELECT s.name FROM Appointment_Service aps INNER JOIN Service s ON aps.ServiceId = s.idWHERE aps.AppointmentId = ?";
+
+        String sq3 = "SELECT totalAmount FROM Invoice WHERE appointmentId = ?";
+
+        
+
+        List<Appointment> appointments = new ArrayList<>();
 
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, staffId); 
-
+            System.out.println("🔍 Truy vấn các cuộc hẹn hôm nay của staffId = " + staffId);
+            ps.setInt(1, staffId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
+
+            while (rs.next()) {
+                Appointment appointment = new Appointment();
                 int appointmentId = rs.getInt("id");
-                int customerId = rs.getInt("customerId");
-                String appointmentTime = rs.getString("appointmentTime");
-                LocalDateTime appointment_time = LocalDateTime.parse(appointmentTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                String status = rs.getString("status");
-                PreparedStatement ps2 = con.prepareStatement(sq2);
-                ps2.setInt(1, appointmentId);
-                ResultSet rs2 = ps2.executeQuery();
-                while(rs2.next()){
-                    serviceName += rs.getString("s.name") +", ";
+
+                appointment.setId(appointmentId);
+                appointment.setCustomerId(rs.getInt("customerId"));
+                appointment.setCustomerName(rs.getString("lastName") + " " + rs.getString("firstName"));
+                appointment.setStatus(rs.getString("status"));
+
+                LocalDateTime apptTime = rs.getObject("appointmentTime", LocalDateTime.class);
+                appointment.setAppointmentTime(apptTime);
+
+                // Lấy danh sách dịch vụ
+                StringBuilder serviceName = new StringBuilder();
+                try (PreparedStatement ps2 = con.prepareStatement(sq2)) {
+                    ps2.setInt(1, appointmentId);
+                    try (ResultSet rs2 = ps2.executeQuery()) {
+                        while (rs2.next()) {
+                            String sname = rs2.getString("name");
+                            serviceName.append(sname).append(", ");
+                            System.out.println("  ➕ Dịch vụ: " + sname);
+                        }
+                    }
+                } catch (SQLException ex2) {
+                    System.err.println("❌ Lỗi dịch vụ appointmentId = " + appointmentId + ": " + ex2.getMessage());
                 }
-                Appointment appointment = new Appointment(staffId, customerId, staffId, appointment_time, status);
+
+                String services = serviceName.length() > 0
+                        ? serviceName.substring(0, serviceName.length() - 2)
+                        : "";
+                appointment.setServices(services);
+
+                // Lấy totalAmount từ hóa đơn
+                float totalAmount = 0;
+                try (PreparedStatement ps3 = con.prepareStatement(sq3)) {
+                    ps3.setInt(1, appointmentId);
+                    try (ResultSet rs3 = ps3.executeQuery()) {
+                        if (rs3.next()) {
+                            totalAmount = rs3.getFloat("totalAmount");
+                            System.out.println("  💵 Tổng tiền: " + totalAmount);
+                        }
+                    }
+                    appointment.setTotalAmount(totalAmount);
+                } catch (SQLException ex3) {
+                    System.err.println("❌ Lỗi hóa đơn appointmentId = " + appointmentId + ": " + ex3.getMessage());
+                }
+
                 appointments.add(appointment);
             }
-            return appointments;
-            
+
+            System.out.println("✅ Tổng số cuộc hẹn tìm thấy: " + appointments.size());
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi SQL trong appointmentOfStaff: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("❌ Lỗi không xác định: " + e.getMessage());
+            System.err.println("❌ Lỗi không xác định trong appointmentOfStaff: " + e.getMessage());
             e.printStackTrace();
         }
+
         return appointments;
     }
 
-    
-   
 }
