@@ -13,17 +13,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.WorkSchedule;
+import model.Branch; // Thêm import cho Branch
 
 @WebServlet("/ViewScheduleServlet")
 public class ViewScheduleServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private WorkScheduleDAO workScheduleDAO;
-
-//    @Override
-//    public void init() throws ServletException {
-//        workScheduleDAO = new WorkScheduleDAO();
-//    }
 
     @Override
     public void init() throws ServletException {
@@ -37,10 +33,17 @@ public class ViewScheduleServlet extends HttpServlet {
 
         if (action == null || action.isEmpty()) {
             // Forward dữ liệu trực tiếp đến JSP
-            List<WorkSchedule> schedules = workScheduleDAO.getAllOffSchedules();
-            System.out.println("Schedules fetched for forward: " + (schedules != null ? schedules.size() : "null"));
-            request.setAttribute("schedules", schedules);
             try {
+                // Lấy danh sách lịch nghỉ
+                List<WorkSchedule> schedules = workScheduleDAO.getAllOffSchedules();
+                System.out.println("Schedules fetched for forward: " + (schedules != null ? schedules.size() : "null"));
+                request.setAttribute("schedules", schedules);
+
+                // Lấy danh sách chi nhánh
+                List<Branch> branches = workScheduleDAO.getAllBranches(); // Giả định có phương thức này
+                System.out.println("Branches fetched: " + (branches != null ? branches.size() : "null"));
+                request.setAttribute("branches", branches);
+
                 request.getRequestDispatcher("/views/admin/viewSchedule.jsp").forward(request, response);
                 System.out.println("Forward to JSP successful");
             } catch (Exception e) {
@@ -85,6 +88,7 @@ public class ViewScheduleServlet extends HttpServlet {
                     obj.put("firstName", schedule.getFirstName() != null ? schedule.getFirstName() : "N/A");
                     obj.put("lastName", schedule.getLastName() != null ? schedule.getLastName() : "N/A");
                     obj.put("status", schedule.getStatus() != null ? schedule.getStatus() : "N/A");
+                    obj.put("branch", schedule.getBranch() != null ? schedule.getBranch() : "N/A"); // Đảm bảo branch được bao gồm
                     schedulesArray.put(obj);
                 }
                 jsonResponse.put("data", schedulesArray);
@@ -102,4 +106,8 @@ public class ViewScheduleServlet extends HttpServlet {
         response.getWriter().write(jsonResponse.toString());
     }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response); // Gộp xử lý GET và POST
+    }
 }
