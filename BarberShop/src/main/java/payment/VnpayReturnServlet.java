@@ -48,6 +48,8 @@ public class VnpayReturnServlet extends HttpServlet {
                     "PAID",
                     payTime
                 );
+                
+                
             }
             req.setAttribute("message", "Thanh toán thành công! Lịch hẹn của bạn đã được xác nhận.");
         } else {

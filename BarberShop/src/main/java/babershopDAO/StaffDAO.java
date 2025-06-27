@@ -1,5 +1,6 @@
 package babershopDAO;
 
+import static babershopDAO.CustomerDAO.getConnect;
 import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;
@@ -59,30 +60,38 @@ public class StaffDAO {
     }
 
     public List<Staff> getAllStaffs() {
-
         List<Staff> staffs = new ArrayList<>();
-        String sql = "SELECT id, firstName, lastName, img, branchId FROM [Staff]";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int staffId = rs.getInt("id");
-                String firstName = rs.getString("firstName");
-                String lastName = rs.getString("lastName");
-                String img = rs.getString("img");
-                int branchId = rs.getInt("branchId");
-                Staff staff = new Staff(staffId, firstName, lastName, img, branchId);
+        String sql = "SELECT DISTINCT s.id, s.accountId, s.firstName, s.lastName, s.img, "
+                + "a.email, a.phoneNumber, a.password, a.role, a.status, "
+                + "b.id AS branchId "
+                + "FROM Staff s "
+                + "JOIN Account a ON s.accountId = a.id "
+                + "JOIN Branch b ON s.branchId = b.id";
 
-                staffs.add(staff);
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                staffs.add(new Staff(
+                        rs.getInt("id"),
+                        rs.getInt("accountId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("img"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getInt("status"),
+                        rs.getInt("branchId")
+                ));
             }
-            return staffs;
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("🔥 ERROR in getAllStaffs(): " + e);
         }
-        return null;
+        return staffs;
     }
 
-    public static void addStaff(String firstName, String lastName, String email, String phoneNumber, String role, String img) {
+    public static void addStaff(String firstName, String lastName, String email, String phoneNumber, String role, String img, int branchId) {
         Connection con = null;
         PreparedStatement psAccount = null;
         PreparedStatement psStaff = null;
@@ -91,17 +100,16 @@ public class StaffDAO {
             if (con != null) {
                 con.setAutoCommit(false); // Bắt đầu giao dịch
 
-                // Bước 1: Chèn vào bảng Account
+                // Chèn vào bảng Account
                 String sqlAccount = "INSERT INTO Account (email, phoneNumber, password, role, status) VALUES (?, ?, ?, ?, ?)";
                 psAccount = con.prepareStatement(sqlAccount, PreparedStatement.RETURN_GENERATED_KEYS);
                 psAccount.setString(1, email);
                 psAccount.setString(2, phoneNumber != null ? phoneNumber : "");
-                psAccount.setString(3, "default123"); // Mật khẩu mặc định (nên mã hóa trong thực tế)
+                psAccount.setString(3, "default123");
                 psAccount.setString(4, role);
-                psAccount.setInt(5, 1); // Trạng thái mặc định là 1 (hoạt động)
+                psAccount.setInt(5, 1);
                 psAccount.executeUpdate();
 
-                // Lấy accountId vừa tạo
                 int accountId = -1;
                 try (ResultSet generatedKeys = psAccount.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
@@ -111,21 +119,22 @@ public class StaffDAO {
                     }
                 }
 
-                // Bước 2: Chèn vào bảng Staff
-                String sqlStaff = "INSERT INTO Staff (accountId, firstName, lastName, img) VALUES (?, ?, ?, ?)";
+                // Chèn vào bảng Staff (có branchId)
+                String sqlStaff = "INSERT INTO Staff (accountId, firstName, lastName, img, branchId) VALUES (?, ?, ?, ?, ?)";
                 psStaff = con.prepareStatement(sqlStaff);
                 psStaff.setInt(1, accountId);
                 psStaff.setString(2, firstName);
                 psStaff.setString(3, lastName);
-                psStaff.setString(4, img != null && !img.isEmpty() ? img : null); // Cho phép NULL nếu không có ảnh
+                psStaff.setString(4, img != null && !img.isEmpty() ? img : null);
+                psStaff.setInt(5, branchId);
                 psStaff.executeUpdate();
 
-                con.commit(); // Hoàn tất giao dịch
+                con.commit();
             }
         } catch (SQLException e) {
             if (con != null) {
                 try {
-                    con.rollback(); // Rollback nếu có lỗi
+                    con.rollback();
                 } catch (SQLException ex) {
                     System.out.println("Rollback error: " + ex);
                 }
@@ -227,20 +236,27 @@ public class StaffDAO {
         return staffs;
     }
 
-    public static List<Staff> searchAndSortStaff(String name, String email, String role, String sort) {
+    public static List<Staff> searchAndSortStaff(String name, String email, String role, String sort, Integer branchId) {
         List<Staff> list = new ArrayList<>();
         String sql = "SELECT s.id, s.accountId, s.firstName, s.lastName, s.img, "
-                + "a.email, a.phoneNumber, a.password, a.role, a.status "
-                + "FROM Staff s JOIN Account a ON s.accountId = a.id WHERE 1=1 ";
+                + "a.email, a.phoneNumber, a.password, a.role, a.status, "
+                + "b.id AS branchId "
+                + "FROM Staff s "
+                + "JOIN Account a ON s.accountId = a.id "
+                + "JOIN Branch b ON s.branchId = b.id "
+                + "WHERE 1=1 ";
 
-        if (name != null && !name.isEmpty()) {
+        if (name != null && !name.trim().isEmpty()) {
             sql += "AND (s.firstName LIKE ? OR s.lastName LIKE ?) ";
         }
-        if (email != null && !email.isEmpty()) {
+        if (email != null && !email.trim().isEmpty()) {
             sql += "AND a.email LIKE ? ";
         }
-        if (role != null && !role.isEmpty()) {
+        if (role != null && !role.trim().isEmpty()) {
             sql += "AND a.role = ? ";
+        }
+        if (branchId != null) {
+            sql += "AND s.branchId = ? ";
         }
 
         if (sort != null) {
@@ -262,40 +278,44 @@ public class StaffDAO {
 
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             int i = 1;
-            if (name != null && !name.isEmpty()) {
+            if (name != null && !name.trim().isEmpty()) {
                 ps.setString(i++, "%" + name + "%");
                 ps.setString(i++, "%" + name + "%");
             }
-            if (email != null && !email.isEmpty()) {
+            if (email != null && !email.trim().isEmpty()) {
                 ps.setString(i++, "%" + email + "%");
             }
-            if (role != null && !role.isEmpty()) {
+            if (role != null && !role.trim().isEmpty()) {
                 ps.setString(i++, role);
+            }
+            if (branchId != null) {
+                ps.setInt(i++, branchId);
             }
 
             ResultSet rs = ps.executeQuery();
-//            while (rs.next()) {
-//                list.add(new Staff(
-//                        rs.getInt("id"),
-//                        rs.getInt("accountId"),
-//                        rs.getString("firstName"),
-//                        rs.getString("lastName"),
-//                        rs.getString("img"),
-//                        rs.getString("email"),
-//                        rs.getString("phoneNumber"),
-//                        rs.getString("password"),
-//                        rs.getString("role"),
-//                        rs.getInt("status")
-//                ));
-//            }
+            while (rs.next()) {
+                list.add(new Staff(
+                        rs.getInt("id"),
+                        rs.getInt("accountId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("img"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getInt("status"),
+                        rs.getInt("branchId")
+                ));
+            }
         } catch (Exception e) {
-            System.out.println("❌ Lỗi ở searchAndSortStaff(): " + e);
+            System.out.println("❌ Error in searchAndSortStaff(): " + e);
         }
-
         return list;
     }
 
     public List<Appointment> appointmentOfStaff(int staffId) {
+
         String sql
                 = "SELECT a.id, a.customerId, a.appointmentTime, a.status, a.branchId, "
                 + "       c.firstName, c.lastName "
@@ -318,6 +338,7 @@ public class StaffDAO {
 
             System.out.println("🔍 Truy vấn các cuộc hẹn hôm nay của staffId = " + staffId);
             ps.setInt(1, staffId);
+
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -345,6 +366,7 @@ public class StaffDAO {
                     }
                 } catch (SQLException ex2) {
                     System.err.println("❌ Lỗi dịch vụ appointmentId = " + appointmentId + ": " + ex2.getMessage());
+
                 }
 
                 String services = serviceName.length() > 0
@@ -375,6 +397,7 @@ public class StaffDAO {
         } catch (SQLException e) {
             System.err.println("❌ Lỗi SQL trong appointmentOfStaff: " + e.getMessage());
             e.printStackTrace();
+
         } catch (Exception e) {
             System.err.println("❌ Lỗi không xác định trong appointmentOfStaff: " + e.getMessage());
             e.printStackTrace();
