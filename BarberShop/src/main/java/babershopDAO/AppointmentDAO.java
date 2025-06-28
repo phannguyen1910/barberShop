@@ -125,7 +125,7 @@ public class AppointmentDAO {
 
     // Inside your AppointmentDAO class
     public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int branchId, List<Integer> serviceIds) {
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Pending', ?)";
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Confirmed', ?)";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
         Connection con = null;

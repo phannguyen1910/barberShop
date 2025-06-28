@@ -547,7 +547,7 @@
 
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="index.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
                     <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

@@ -231,31 +231,31 @@
         }
 
         .stats-grid .card {
-    background: rgba(29, 29, 27, 0.9);
-    backdrop-filter: blur(10px);
-    border: 2px solid #B8860B;
-    color: #fff;
-    border-radius: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(184, 134, 11, 0.3);
-}
+            background: rgba(29, 29, 27, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid #B8860B;
+            color: #fff;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(184, 134, 11, 0.3);
+        }
 
-.stats-grid .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.5);
-}
+        .stats-grid .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.5);
+        }
 
-.stats-grid .card-title {
-    color: #DAA520; /* Nhấn nhẹ tiêu đề bằng tông vàng sáng hơn */
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+        .stats-grid .card-title {
+            color: #DAA520; /* Nhấn nhẹ tiêu đề bằng tông vàng sáng hơn */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-.stats-grid i {
-    color: #B8860B;
-    opacity: 0.7;
-}
+        .stats-grid i {
+            color: #B8860B;
+            opacity: 0.7;
+        }
 
 
         /* Table Card - NEW STYLING for the table container */
@@ -293,12 +293,11 @@
             vertical-align: middle;
         }
         .table tbody tr {
-            
             transition: background-color 0.2s ease;
         }
         .table tbody tr:hover {
-            
-            background-color: linear-gradient(90deg, #DAA520, #B8860B); /* Slightly more prominent hover */
+            /* Keep background-color: rgba(218, 165, 32, 0.15); to avoid linear-gradient clash on hover */
+            background-color: rgba(218, 165, 32, 0.15); /* Slightly more prominent hover */
         }
         .table tbody td {
             border-top: 1px solid rgba(218, 165, 32, 0.15);
@@ -306,7 +305,7 @@
             padding: 0.75rem;
             color: #e0e0e0; /* Default cell text color */
             background: rgba(29, 29, 27, 0.9);
-                backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); /* Apply blur to cells */
         }
 
         /* Table Specific Elements */
@@ -342,10 +341,22 @@
             padding: 6px 12px; /* Adjusted padding for smaller button */
             border-radius: 20px;
             font-size: 0.9rem;
+            transition: all 0.3s ease; /* Ensure transition for smooth state changes */
         }
-        .edit-btn:hover {
+        .edit-btn:hover:not(:disabled) { /* Apply hover only when NOT disabled */
             background-color: #DAA520;
             color: #1d1d1b;
+        }
+
+        /* Styling for disabled edit button */
+        .edit-btn[disabled], .edit-btn.disabled {
+            background-color: rgba(218, 165, 32, 0.05); /* Very subtle background */
+            border-color: rgba(218, 165, 32, 0.15); /* Faint border */
+            color: #666; /* Greyed out text */
+            cursor: not-allowed;
+            opacity: 0.5; /* Slightly faded */
+            box-shadow: none; /* Remove any active shadows */
+            transform: none; /* Remove hover transform */
         }
 
         .services-list {
@@ -654,6 +665,7 @@
             </div>
         </nav>
 
+                        
         <main class="main-content">
             <div class="container-fluid py-4">
                 <div class="row mb-4">
@@ -698,7 +710,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card  text-white">
+                        <div class="card text-white">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
@@ -711,7 +723,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card  text-white">
+                        <div class="card text-white">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
@@ -724,7 +736,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card  text-white">
+                        <div class="card text-white">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
@@ -740,8 +752,10 @@
 
                 <div class="row">
                     <div class="col-12">
-                        <div class="card border-0 table-card"> <div class="card-header py-3">
-                                <h5 class="mb-0">Danh sách Lịch hẹn</h5> </div>
+                        <div class="card border-0 table-card">
+                            <div class="card-header py-3">
+                                <h5 class="mb-0">Danh sách Lịch hẹn</h5>
+                            </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <table class="table table-hover mb-0" id="appointmentsTable">
@@ -820,8 +834,10 @@
                                                     </span>
                                                 </td>
                                                 <td>
+                                                    <c:set var="isButtonDisabled" value="${appointment.status == 'Completed' || appointment.status == 'Cancelled'}"/>
                                                     <button class="btn btn-sm btn-outline-primary edit-btn"
-                                                            onclick="openEditModal(${appointment.id}, '${appointment.status}', '${appointment.services}', '${appointment.customerName}')">
+                                                            onclick="openEditModal(${appointment.id}, '${appointment.status}', '${appointment.services}', '${appointment.customerName}')"
+                                                            <c:if test="${isButtonDisabled}">disabled</c:if>>
                                                         <i class="fas fa-edit me-1"></i>Sửa
                                                     </button>
                                                 </td>
@@ -1096,10 +1112,10 @@
         ];
 
         // Store ALL staff data, including branchId, for client-side filtering
-        const allStaff = [            <c:forEach var="staff" items="${listStaff}" varStatus="loop">                {                    id: ${staff.id},                    firstName: '${staff.firstName}',                    lastName: '${staff.lastName}',                    branchId: ${staff.branchId}                }<c:if test="${!loop.last}">,</c:if>            </c:forEach>        ];
+        const allStaff = [        <c:forEach var="staff" items="${listStaff}" varStatus="loop">                {                    id: ${staff.id},                    firstName: '${staff.firstName}',                    lastName: '${staff.lastName}',                    branchId: ${staff.branchId}                }<c:if test="${!loop.last}">,</c:if>            </c:forEach>        ];
 
         // Store all appointments for client-side filtering
-        const allAppointments = [            <c:forEach var="appointment" items="${listAppointment}" varStatus="loop">                {                    id: ${appointment.id},                    customerId: ${appointment.customerId},                    staffId: ${appointment.staffId},                    appointmentTime: '${appointment.appointmentTime}',                    status: '${appointment.status}',                    customerName: '${appointment.customerName}',                    services: '${appointment.services}',                    totalAmount: ${appointment.totalAmount},                    branchId: ${appointment.branchId}                }<c:if test="${!loop.last}">,</c:if>            </c:forEach>        ];
+        const allAppointments = [        <c:forEach var="appointment" items="${listAppointment}" varStatus="loop">                {                    id: ${appointment.id},                    customerId: ${appointment.customerId},                    staffId: ${appointment.staffId},                    appointmentTime: '${appointment.appointmentTime}',                    status: '${appointment.status}',                    customerName: '${appointment.customerName}',                    services: '${appointment.services}',                    totalAmount: ${appointment.totalAmount},                    branchId: ${appointment.branchId}                }<c:if test="${!loop.last}">,</c:if>            </c:forEach>        ];
 
         // Toggle sidebar for mobile - Copied from dashboard.jsp
         function toggleSidebar() {

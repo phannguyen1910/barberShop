@@ -121,10 +121,17 @@ public class ServiceDAO {
                 int duration = rs.getInt("duration");
                 String description = rs.getString("description");
                 String image = rs.getString("image");
-                String[] images = image.split(",");
-                Service service = new Service(id, name, price, duration, description, images);
+                String[] images = image.split(", ");
+                int categoryId = rs.getInt("categoryId");
+                Service service = new Service(id, name, price, duration, description, images, categoryId);
                 services.add(service);
+                for(int i =0; i< images.length; i++){
+                                 System.out.println(images[i]);
+   
+                }
+                        
             }
+           
             return services;
         } catch (Exception e) {
             System.out.println(e);

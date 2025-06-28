@@ -55,39 +55,7 @@
                         </div>
                     </div>
 
-                    <%-- REMOVED STEP 2: Choose number of people --%>
-                    <%--
-                    <div class="step">
-                        <div class="step-header">
-                            <div class="step-number">2</div>
-                            <div class="step-title">Chọn số người</div>
-                        </div>
-                        <div class="step-content">
-                            <button class="btn btn-outline btn-full" id="togglePeopleForm">
-                                <i class="bi bi-people"></i>
-                                Chọn số người sử dụng dịch vụ
-                            </button>
-                            <div id="peopleForm" class="people-form" style="display: none;">
-                                <div class="form-group">
-                                    <label class="form-label" for="numPeople">Số người bạn muốn đặt:</label>
-                                    <select id="numPeople" class="form-select">
-                                        <option value="1">1 người</option>
-                                        <option value="2">2 người</option>
-                                        <option value="3">3 người</option>
-                                        <option value="4">4 người</option>
-                                        <option value="5">5 người</option>
-                                        <option value="6">6 người</option>
-                                        <option value="7">7 người</option>
-                                        <option value="8">8 người</option>
-                                        <option value="9">9 người</option>
-                                        <option value="10">10 người</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    --%>
-
+                                
                     <div class="step">
                         <div class="step-header">
                             <div class="step-number">2</div> <%-- Changed from 3 to 2 --%>

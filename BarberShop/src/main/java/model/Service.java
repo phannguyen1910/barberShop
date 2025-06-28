@@ -8,13 +8,31 @@ public class Service {
     private int duration;
     private String description;
     private String [] image;
-
+    private int categoryId;
     // Constructor
 
     public Service(String name1, double price, int duration1, String description1) {
     }
 
     public Service() {
+    }
+
+    public Service(int id, String name, float price, int duration, String description, String[] image, int categoryId) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.duration = duration;
+        this.description = description;
+        this.image = image;
+        this.categoryId = categoryId;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Service(int id, String name, float price, int duration, String description, String[] image) {

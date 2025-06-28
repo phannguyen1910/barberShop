@@ -57,6 +57,18 @@ public class AccountDAO {
         return null;
     }
 
+    public static boolean updateEmail(int accountId, String newEmail) {
+        String sql = "UPDATE Account SET email = ? WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newEmail);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
     public static boolean checkExistedEmail(String email) {
         String sql = "Select * FROM Account WHERE email = ?";
         try (Connection conn = getConnect(); PreparedStatement st = conn.prepareStatement(sql)) {

@@ -69,7 +69,7 @@
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Profile</a></li>
+                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">Profile</a></li>
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Logout</a></li>
                         </ul>
                     </div>
