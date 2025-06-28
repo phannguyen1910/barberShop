@@ -37,20 +37,27 @@ public class StaffDAO {
     }
 
     public static Staff getStaffByAccountId(int accountId) {
-        String sql = "SELECT * FROM [Staff] WHERE accountId = ?";
+        String sql = "SELECT s.id, s.accountId, s.firstName, s.lastName, s.img, a.email, a.phoneNumber, a.password, a.role, a.status " +
+                     "FROM Staff s JOIN Account a ON s.accountId = a.id WHERE s.accountId = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, accountId);  // Chỉ sử dụng accountId để tìm kiếm
+            ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int id = rs.getInt("id");  // id là khóa chính của [Staff], có thể khác accountId
+                int id = rs.getInt("id");
+                int accId = rs.getInt("accountId");
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 String img = rs.getString("img");
-                Staff staff = new Staff(id, firstName, lastName, img);
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phoneNumber");
+                String password = rs.getString("password");
+                String role = rs.getString("role");
+                int status = rs.getInt("status");
+                Staff staff = new Staff(id, accId, firstName, lastName, img, email, phoneNumber, password, role, status);
                 System.out.println("Found staff for accountId " + accountId + ": " + staff);
                 return staff;
-            } else {
+            } else   {
                 System.out.println("No staff found for accountId: " + accountId);
             }
         } catch (Exception e) {
