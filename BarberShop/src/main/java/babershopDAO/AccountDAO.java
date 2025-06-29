@@ -301,19 +301,23 @@ public class AccountDAO {
             }
             return admins;
         } catch (Exception e) {
+            System.out.println(e);
         }
         return null;
     }
 
-    public Customer getCustomerByAccountId(Integer accountId) {
+    public Object getStaffByAccountId(int id) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
-    public Staff getStaffByAccountId(Integer accountId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public Admin getAdminByAccountId(Integer accountId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static boolean updateEmail(int accountId, String newEmail) {
+        String sql = "UPDATE Account SET email = ? WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newEmail);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -73,7 +73,7 @@
             <div><h1><i class="fas fa-store"></i> Quản lý Dịch vụ</h1><p>Quản lý các dịch vụ của salon</p></div>
             <div class="header-actions">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
-                    <i class="fas fa-plus"></i> Thêm Dịch vụ
+                    <i class="fas fa-plus"></i> Thêm Dịch vụ    
                 </button>
             </div>
         </div>

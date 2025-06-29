@@ -4,6 +4,7 @@ import static babershopDatabase.databaseInfo.*;
 import java.sql.*;
 import java.util.*;
 import model.Customer;
+import model.Staff;
 
 public class CustomerDAO {
 
@@ -367,6 +368,4 @@ public class CustomerDAO {
             e.printStackTrace();
         }
     }
-
-    
 } 

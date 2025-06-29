@@ -505,7 +505,7 @@
                     <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/dashboard.jsp" class="nav-link" aria-label="Trang tổng quan"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
                     <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/registerForAShift.jsp" class="nav-link active" aria-label="Đăng ký lịch làm việc"><i class="fas fa-calendar-alt"></i><span>Đăng ký Lịch Làm</span></a></div>
                     <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/appointments.jsp" class="nav-link" aria-label="Lịch hẹn của tôi"><i class="fas fa-clock"></i><span>Lịch Hẹn của Tôi</span></a></div>
-                    <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/profile.jsp" class="nav-link" aria-label="Thông tin cá nhân"><i class="fas fa-user"></i><span>Thông Tin Cá Nhân</span></a></div>
+                    <div class="nav-item"><a href="${pageContext.request.contextPath}/views/common/profile.jsp" class="nav-link" aria-label="Thông tin cá nhân"><i class="fas fa-user"></i><span>Thông Tin Cá Nhân</span></a></div>
                 </div>
             </nav>
 
@@ -573,7 +573,7 @@
                     this.disallowedDays = [];
                     this.registeredDays = {};
                     this.monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-                    console.log("Staff ID from session: " + ${sessionScope.staff.id});
+                    console.log("Staff ID from session: " + ${sessionScope.staff.accountId});
                     this.init();
                     this.loadRegistrations();
                     this.loadDisallowedDays();
@@ -627,7 +627,7 @@
                 }
 
                 loadRegisteredDays() {
-                    const staffId = ${sessionScope.staff.id};
+                    const staffId = ${sessionScope.staff.accountId};
                     const year = this.currentDate.getFullYear();
                     const month = this.currentDate.getMonth() + 1;
                     fetch('${pageContext.request.contextPath}/ViewScheduleServlet?action=getRegisteredDays&staffId=' + staffId + '&year=' + year + '&month=' + month, {
