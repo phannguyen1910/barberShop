@@ -13,8 +13,10 @@ public class Appointment {
     private String status;
     private String customerName;
     private String services;
-    private double totalAmount;
+    private float totalAmount;
     private int branchId;
+    private String staffName;
+    private String branchName;
 
     public Appointment(LocalDateTime appointment_time, int customerId1, int staff) {
     }
@@ -22,7 +24,33 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount, int branchId) {
+    public Appointment(int id, LocalDateTime appointmentTime, String status, String services, float totalAmount, String staffName, String branchName) {
+        this.id = id;
+        this.appointmentTime = appointmentTime;
+        this.status = status;
+        this.services = services;
+        this.totalAmount = totalAmount;
+        this.staffName = staffName;
+        this.branchName = branchName;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, float totalAmount, int branchId) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
@@ -34,7 +62,7 @@ public class Appointment {
         this.branchId = branchId;
     }
 
-    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, double totalAmount) {
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, float totalAmount) {
         this.id = id;
         this.customerId = customerId;
         this.staffId = staffId;
@@ -55,8 +83,7 @@ public class Appointment {
         this.services = services;
         this.branchId = branchId;
     }
-    
-  
+
     public int getBranchId() {
         return branchId;
     }
@@ -69,7 +96,7 @@ public class Appointment {
         return totalAmount;
     }
 
-    public void setTotalAmount(double totalAmount) {
+    public void setTotalAmount(float totalAmount) {
         this.totalAmount = totalAmount;
     }
 
@@ -137,8 +164,8 @@ public class Appointment {
     public void setServices(String services) {
         this.services = services;
     }
-    
-        public Date getAppointmentDateAsUtilDate() {
+
+    public Date getAppointmentDateAsUtilDate() {
         if (this.appointmentTime == null) {
             return null;
         }

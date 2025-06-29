@@ -9,6 +9,7 @@ babershopDAO\StaffDAO.class
 controller\BookingServlet.class
 controller\VoucherServlet$2.class
 model\WorkSchedule.class
+controller\HistoryAppointmentServlet$1.class
 controller\HolidayServlet.class
 model\Appointment.class
 constant\Iconstant.class
@@ -43,10 +44,12 @@ model\Staff.class
 controller\AddCustomerServlet.class
 AppointmentManager\AppointmentManagerServlet.class
 model\CustomerVoucher.class
+controller\CancelAppointmentServlet.class
 controller\ConfirmationServlet.class
 babershopDAO\AccountDAO$3.class
 model\GoogleAccount.class
 controller\BanStaffServlet.class
+controller\HistoryAppointmentServlet.class
 controller\AddStaffServlet.class
 controller\SendOTPServlet$1.class
 controller\ProfileServlet.class
