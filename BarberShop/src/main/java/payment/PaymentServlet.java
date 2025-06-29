@@ -41,7 +41,7 @@ public class PaymentServlet extends HttpServlet {
         }
 
         // ✅ Cố định số tiền cọc: 50.000 VNĐ
-        double totalAmount = 50000;
+        float totalAmount = 50000;
 
         // ✅ Lưu thông tin booking vào session
         HttpSession session = req.getSession();
@@ -53,7 +53,11 @@ public class PaymentServlet extends HttpServlet {
         session.setAttribute("amount", totalAmount);
 
         // ✅ Chuẩn bị dữ liệu gửi VNPAY
-        String vnp_TxnRef = "APPT" + System.currentTimeMillis();
+        AppointmentDAO dao = new AppointmentDAO();
+        String result = dao.Booking(customerId, staffId, appointmentTime, numberOfPeople, serviceIds);
+        int appointmentId = dao.getLastInsertedAppointmentId();
+
+        String vnp_TxnRef = "APPT" + appointmentId;
         session.setAttribute("txnRef", vnp_TxnRef);
 
         String vnp_Version = "2.1.0";
@@ -68,7 +72,7 @@ public class PaymentServlet extends HttpServlet {
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
-        
+
         if (bankCode != null && !bankCode.isEmpty()) {
             vnp_Params.put("vnp_BankCode", bankCode);
         }
@@ -89,11 +93,11 @@ public class PaymentServlet extends HttpServlet {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-        
+
         cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-        
+
         List fieldNames = new ArrayList(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
@@ -121,6 +125,7 @@ public class PaymentServlet extends HttpServlet {
         String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
-        resp.sendRedirect(paymentUrl);}
-    
+        resp.sendRedirect(paymentUrl);
+    }
+
 }

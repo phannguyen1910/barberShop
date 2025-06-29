@@ -1,8 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Payment Successful</title>
+    <title>Kết quả thanh toán</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -18,9 +19,15 @@
             display: inline-block;
             max-width: 500px;
         }
-        .success-icon {
+        .icon {
             font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .success {
             color: #2ecc71;
+        }
+        .fail {
+            color: #e74c3c;
         }
         h2 {
             color: #333;
@@ -38,12 +45,23 @@
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="success-icon">✔</div>
-        <h2>Payment Successful!</h2>
-        <p>Your payment has been processed successfully.</p>
-        <p>Thank you for using our service.</p>
-        <a href="views/common/home.jsp">← Trở về trang chủ </a>
-    </div>
+
+<div class="card">
+    <c:choose>
+        <c:when test="${transResult == true}">
+            <div class="icon success">✔</div>
+            <h2>Thanh toán thành công!</h2>
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
+            <a href="views/common/home.jsp">← Trở về trang chủ</a>
+        </c:when>
+        <c:otherwise>
+            <div class="icon fail">✖</div>
+            <h2>Thanh toán thất bại!</h2>
+            <p>Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại sau.</p>
+            <a href="views/common/home.jsp">← Quay lại trang chủ</a>
+        </c:otherwise>
+    </c:choose>
+</div>
+
 </body>
 </html>

@@ -4,32 +4,60 @@ import java.sql.Timestamp;
 
 public class Payment {
     private int id;
-    private int invoiceId;
-    private double amount;
+    private int appointmentId;
+    private String transactionNo;
+    private String method;
+    private float amount;
     private Timestamp receivedDate;
 
-    // Constructors, Getters, Setters
     public Payment() {}
 
-    public Payment(int invoiceId, double amount, Timestamp receivedDate) {
-        this.invoiceId = invoiceId;
+    public Payment(int appointmentId, String transactionNo, String method, float amount, Timestamp receivedDate) {
+        this.appointmentId = appointmentId;
+        this.transactionNo = transactionNo;
+        this.method = method;
         this.amount = amount;
         this.receivedDate = receivedDate;
     }
 
-    public int getInvoiceId() {
-        return invoiceId;
+    // Getters & Setters
+    public int getAppointmentId() {
+        return appointmentId;
     }
 
-    public void setInvoiceId(int invoiceId) {
-        this.invoiceId = invoiceId;
+    public void setAppointmentId(int appointmentId) {
+        this.appointmentId = appointmentId;
     }
 
-    public double getAmount() {
+    public String getTransactionNo() {
+        return transactionNo;
+    }
+
+    public void setTransactionNo(String transactionNo) {
+        this.transactionNo = transactionNo;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public float getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setAmount(float amount) {
         this.amount = amount;
     }
 

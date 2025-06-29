@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import model.Payment;
 
 /**
  *
@@ -35,18 +36,24 @@ public class PaymentDAO {
         return null;
     }
 
-    public boolean insertPayment(Connection con, int invoiceId) {
-        String sql = "INSERT INTO Payment (invoiceId, amount, receivedDate) VALUES (?, ?, ?)";
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, invoiceId);
-            ps.setDouble(2, 50000); // tiền cọc cố định
-            ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public boolean insertPayment(Payment payment) {
+    String sql = "INSERT INTO Payment (appointmentId, transactionNo, amount, receivedDate, method) VALUES (?, ?, ?, ?, ?)";
+    try (Connection con = getConnect();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, payment.getAppointmentId());
+        ps.setString(2, payment.getTransactionNo());
+        ps.setFloat(3, (float) payment.getAmount());  // dùng float
+        ps.setTimestamp(4, payment.getReceivedDate());
+        ps.setString(5, payment.getMethod());
+
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
-
-
+    return false;
 }
+}
+
+
+

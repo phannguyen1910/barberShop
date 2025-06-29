@@ -707,5 +707,15 @@ public class AppointmentDAO {
 
         return -1; // Trả -1 nếu có lỗi hoặc không tìm thấy
     }
+    public void updateAppointmentStatusAfterPayment(int appointmentId, String status) throws SQLException {
+    String sql = "UPDATE Appointment SET status = ? WHERE id = ?";
+    try (Connection conn = getConnect();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, status);
+        ps.setInt(2, appointmentId);
+        ps.executeUpdate();
+    }
+}
+
 
 }
