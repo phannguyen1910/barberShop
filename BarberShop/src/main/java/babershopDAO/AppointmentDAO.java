@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Appointment;
@@ -125,7 +126,7 @@ public class AppointmentDAO {
 
     // Inside your AppointmentDAO class
     public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int branchId, List<Integer> serviceIds) {
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Pending', ?)";
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Confirmed', ?)";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
         Connection con = null;
@@ -556,15 +557,89 @@ public class AppointmentDAO {
         }
     }
 
-    public void deleteAppointment(int id) {
-        String sql = "delete from Appointment where id=?";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);
+    public boolean cancelAppointment(int appointmentId) {
+        String sql = "UPDATE Appointment SET status = 'Cancelled' WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, appointmentId);
+            int rowsAffected = ps.executeUpdate();
+
+            return rowsAffected > 0; // true nếu có ít nhất 1 dòng được cập nhật
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
+    }
+
+    public List<Appointment> historyBooking(int customerId) {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql1 = "SELECT a.id, CONCAT(s.lastName, ' ', s.firstName) AS staffName, "
+                + "a.appointmentTime, a.status, b.name AS branchName "
+                + "FROM Appointment a "
+                + "INNER JOIN Staff s ON a.staffId = s.id "
+                + "INNER JOIN Branch b ON a.branchId = b.id "
+                + "WHERE a.customerId = ? "
+                + "ORDER BY a.appointmentTime DESC";
+        String sql2 = "SELECT s.name, s.price FROM Appointment_Service aps JOIN Service s ON aps.serviceId = s.id WHERE aps.appointmentId = ?";
+
+        try (Connection con = getConnect()) {
+            if (con == null) {
+                System.err.println("Không thể kết nối đến cơ sở dữ liệu.");
+                return appointments;
+            }
+
+            try (PreparedStatement ps1 = con.prepareStatement(sql1)) {
+                ps1.setInt(1, customerId);
+                ResultSet rs1 = ps1.executeQuery();
+                LocalDateTime appointmentTime = null;
+                while (rs1.next()) {
+                    int id = rs1.getInt("id");
+
+                    try {
+                        appointmentTime = rs1.getObject("appointmentTime", LocalDateTime.class);
+                    } catch (DateTimeParseException dtpe) {
+                        System.err.println("Lỗi định dạng ngày giờ cho appointment ID " + id);
+                        continue; // bỏ qua lần booking này
+                    }
+
+                    String staffName = rs1.getString("staffName");
+                    String status = rs1.getString("status");
+                    String branchName = rs1.getString("branchName");
+
+                    float totalAmount = 0;
+                    StringBuilder services = new StringBuilder();
+
+                    try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
+                        ps2.setInt(1, id);
+                        ResultSet rs2 = ps2.executeQuery();
+
+                        while (rs2.next()) {
+                            String name = rs2.getString("name");
+                            if (services.length() > 0) {
+                                services.append(", ");
+                            }
+                            services.append(name);
+                            totalAmount += rs2.getFloat("price");
+                        }
+
+                    } catch (SQLException e2) {
+                        System.err.println("Lỗi khi truy vấn danh sách dịch vụ cho appointment ID " + id + ": " + e2.getMessage());
+                        continue; // bỏ qua nếu không lấy được dịch vụ
+                    }
+
+                    Appointment appointment = new Appointment(id, appointmentTime, status, services.toString(), totalAmount, staffName, branchName);
+                    appointments.add(appointment);
+                }
+
+            } catch (SQLException e1) {
+                System.err.println("Lỗi khi truy vấn lịch sử booking cho customerId " + customerId + ": " + e1.getMessage());
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi kết nối đến cơ sở dữ liệu: " + e.getMessage());
+        }
+
+        return appointments;
     }
 
     public String Booking(int customerId, int staffId, String appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
@@ -659,13 +734,11 @@ public class AppointmentDAO {
         }
     }
 
-    public double caculateMoney(List<Service> services, int numberOfPeople) {
+    public double caculateMoney(List<Service> services) {
         double amount = 0;
         for (Service s : services) {
             amount += s.getPrice();
         }
-        amount = amount * numberOfPeople;
-        System.out.println(numberOfPeople);
         return amount;
     }
 
@@ -716,6 +789,19 @@ public class AppointmentDAO {
         ps.executeUpdate();
     }
 }
+    public float getTotalAmount(int appointmentId) throws SQLException {
+    String sql = "SELECT totalAmount FROM Appointment WHERE id = ?";
+    try (Connection conn = getConnect();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, appointmentId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getFloat("totalAmount");
+        }
+    }
+    return 0f;
+}
+
 
 
 }

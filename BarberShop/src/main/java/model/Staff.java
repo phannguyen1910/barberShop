@@ -19,6 +19,26 @@ public class Staff extends Account{
         this.branchId = branchId;
     }
 
+    public Staff(int id, int accountId, String firstName, String lastName, String img, String email, String phoneNumber, String password, String role, int status) {
+        super(email, phoneNumber, password, role, status);
+        this.id = id;
+        this.accountId = accountId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.img = img;
+    }
+
+    public Staff(int id, int accountId, String firstName, String lastName, String img, String email, String phoneNumber, int status) {
+        super(email, phoneNumber, status);
+        this.id = id;
+        this.accountId = accountId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.img = img;
+    }
+    
+    
+
     public Staff() {
     }
 

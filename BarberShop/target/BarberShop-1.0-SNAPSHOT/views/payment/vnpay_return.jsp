@@ -45,24 +45,15 @@
 </head>
 <body>
 <div class="container">
-    <c:choose>
-        <c:when test="${transResult eq true}">
-            <h2 class="success">✅ Thanh toán thành công!</h2>
-            <p>Cảm ơn bạn đã thanh toán qua VNPay.</p>
-            <p><strong>Mã đơn hàng:</strong> ${param.vnp_TxnRef}</p>
-            <p><strong>Mã giao dịch:</strong> ${param.vnp_TransactionNo}</p>
-            <p><strong>Số tiền:</strong> ${param.vnp_Amount / 100} VNĐ</p>
-        </c:when>
-        <c:otherwise>
-            <h2 class="error">❌ Thanh toán thất bại!</h2>
-            <p>Rất tiếc, giao dịch của bạn không thành công.</p>
-            <p>Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
-        </c:otherwise>
-    </c:choose>
+ <td>
+    <c:if test="${appointment.status == 'confirmed'}">
+        <form action="${pageContext.request.contextPath}/final-payment" method="post">
+            <input type="hidden" name="appointmentId" value="${appointment.id}" />
+            <button type="submit" class="btn btn-sm btn-primary">Thanh toán còn lại</button>
+        </form>
+    </c:if>
+</td>
 
-    <div class="mt-4">
-        <a href="${pageContext.request.contextPath}/products?action=find" class="btn">🛒 Tiếp tục mua sắm</a>
-    </div>
 </div>
 </body>
 </html>
