@@ -1,6 +1,7 @@
 package controller.Payment;
 
 import babershopDAO.AppointmentDAO;
+import babershopDAO.InvoiceDAO;
 import babershopDAO.PaymentDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,17 +32,29 @@ public class VnpayReturnServlet extends HttpServlet {
         if ("00".equals(vnp_ResponseCode)) {
             try {
                 // Extract appointmentId from vnp_TxnRef (e.g., APPT1751185196724 -> 73)
-                String idOnly = vnp_TxnRef.replaceAll("[^0-9]", "");
-                int appointmentId = Integer.parseInt(idOnly);
+                // Lấy số giữa "APPT" và dấu "_"
+                int appointmentId;
+                if (vnp_TxnRef.contains("_")) {
+                    String rawId = vnp_TxnRef.substring(4, vnp_TxnRef.indexOf("_"));
+                    appointmentId = Integer.parseInt(rawId);
+                } else {
+                    appointmentId = Integer.parseInt(vnp_TxnRef.substring(4));
+                }
 
                 float amount;
-                AppointmentDAO appointmentDAO = new AppointmentDAO();
+                InvoiceDAO invoiceDAO = new InvoiceDAO();
 
                 if ("final".equalsIgnoreCase(paymentType)) {
-                    float totalAmount = appointmentDAO.getTotalAmount(appointmentId);
+                    float totalAmount = invoiceDAO.getTotalAmountByAppointmentId(appointmentId);
                     amount = totalAmount - 50000f;
                 } else {
                     amount = 50000f; // Default deposit
+                }
+                
+                if ("final".equalsIgnoreCase(paymentType)) {
+                    invoiceDAO.updateInvoiceStatus(appointmentId, "Paid");
+                } else {
+                    invoiceDAO.updateInvoiceStatus(appointmentId, "Paid Deposit");
                 }
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -59,10 +72,11 @@ public class VnpayReturnServlet extends HttpServlet {
                 paymentDAO.insertPayment(payment);
 
                 // ✅ Update Appointment status
+                AppointmentDAO appointmentDAO = new AppointmentDAO();
                 if ("final".equalsIgnoreCase(paymentType)) {
-                    appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "completed");
+                    appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "Completed");
                 } else {
-                    appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "confirmed");
+                    appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "Confirmed");
                 }
 
                 req.setAttribute("transResult", true);

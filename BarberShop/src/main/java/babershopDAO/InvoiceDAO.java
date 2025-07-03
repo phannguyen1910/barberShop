@@ -302,4 +302,29 @@ public class InvoiceDAO {
                 return 1;
         }
     }
+    public float getTotalAmountByAppointmentId(int appointmentId) throws SQLException {
+    String sql = "SELECT totalAmount FROM Invoice WHERE appointmentId = ?";
+    try (Connection con = getConnect();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, appointmentId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getFloat("totalAmount");
+            }
+        }
+    }
+    return 0f; // hoặc throw lỗi nếu muốn bắt buộc có invoice
+}
+public boolean updateInvoiceStatus(int appointmentId, String status) {
+    String sql = "UPDATE Invoice SET status = ? WHERE appointmentId = ?";
+    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, status);
+        ps.setInt(2, appointmentId);
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 }

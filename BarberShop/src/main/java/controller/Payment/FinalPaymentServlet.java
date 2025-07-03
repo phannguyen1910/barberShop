@@ -2,6 +2,7 @@ package controller.Payment;
 
 import controller.Payment.Config;
 import babershopDAO.AppointmentDAO;
+import babershopDAO.InvoiceDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,10 +24,11 @@ public class FinalPaymentServlet extends HttpServlet {
             throws ServletException, IOException {
 
         int appointmentId = Integer.parseInt(req.getParameter("appointmentId"));
-        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        InvoiceDAO invoiceDAO = new InvoiceDAO();
+
         float totalAmount = 0f;
         try {
-            totalAmount = appointmentDAO.getTotalAmount(appointmentId);
+            totalAmount = invoiceDAO.getTotalAmountByAppointmentId(appointmentId);
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Không thể lấy totalAmount");
