@@ -18,13 +18,6 @@
 </head>
 <body>
     <c:if test="${not empty message}">
-<<<<<<< Updated upstream
-    <div class="alert alert-success">${message}</div>
-</c:if>
-<c:if test="${not empty error}">
-    <div class="alert alert-danger">${error}</div>
-</c:if>
-=======
         <div class="alert alert-success">${message}</div>
     </c:if>
     <c:if test="${not empty error}">
@@ -51,7 +44,6 @@
         </div>
     </c:if>
 
->>>>>>> Stashed changes
     <jsp:include page="/views/common/navbar.jsp"/>
     <div class="container mt-5">
         <h2 class="section-title">Thông tin cá nhân</h2>
@@ -65,6 +57,10 @@
                     <a href="${pageContext.request.contextPath}/views/common/editProfile.jsp" class="btn btn-primary">
                         <i class="fa fa-edit"></i> Chỉnh sửa thông tin
                     </a>
+                    <!-- Nút mở Modal cho Lịch sử đặt lịch -->
+                    <button id="showHistoryModalBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#historyTableModal">
+                        <i class="fas fa-history"></i> Lịch sử đặt lịch
+                    </button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-borderless">
@@ -105,10 +101,7 @@
             </div>
         </div>
     </div>
-<<<<<<< Updated upstream
-                                             
-=======
-                                        
+
     <%-- Modal Dialog cho Lịch sử đặt lịch --%>
     <div class="modal fade" id="historyTableModal" tabindex="-1" aria-labelledby="historyTableModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -150,7 +143,6 @@
         </div>
     </div>
 
->>>>>>> Stashed changes
 <footer class="footer">
     <div class="container">
         <div class="row">
@@ -189,69 +181,56 @@
     </div>
 </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< Updated upstream
-</body>
-</html>
-=======
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Lịch sử đặt lịch
             const showHistoryModalBtn = document.getElementById('showHistoryModalBtn');
             const historyTableBody = document.querySelector('#historyTable tbody');
             const historyTable = document.getElementById('historyTable');
             const noHistoryMessage = document.getElementById('noHistoryMessage');
 
             showHistoryModalBtn.addEventListener('click', function() {
-                // Hiển thị thông báo "Đang tải..." và ẩn bảng cũ
                 noHistoryMessage.textContent = 'Đang tải lịch sử đặt lịch...';
                 noHistoryMessage.style.display = 'block';
                 historyTable.style.display = 'none';
-                historyTableBody.innerHTML = ''; // Xóa nội dung cũ trong bảng
+                historyTableBody.innerHTML = '';
 
                 fetch('${pageContext.request.contextPath}/HistoryAppointmentServlet')
-                    .then(response => {
-                        return response.text().then(text => {
-                            if (!response.ok) {
-                                try {
-                                    const errorData = JSON.parse(text);
-                                    if (response.status === 401 && errorData.error) {
-                                        throw new Error(errorData.error);
-                                    }
-                                    throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + (errorData.message || JSON.stringify(errorData)));
-                                } catch (e) {
-                                    console.error("Raw Server Error Response (not JSON):", text); 
-                                    const errorMessage = text.substring(0, Math.min(text.length, 200));
-                                    throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + errorMessage + '...');
+                    .then(response => response.text().then(text => {
+                        if (!response.ok) {
+                            try {
+                                const errorData = JSON.parse(text);
+                                if (response.status === 401 && errorData.error) {
+                                    throw new Error(errorData.error);
                                 }
+                                throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + (errorData.message || JSON.stringify(errorData)));
+                            } catch (e) {
+                                const errorMessage = text.substring(0, Math.min(text.length, 200));
+                                throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + errorMessage + '...');
                             }
-                            return JSON.parse(text); 
-                        });
-                    })
+                        }
+                        return JSON.parse(text);
+                    }))
                     .then(data => {
-                        noHistoryMessage.style.display = 'none'; 
+                        noHistoryMessage.style.display = 'none';
                         if (data && data.length > 0) {
-                            historyTable.style.display = 'table'; 
+                            historyTable.style.display = 'table';
                             data.forEach(appointment => {
                                 const row = historyTableBody.insertRow();
-                      
                                 row.insertCell().textContent = formatDateTime(appointment.appointmentTime);
                                 row.insertCell().textContent = appointment.services;
-                                
                                 const totalAmountCell = row.insertCell();
                                 totalAmountCell.textContent = formatCurrency(appointment.totalAmount);
-                                
                                 const statusCell = row.insertCell();
                                 const statusSpan = document.createElement('span');
                                 statusSpan.textContent = appointment.status;
                                 statusSpan.className = getStatusClass(appointment.status);
                                 statusCell.appendChild(statusSpan);
-                                
-                                row.insertCell().textContent = appointment.staffName; 
+                                row.insertCell().textContent = appointment.staffName;
                                 row.insertCell().textContent = appointment.branchName;
-                                
                                 // Add cancel button cell
                                 const actionCell = row.insertCell();
                                 const canCancel = appointment.status === 'Pending' || appointment.status === 'Confirmed';
-                                
                                 if (canCancel) {
                                     const cancelBtn = document.createElement('button');
                                     cancelBtn.className = 'btn btn-cancel';
@@ -267,23 +246,19 @@
                                     disabledBtn.disabled = true;
                                     actionCell.appendChild(disabledBtn);
                                 }
-
                                 const feedbackCell = row.insertCell();
                                 if (appointment.status === 'Completed') {
-                                    // Tạo form chuyển sang feedback.jsp, truyền customerId, staffId, appointmentId
                                     const feedbackForm = document.createElement('form');
                                     feedbackForm.action = '${pageContext.request.contextPath}/views/common/feedback.jsp';
                                     feedbackForm.method = 'get';
                                     feedbackForm.style.display = 'flex';
                                     feedbackForm.style.flexDirection = 'column';
                                     feedbackForm.style.alignItems = 'center';
-                                    // Tiêu đề Feedback
                                     const feedbackLabel = document.createElement('span');
                                     feedbackLabel.textContent = 'Feedback';
                                     feedbackLabel.style.fontWeight = 'bold';
                                     feedbackLabel.style.marginBottom = '4px';
                                     feedbackForm.appendChild(feedbackLabel);
-                                    // Hidden input
                                     const inputCustomer = document.createElement('input');
                                     inputCustomer.type = 'hidden';
                                     inputCustomer.name = 'customerId';
@@ -299,7 +274,6 @@
                                     inputAppointment.name = 'appointmentId';
                                     inputAppointment.value = appointment.id;
                                     feedbackForm.appendChild(inputAppointment);
-                                    // Nút gửi feedback
                                     const feedbackBtn = document.createElement('button');
                                     feedbackBtn.type = 'submit';
                                     feedbackBtn.className = 'btn btn-primary';
@@ -313,28 +287,24 @@
                             });
                         } else {
                             noHistoryMessage.textContent = 'Bạn chưa có lịch sử đặt lịch nào.';
-                            noHistoryMessage.style.display = 'block'; 
-                            historyTable.style.display = 'none'; 
+                            noHistoryMessage.style.display = 'block';
+                            historyTable.style.display = 'none';
                         }
                     })
                     .catch(error => {
-                        console.error('Error fetching history:', error);
                         noHistoryMessage.textContent = 'Không thể tải lịch sử đặt lịch: ' + error.message;
                         noHistoryMessage.style.display = 'block';
                         historyTable.style.display = 'none';
-                        alert('Lỗi: ' + error.message); 
                     });
             });
 
             // Function to handle cancel appointment
             function handleCancelAppointment(appointmentId, status) {
                 if (status === 'Confirmed') {
-                    // Show warning for confirmed appointments
                     if (confirm('Nếu như hủy lịch bạn sẽ mất tiền đặt cọc. Bạn có chắc chắn muốn hủy lịch không?')) {
                         cancelAppointment(appointmentId);
                     }
                 } else if (status === 'Pending') {
-                    // Direct confirmation for pending appointments
                     if (confirm('Bạn có chắc chắn muốn hủy lịch hẹn này không?')) {
                         cancelAppointment(appointmentId);
                     }
@@ -343,16 +313,13 @@
 
             // Function to send cancel request to servlet
             function cancelAppointment(appointmentId) {
-                // Create form and submit
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '${pageContext.request.contextPath}/CancelAppointmentServlet';
-                
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'appointmentId';
                 input.value = appointmentId;
-                
                 form.appendChild(input);
                 document.body.appendChild(form);
                 form.submit();
@@ -377,18 +344,17 @@
                     if (isNaN(date.getTime())) {
                         throw new Error('Invalid date string');
                     }
-                    const options = { 
-                        year: 'numeric', 
-                        month: '2-digit', 
-                        day: '2-digit', 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        second: '2-digit', 
+                    const options = {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
                         hour12: false
                     };
                     return date.toLocaleString('vi-VN', options);
                 } catch (e) {
-                    console.error("Lỗi định dạng ngày giờ cho chuỗi:", isoString, e);
                     return isoString;
                 }
             }
@@ -397,26 +363,25 @@
             function formatCurrency(amount) {
                 const numAmount = parseFloat(amount);
                 if (isNaN(numAmount)) {
-                    console.warn("Giá trị không phải số để định dạng tiền tệ:", amount);
                     return amount;
                 }
                 return numAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
             }
 
+            // Alert tự động ẩn
             window.addEventListener('DOMContentLoaded', function() {
                 var alert = document.getElementById('feedbackAlert');
                 if (alert) {
                     setTimeout(function() {
-                        // Sử dụng Bootstrap để fade out alert
                         alert.classList.remove('show');
                         alert.classList.add('fade');
                         setTimeout(function() {
                             if (alert.parentNode) alert.parentNode.removeChild(alert);
-                        }, 500); // Đợi hiệu ứng fade out
+                        }, 500);
                     }, 1500);
                 }
             });
         });
     </script>
 </body>
->>>>>>> Stashed changes
+</html>

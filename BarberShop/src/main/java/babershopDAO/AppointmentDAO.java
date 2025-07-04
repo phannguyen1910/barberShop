@@ -311,28 +311,16 @@ public class AppointmentDAO {
         }
     }
 
-<<<<<<< Updated upstream
-    public void deleteAppointment(int id) {
-        String sql = "delete from Appointment where id=?";
-        try (Connection con = getConnect()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);
-=======
     public boolean cancelAppointment(int appointmentId) {
         String sql = "UPDATE Appointment SET status = 'Cancelled' WHERE id = ?";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, appointmentId);
-            int rowsAffected = ps.executeUpdate();
-
-            return rowsAffected > 0; // true nếu có ít nhất 1 dòng được cập nhật
+            int rows = ps.executeUpdate();
+            return rows > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            System.err.println("Lỗi kết nối đến cơ sở dữ liệu: " + e.getMessage());
         }
+        return false;
     }
 
     public List<Appointment> historyBooking(int customerId) {
@@ -359,10 +347,9 @@ public class AppointmentDAO {
                 while (rs1.next()) {
                     int id = rs1.getInt("id");
                     int staffId = rs1.getInt("staffId");
-
                     try {
                         appointmentTime = rs1.getObject("appointmentTime", LocalDateTime.class);
-                    } catch (DateTimeParseException dtpe) {
+                    } catch (Exception dtpe) {
                         System.err.println("Lỗi định dạng ngày giờ cho appointment ID " + id);
                         continue; // bỏ qua lần booking này
                     }
@@ -392,9 +379,7 @@ public class AppointmentDAO {
                         continue; // bỏ qua nếu không lấy được dịch vụ
                     }
 
-                    Appointment appointment = new Appointment(id, 0, staffId, appointmentTime, status, null, services.toString(), totalAmount, 0);
-                    appointment.setStaffName(staffName);
-                    appointment.setBranchName(branchName);
+                    Appointment appointment = new Appointment(id, customerId, staffId, appointmentTime, status, null, services.toString(), totalAmount);
                     appointments.add(appointment);
                 }
 
@@ -404,8 +389,9 @@ public class AppointmentDAO {
 
         } catch (SQLException e) {
             System.err.println("Lỗi kết nối đến cơ sở dữ liệu: " + e.getMessage());
->>>>>>> Stashed changes
         }
+
+        return appointments;
     }
 
     public String Booking(int customerId, int staffId, String appointmentTime, int numberOfPeople, List<Integer> serviceIds) {
