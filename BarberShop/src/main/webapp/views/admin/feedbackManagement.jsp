@@ -702,7 +702,31 @@
                                 <th>Phản hồi</th>
                             </tr>
                         </thead>
-                        <tbody id="feedbackTableBody"></tbody>
+                        <tbody id="feedbackTableBody">
+                            <%-- Hiển thị danh sách feedback từ backend --%>
+                            <jsp:useBean id="feedbackList" class="java.util.ArrayList" scope="request" />
+                            <jsp:useBean id="feedback" class="model.Feedback" scope="page" />
+                            <%-- Giả sử request.setAttribute("feedbackList", List<Feedback>) đã được set ở servlet --%>
+                            <% for (Object obj : (java.util.List)request.getAttribute("feedbackList")) {
+                                 model.Feedback feedback = (model.Feedback)obj;
+                            %>
+                            <tr>
+                                <td><%= feedback.getAppointmentId() %></td>
+                                <td><%= feedback.getStaffId() %></td>
+                                <td><%= babershopDAO.CustomerDAO.getCustomerFullName(feedback.getCustomerId()) %></td>
+                                <td>
+                                    <% for (int i = 1; i <= 5; i++) { %>
+                                        <% if (i <= feedback.getRate()) { %>
+                                            <i class="fas fa-star" style="color: #FFC107;"></i>
+                                        <% } else { %>
+                                            <i class="far fa-star" style="color: #FFC107;"></i>
+                                        <% } %>
+                                    <% } %>
+                                </td>
+                                <td class="feedback-text"><%= feedback.getComment() %></td>
+                            </tr>
+                            <% } %>
+                        </tbody>
                     </table>
                 </div>
             </main>

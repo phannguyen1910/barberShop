@@ -1,4 +1,3 @@
-
 package model;
 
 import java.time.LocalDateTime;
@@ -9,13 +8,15 @@ public class Feedback {
     private int staffId;
     private int appointmentId;
     private String comment;
+    private java.time.LocalDateTime feedbackTime;
     private int rate;
-    private LocalDateTime feedbackTime;
+    private int serviceId;
+    private int rating;
 
     public Feedback() {
     }
 
-    public Feedback(int customerId, int staffId, int appointmentId, String comment, int rate, LocalDateTime feedbackTime) {
+    public Feedback(int customerId, int staffId, int appointmentId, String comment, int rate, java.time.LocalDateTime feedbackTime) {
         this.customerId = customerId;
         this.staffId = staffId;
         this.appointmentId = appointmentId;
@@ -27,19 +28,11 @@ public class Feedback {
     
     
 
-    public int getRate() {
-        return rate;
-    }
-
-    public void setRate(int rate) {
-        this.rate = rate;
-    }
-
-    public LocalDateTime getFeedbackTime() {
+    public java.time.LocalDateTime getFeedbackTime() {
         return feedbackTime;
     }
 
-    public void setFeedbackTime(LocalDateTime feedbackTime) {
+    public void setFeedbackTime(java.time.LocalDateTime feedbackTime) {
         this.feedbackTime = feedbackTime;
     }
 
@@ -83,5 +76,29 @@ public class Feedback {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
+
+    public int getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(int serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

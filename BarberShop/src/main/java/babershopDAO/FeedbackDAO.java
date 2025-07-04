@@ -88,4 +88,21 @@ public class FeedbackDAO {
             System.out.println(e);
         }
     }
+
+    public static void insertFeedback(Feedback feedback) {
+        String sql = "INSERT INTO Feedback (customerId, staffId, appointmentId, serviceId, rating, comment, feedbackTime) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, feedback.getCustomerId());
+            ps.setInt(2, feedback.getStaffId());
+            ps.setInt(3, feedback.getAppointmentId());
+            ps.setInt(4, feedback.getServiceId());
+            ps.setInt(5, feedback.getRating());
+            ps.setString(6, feedback.getComment());
+            ps.setObject(7, feedback.getFeedbackTime());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 }

@@ -311,6 +311,7 @@ public class AppointmentDAO {
         }
     }
 
+<<<<<<< Updated upstream
     public void deleteAppointment(int id) {
         String sql = "delete from Appointment where id=?";
         try (Connection con = getConnect()) {
@@ -319,6 +320,91 @@ public class AppointmentDAO {
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e);
+=======
+    public boolean cancelAppointment(int appointmentId) {
+        String sql = "UPDATE Appointment SET status = 'Cancelled' WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, appointmentId);
+            int rowsAffected = ps.executeUpdate();
+
+            return rowsAffected > 0; // true nếu có ít nhất 1 dòng được cập nhật
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Appointment> historyBooking(int customerId) {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql1 = "SELECT a.id, a.staffId, CONCAT(s.lastName, ' ', s.firstName) AS staffName, "
+                + "a.appointmentTime, a.status, b.name AS branchName "
+                + "FROM Appointment a "
+                + "INNER JOIN Staff s ON a.staffId = s.id "
+                + "INNER JOIN Branch b ON a.branchId = b.id "
+                + "WHERE a.customerId = ? "
+                + "ORDER BY a.appointmentTime DESC";
+        String sql2 = "SELECT s.name, s.price FROM Appointment_Service aps JOIN Service s ON aps.serviceId = s.id WHERE aps.appointmentId = ?";
+
+        try (Connection con = getConnect()) {
+            if (con == null) {
+                System.err.println("Không thể kết nối đến cơ sở dữ liệu.");
+                return appointments;
+            }
+
+            try (PreparedStatement ps1 = con.prepareStatement(sql1)) {
+                ps1.setInt(1, customerId);
+                ResultSet rs1 = ps1.executeQuery();
+                LocalDateTime appointmentTime = null;
+                while (rs1.next()) {
+                    int id = rs1.getInt("id");
+                    int staffId = rs1.getInt("staffId");
+
+                    try {
+                        appointmentTime = rs1.getObject("appointmentTime", LocalDateTime.class);
+                    } catch (DateTimeParseException dtpe) {
+                        System.err.println("Lỗi định dạng ngày giờ cho appointment ID " + id);
+                        continue; // bỏ qua lần booking này
+                    }
+
+                    String staffName = rs1.getString("staffName");
+                    String status = rs1.getString("status");
+                    String branchName = rs1.getString("branchName");
+
+                    float totalAmount = 0;
+                    StringBuilder services = new StringBuilder();
+
+                    try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
+                        ps2.setInt(1, id);
+                        ResultSet rs2 = ps2.executeQuery();
+
+                        while (rs2.next()) {
+                            String name = rs2.getString("name");
+                            if (services.length() > 0) {
+                                services.append(", ");
+                            }
+                            services.append(name);
+                            totalAmount += rs2.getFloat("price");
+                        }
+
+                    } catch (SQLException e2) {
+                        System.err.println("Lỗi khi truy vấn danh sách dịch vụ cho appointment ID " + id + ": " + e2.getMessage());
+                        continue; // bỏ qua nếu không lấy được dịch vụ
+                    }
+
+                    Appointment appointment = new Appointment(id, 0, staffId, appointmentTime, status, null, services.toString(), totalAmount, 0);
+                    appointment.setStaffName(staffName);
+                    appointment.setBranchName(branchName);
+                    appointments.add(appointment);
+                }
+
+            } catch (SQLException e1) {
+                System.err.println("Lỗi khi truy vấn lịch sử booking cho customerId " + customerId + ": " + e1.getMessage());
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi kết nối đến cơ sở dữ liệu: " + e.getMessage());
+>>>>>>> Stashed changes
         }
     }
 
@@ -461,6 +547,23 @@ public class AppointmentDAO {
         }
 
         return -1; // Trả -1 nếu có lỗi hoặc không tìm thấy
+    }
+
+    // Lấy staffId từ appointmentId
+    public static int getStaffIdByAppointmentId(int appointmentId) {
+        String sql = "SELECT staffId FROM Appointment WHERE id = ?";
+        try (Connection con = getConnect();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("staffId");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getStaffIdByAppointmentId: " + e);
+        }
+        return 0; // hoặc -1 nếu muốn báo lỗi rõ hơn
     }
 
 }

@@ -8,7 +8,11 @@ babershopDAO\StaffDAO.class
 controller\BookingServlet.class
 model\WorkSchedule.class
 controller\HolidayServlet.class
+<<<<<<< Updated upstream
 controller\DeleteService.class
+=======
+controller\AddFeedbackServlet.class
+>>>>>>> Stashed changes
 model\Appointment.class
 constant\Iconstant.class
 model\Voucher.class

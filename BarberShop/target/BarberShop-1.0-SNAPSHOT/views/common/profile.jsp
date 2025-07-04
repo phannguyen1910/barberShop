@@ -18,11 +18,40 @@
 </head>
 <body>
     <c:if test="${not empty message}">
+<<<<<<< Updated upstream
     <div class="alert alert-success">${message}</div>
 </c:if>
 <c:if test="${not empty error}">
     <div class="alert alert-danger">${error}</div>
 </c:if>
+=======
+        <div class="alert alert-success">${message}</div>
+    </c:if>
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger">${error}</div>
+    </c:if>
+    <%-- Hiển thị errorMessage từ Servlet nếu có (ví dụ: chưa đăng nhập) --%>
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger">${errorMessage}</div>
+    </c:if>
+
+    <%-- Hiển thị thông báo gửi feedback thành công nếu có msg=success --%>
+    <c:if test="${param.msg == 'success'}">
+        <div class="alert alert-success alert-dismissible fade show mx-auto text-center" id="feedbackAlert" style="max-width: 400px;">
+            <strong><i class="fas fa-check-circle"></i> Thành công!</strong> Gởi feedback thành công
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
+    <%-- Hiển thị thông báo gửi feedback thất bại nếu có msg=error --%>
+    <c:if test="${param.msg == 'error'}">
+        <div class="alert alert-danger alert-dismissible fade show mx-auto text-center" id="feedbackAlert" style="max-width: 400px;">
+            <strong><i class="fas fa-times-circle"></i> Thất bại!</strong> Gởi feedback thất bại. Vui lòng thử lại!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
+>>>>>>> Stashed changes
     <jsp:include page="/views/common/navbar.jsp"/>
     <div class="container mt-5">
         <h2 class="section-title">Thông tin cá nhân</h2>
@@ -76,7 +105,52 @@
             </div>
         </div>
     </div>
+<<<<<<< Updated upstream
                                              
+=======
+                                        
+    <%-- Modal Dialog cho Lịch sử đặt lịch --%>
+    <div class="modal fade" id="historyTableModal" tabindex="-1" aria-labelledby="historyTableModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historyTableModalLabel">
+                        <i class="fas fa-history me-2"></i>Lịch sử đặt lịch của bạn
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="historyTableContainer" class="table-responsive">
+                        <p id="noHistoryMessage" class="text-center">Đang tải lịch sử đặt lịch...</p>
+                        <table class="table" id="historyTable" style="display: none;"> <%-- Mặc định ẩn bảng --%>
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Nhân viên</th>
+                                    <th>Chi nhánh</th>
+                                    <th>Thao tác</th>
+                                    <th>Feedback</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%-- Dữ liệu sẽ được điền vào đây bởi JavaScript --%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+>>>>>>> Stashed changes
 <footer class="footer">
     <div class="container">
         <div class="row">
@@ -115,5 +189,234 @@
     </div>
 </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< Updated upstream
 </body>
 </html>
+=======
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const showHistoryModalBtn = document.getElementById('showHistoryModalBtn');
+            const historyTableBody = document.querySelector('#historyTable tbody');
+            const historyTable = document.getElementById('historyTable');
+            const noHistoryMessage = document.getElementById('noHistoryMessage');
+
+            showHistoryModalBtn.addEventListener('click', function() {
+                // Hiển thị thông báo "Đang tải..." và ẩn bảng cũ
+                noHistoryMessage.textContent = 'Đang tải lịch sử đặt lịch...';
+                noHistoryMessage.style.display = 'block';
+                historyTable.style.display = 'none';
+                historyTableBody.innerHTML = ''; // Xóa nội dung cũ trong bảng
+
+                fetch('${pageContext.request.contextPath}/HistoryAppointmentServlet')
+                    .then(response => {
+                        return response.text().then(text => {
+                            if (!response.ok) {
+                                try {
+                                    const errorData = JSON.parse(text);
+                                    if (response.status === 401 && errorData.error) {
+                                        throw new Error(errorData.error);
+                                    }
+                                    throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + (errorData.message || JSON.stringify(errorData)));
+                                } catch (e) {
+                                    console.error("Raw Server Error Response (not JSON):", text); 
+                                    const errorMessage = text.substring(0, Math.min(text.length, 200));
+                                    throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + errorMessage + '...');
+                                }
+                            }
+                            return JSON.parse(text); 
+                        });
+                    })
+                    .then(data => {
+                        noHistoryMessage.style.display = 'none'; 
+                        if (data && data.length > 0) {
+                            historyTable.style.display = 'table'; 
+                            data.forEach(appointment => {
+                                const row = historyTableBody.insertRow();
+                      
+                                row.insertCell().textContent = formatDateTime(appointment.appointmentTime);
+                                row.insertCell().textContent = appointment.services;
+                                
+                                const totalAmountCell = row.insertCell();
+                                totalAmountCell.textContent = formatCurrency(appointment.totalAmount);
+                                
+                                const statusCell = row.insertCell();
+                                const statusSpan = document.createElement('span');
+                                statusSpan.textContent = appointment.status;
+                                statusSpan.className = getStatusClass(appointment.status);
+                                statusCell.appendChild(statusSpan);
+                                
+                                row.insertCell().textContent = appointment.staffName; 
+                                row.insertCell().textContent = appointment.branchName;
+                                
+                                // Add cancel button cell
+                                const actionCell = row.insertCell();
+                                const canCancel = appointment.status === 'Pending' || appointment.status === 'Confirmed';
+                                
+                                if (canCancel) {
+                                    const cancelBtn = document.createElement('button');
+                                    cancelBtn.className = 'btn btn-cancel';
+                                    cancelBtn.innerHTML = '<i class="fas fa-times me-1"></i>Hủy';
+                                    cancelBtn.onclick = function() {
+                                        handleCancelAppointment(appointment.id, appointment.status);
+                                    };
+                                    actionCell.appendChild(cancelBtn);
+                                } else {
+                                    const disabledBtn = document.createElement('button');
+                                    disabledBtn.className = 'btn btn-cancel';
+                                    disabledBtn.innerHTML = '<i class="fas fa-ban me-1"></i>Hủy';
+                                    disabledBtn.disabled = true;
+                                    actionCell.appendChild(disabledBtn);
+                                }
+
+                                const feedbackCell = row.insertCell();
+                                if (appointment.status === 'Completed') {
+                                    // Tạo form chuyển sang feedback.jsp, truyền customerId, staffId, appointmentId
+                                    const feedbackForm = document.createElement('form');
+                                    feedbackForm.action = '${pageContext.request.contextPath}/views/common/feedback.jsp';
+                                    feedbackForm.method = 'get';
+                                    feedbackForm.style.display = 'flex';
+                                    feedbackForm.style.flexDirection = 'column';
+                                    feedbackForm.style.alignItems = 'center';
+                                    // Tiêu đề Feedback
+                                    const feedbackLabel = document.createElement('span');
+                                    feedbackLabel.textContent = 'Feedback';
+                                    feedbackLabel.style.fontWeight = 'bold';
+                                    feedbackLabel.style.marginBottom = '4px';
+                                    feedbackForm.appendChild(feedbackLabel);
+                                    // Hidden input
+                                    const inputCustomer = document.createElement('input');
+                                    inputCustomer.type = 'hidden';
+                                    inputCustomer.name = 'customerId';
+                                    inputCustomer.value = appointment.customerId || '${sessionScope.customer.id}';
+                                    feedbackForm.appendChild(inputCustomer);
+                                    const inputStaff = document.createElement('input');
+                                    inputStaff.type = 'hidden';
+                                    inputStaff.name = 'staffId';
+                                    inputStaff.value = appointment.staffId || '';
+                                    feedbackForm.appendChild(inputStaff);
+                                    const inputAppointment = document.createElement('input');
+                                    inputAppointment.type = 'hidden';
+                                    inputAppointment.name = 'appointmentId';
+                                    inputAppointment.value = appointment.id;
+                                    feedbackForm.appendChild(inputAppointment);
+                                    // Nút gửi feedback
+                                    const feedbackBtn = document.createElement('button');
+                                    feedbackBtn.type = 'submit';
+                                    feedbackBtn.className = 'btn btn-primary';
+                                    feedbackBtn.style.marginTop = '4px';
+                                    feedbackBtn.textContent = 'Gửi Feedback';
+                                    feedbackForm.appendChild(feedbackBtn);
+                                    feedbackCell.appendChild(feedbackForm);
+                                } else {
+                                    feedbackCell.textContent = '-';
+                                }
+                            });
+                        } else {
+                            noHistoryMessage.textContent = 'Bạn chưa có lịch sử đặt lịch nào.';
+                            noHistoryMessage.style.display = 'block'; 
+                            historyTable.style.display = 'none'; 
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching history:', error);
+                        noHistoryMessage.textContent = 'Không thể tải lịch sử đặt lịch: ' + error.message;
+                        noHistoryMessage.style.display = 'block';
+                        historyTable.style.display = 'none';
+                        alert('Lỗi: ' + error.message); 
+                    });
+            });
+
+            // Function to handle cancel appointment
+            function handleCancelAppointment(appointmentId, status) {
+                if (status === 'Confirmed') {
+                    // Show warning for confirmed appointments
+                    if (confirm('Nếu như hủy lịch bạn sẽ mất tiền đặt cọc. Bạn có chắc chắn muốn hủy lịch không?')) {
+                        cancelAppointment(appointmentId);
+                    }
+                } else if (status === 'Pending') {
+                    // Direct confirmation for pending appointments
+                    if (confirm('Bạn có chắc chắn muốn hủy lịch hẹn này không?')) {
+                        cancelAppointment(appointmentId);
+                    }
+                }
+            }
+
+            // Function to send cancel request to servlet
+            function cancelAppointment(appointmentId) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '${pageContext.request.contextPath}/CancelAppointmentServlet';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'appointmentId';
+                input.value = appointmentId;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            // Function to get status CSS class
+            function getStatusClass(status) {
+                switch(status) {
+                    case 'Pending': return 'status-pending';
+                    case 'Confirmed': return 'status-confirmed';
+                    case 'Completed': return 'status-completed';
+                    case 'Cancelled': return 'status-cancelled';
+                    default: return 'status-unknown';
+                }
+            }
+
+            // Hàm định dạng ngày giờ
+            function formatDateTime(isoString) {
+                if (!isoString) return '';
+                try {
+                    const date = new Date(isoString);
+                    if (isNaN(date.getTime())) {
+                        throw new Error('Invalid date string');
+                    }
+                    const options = { 
+                        year: 'numeric', 
+                        month: '2-digit', 
+                        day: '2-digit', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit', 
+                        hour12: false
+                    };
+                    return date.toLocaleString('vi-VN', options);
+                } catch (e) {
+                    console.error("Lỗi định dạng ngày giờ cho chuỗi:", isoString, e);
+                    return isoString;
+                }
+            }
+
+            // Hàm định dạng tiền tệ
+            function formatCurrency(amount) {
+                const numAmount = parseFloat(amount);
+                if (isNaN(numAmount)) {
+                    console.warn("Giá trị không phải số để định dạng tiền tệ:", amount);
+                    return amount;
+                }
+                return numAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            }
+
+            window.addEventListener('DOMContentLoaded', function() {
+                var alert = document.getElementById('feedbackAlert');
+                if (alert) {
+                    setTimeout(function() {
+                        // Sử dụng Bootstrap để fade out alert
+                        alert.classList.remove('show');
+                        alert.classList.add('fade');
+                        setTimeout(function() {
+                            if (alert.parentNode) alert.parentNode.removeChild(alert);
+                        }, 500); // Đợi hiệu ứng fade out
+                    }, 1500);
+                }
+            });
+        });
+    </script>
+</body>
+>>>>>>> Stashed changes
