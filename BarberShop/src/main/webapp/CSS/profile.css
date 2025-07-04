@@ -466,3 +466,376 @@ html, body {
         font-size: 0.9rem !important; /* Giảm kích thước font */
     }
 }
+        /* General styles for the Profile Page to match overall theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(29, 29, 27, 0.7), rgba(29, 29, 27, 0.7)),
+                url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e0e0; /* Light text for dark background */
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #DAA520; /* Gold accent color */
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #DAA520;
+            border-radius: 2px;
+        }
+        
+        .status-unknown { color: gray; font-weight: bold; }
+
+        .service-card { /* Reusing name, but acts as a content card */
+            background: rgba(29, 29, 27, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            max-width: 800px; /* Limit width for better readability */
+            margin: 0 auto; /* Center the card */
+            margin-bottom: 30px; /* Add space below this card */
+        }
+
+        .table-responsive {
+            margin-top: 20px;
+        }
+
+        .table {
+            color: #e0e0e0;
+        }
+
+        .table-borderless tbody tr td {
+            border: none;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .fw-bold {
+            color: #DAA520; /* Gold for bold labels */
+            font-weight: 600 !important;
+        }
+
+        .btn-primary {
+            background-color: #DAA520;
+            border-color: #DAA520;
+            color: #1d1d1b; /* Dark text on gold button */
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #B8860B;
+            border-color: #B8860B;
+            color: #fff; /* White text on hover */
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #badbcc;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        /* Enhanced Modal Styles - White background with black text */
+        #historyTableModal .modal-content {
+            background: #ffffff; /* White background */
+            border-radius: 15px;
+            border: 2px solid #DAA520; /* Gold border */
+            color: #000000; /* Black text */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        #historyTableModal .modal-header {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            border-bottom: none;
+            border-radius: 15px 15px 0 0;
+            padding: 20px 30px;
+        }
+
+        #historyTableModal .modal-title {
+            font-weight: 700;
+            color: #ffffff; /* White text on gold background */
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        #historyTableModal .btn-close {
+            filter: brightness(0) invert(1); /* White close button */
+        }
+
+        #historyTableModal .modal-body {
+            padding: 30px;
+            background: #ffffff;
+        }
+
+        #historyTableModal .table {
+            color: #000000; /* Black text */
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #historyTableModal .table thead th {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: #ffffff; /* White text on gold background */
+            border: none;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 600;
+            padding: 15px 12px;
+            font-size: 0.95rem;
+        }
+
+        #historyTableModal .table thead th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        #historyTableModal .table thead th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        #historyTableModal .table tbody tr td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+        
+        #historyTableModal .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa; /* Light gray stripe */
+        }
+
+        #historyTableModal .table tbody tr:hover {
+            background-color: #fff3cd; /* Light gold hover effect */
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        #historyTableModal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 15px 15px;
+            padding: 20px 30px;
+        }
+
+        /* Status styles with better contrast for white background */
+        .status-pending { 
+            color: #ff8c00; 
+            font-weight: bold; 
+            background: #fff3cd;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        .status-confirmed { 
+            color: #28a745; 
+            font-weight: bold; 
+            background: #d4edda;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        .status-completed { 
+            color: #17a2b8; 
+            font-weight: bold; 
+            background: #d1ecf1;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        .status-cancelled { 
+            color: #dc3545; 
+            font-weight: bold; 
+            background: #f8d7da;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Cancel button styles */
+        .btn-cancel {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .btn-cancel:disabled {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #ffffff;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Loading message styles */
+        #noHistoryMessage {
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Footer Styles from dashboard/appointment management */
+        .footer {
+            background: rgba(29, 29, 27, 0.95); /* Dark background for consistency */
+            backdrop-filter: blur(10px);
+            color: #f5f5f5;
+            padding: 40px 0;
+            margin-top: 60px; /* Space above footer */
+            border-top: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .footer-col {
+            margin-bottom: 30px;
+        }
+
+        .footer-logo {
+            width: 120px; /* Adjust size as needed */
+            margin-bottom: 20px;
+            filter: brightness(1.2); /* Make logo stand out on dark */
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #DAA520; /* Gold color for titles */
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #cccccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #DAA520; /* Gold hover effect */
+        }
+
+        .footer-contact p {
+            color: #cccccc;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .footer-contact i {
+            margin-right: 10px;
+            color: #DAA520; /* Gold icons */
+            font-size: 1.1em;
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            color: #999999;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            .service-card {
+                padding: 20px;
+            }
+            .footer-col {
+                text-align: center;
+            }
+            .footer-contact p {
+                justify-content: center;
+            }
+            .footer-logo {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            #historyTableModal .modal-body {
+                padding: 15px;
+            }
+            
+            #historyTableModal .table {
+                font-size: 0.8rem;
+            }
+            
+            .btn-cancel {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+        }
+   
