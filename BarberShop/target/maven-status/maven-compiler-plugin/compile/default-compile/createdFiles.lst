@@ -39,7 +39,6 @@ controller\AddCustomerServlet.class
 AppointmentManager\AppointmentManagerServlet.class
 controller\AddServiceServlet.class
 model\CustomerVoucher.class
-controller\ConfirmationServlet.class
 babershopDAO\AccountDAO$3.class
 model\GoogleAccount.class
 controller\BanStaffServlet.class
@@ -48,6 +47,7 @@ controller\SendOTPServlet$1.class
 controller\ProfileServlet.class
 controller\ScheduleServlet.class
 model\Account.class
+controller\CustomerManagement\ConfirmationServlet.class
 model\Validation.class
 controller\ForgetPassword.class
 controller\LoginServlet.class
