@@ -93,11 +93,11 @@ public class BookingServlet extends HttpServlet {
         List<String> currentServiceNamesList = (sessionServiceNames != null) ? new ArrayList<>(sessionServiceNames) : new ArrayList<>();
         double currentTotalPrice = (sessionTotalPriceObj != null) ? sessionTotalPriceObj.doubleValue() : 0.0;
 
-        if (serviceNamesParam != null) { // Kiểm tra nếu tham số được gửi (có thể rỗng)
+        if (serviceNamesParam != null) { 
             if (!serviceNamesParam.isEmpty()) {
                 currentServiceNamesList = Arrays.asList(serviceNamesParam.split(","));
             } else {
-                currentServiceNamesList = new ArrayList<>(); // Đặt lại là rỗng nếu param rỗng
+                currentServiceNamesList = new ArrayList<>(); 
             }
             session.setAttribute("selectedServiceNames", new ArrayList<>(currentServiceNamesList));
 

@@ -1,6 +1,8 @@
 package controller.Authentication;
 
 import babershopDAO.AccountDAO;
+import babershopDAO.AdminDAO;
+import babershopDAO.BranchDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.StaffDAO;
 import jakarta.servlet.ServletException;
@@ -13,6 +15,7 @@ import model.Account;
 import model.Customer;
 import model.Staff;
 import java.io.IOException;
+import model.Admin;
 
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
 public class ProfileServlet extends HttpServlet {
@@ -42,14 +45,18 @@ public class ProfileServlet extends HttpServlet {
                         session.setAttribute("lastName", customer.getLastName());
                         session.setAttribute("email", customer.getEmail());
                         session.setAttribute("phoneNumber", customer.getPhoneNumber());
-                        // ✅ GIỮ NGUYÊN account là Account object
-                        session.setAttribute("account", account);
+                        session.removeAttribute("password");
+            request.setAttribute("account", account);
+            request.getRequestDispatcher("/views/common/profile.jsp").forward(request, response);
                     } else {
                         request.setAttribute("errorMessage", "Không tìm thấy thông tin khách hàng.");
                     }
                     break;
                 case "staff":
                     Staff staff = StaffDAO.getStaffByAccountId(account.getId());
+                    System.out.println(staff.getAccountId());
+                    BranchDAO branchDAO = new BranchDAO();
+                    String branchName = branchDAO.getBranchNameById(staff.getBranchId());
                     if (staff != null) {
                         session.setAttribute("user", staff);
                         session.setAttribute("staff", staff); // Thêm staff vào session
@@ -58,20 +65,34 @@ public class ProfileServlet extends HttpServlet {
                         session.setAttribute("email", staff.getEmail());
                         session.setAttribute("phoneNumber", staff.getPhoneNumber());
                         session.setAttribute("img", staff.getImg());
-                        // ✅ SỬA: Vẫn giữ account là Account object, không phải Staff
+                        session.setAttribute("branchName", branchName);
+                                 session.removeAttribute("password");
+            request.setAttribute("account", account);
+            request.getRequestDispatcher("/views/staff/profileOfStaff.jsp").forward(request, response);
+                    } else {
+                        request.setAttribute("errorMessage", "Không tìm thấy thông tin nhân viên.");
+                    }
+                    break;
+                case "admin":
+                    Admin admin = AdminDAO.getAdminByAccountId(account.getId());
+                    if (admin != null) {
+                        session.setAttribute("user", admin);
+                        session.setAttribute("staff", admin); // Thêm staff vào session
+                        session.setAttribute("firstName", admin.getFirstName());
+                        session.setAttribute("lastName", admin.getLastName());
+                        session.setAttribute("email", admin.getEmail());
+                        session.setAttribute("phoneNumber", admin.getPhoneNumber());
                         session.setAttribute("account", account);
                     } else {
                         request.setAttribute("errorMessage", "Không tìm thấy thông tin nhân viên.");
                     }
                     break;
+                    
                 default:
                     request.setAttribute("errorMessage", "Vai trò không hợp lệ.");
                     break;
             }
-            // Đảm bảo không lưu password trong session
-            session.removeAttribute("password");
-            request.setAttribute("account", account);
-            request.getRequestDispatcher("/views/common/profile.jsp").forward(request, response);
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Lỗi khi tải thông tin hồ sơ: " + e.getMessage());

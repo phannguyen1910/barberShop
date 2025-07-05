@@ -43,6 +43,62 @@ public class AppointmentDAO {
         }
         return null;
     }
+    
+    
+    
+     public boolean isStaffAvailable(int staffId, LocalDateTime requestedStartDateTime, int durationMinutes) {
+        // Tính toán thời gian kết thúc của lịch hẹn yêu cầu
+        LocalDateTime requestedEndDateTime = requestedStartDateTime.plusMinutes(durationMinutes);
+
+        String sql = "SELECT COUNT(*) FROM Appointments " +
+                     "WHERE StaffID = ? " +
+                     "AND AppointmentDate = ? " + // Chỉ kiểm tra trong cùng một ngày
+                     "AND ( " +
+                     "    (CONVERT(datetime, AppointmentDateTime) < ? AND CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) > ?) " + // Existing appointment starts before requested ends AND ends after requested starts
+                     "    OR (CONVERT(datetime, AppointmentDateTime) >= ? AND CONVERT(datetime, AppointmentDateTime) < ?) " + // Requested starts during existing
+                     "    OR (CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) > ? AND CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) <= ?) " + // Requested ends during existing
+                     "    OR (CONVERT(datetime, AppointmentDateTime) <= ? AND CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) >= ?) " + // Existing fully contains requested
+                     ")";
+
+        // Chú ý: Cột TotalServiceDuration cần được thêm vào bảng Appointments
+        // hoặc tính toán lại từ các dịch vụ đã chọn khi lưu lịch hẹn
+
+        // Sử dụng PreparedStatement để tránh SQL Injection
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, staffId);
+            ps.setString(2, requestedStartDateTime.toLocalDate().toString()); // Ngày của lịch hẹn
+
+         
+            String reqStartStr = requestedStartDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String reqEndStr = requestedEndDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            ps.setString(3, reqEndStr); // overlap condition 1
+            ps.setString(4, reqStartStr); // overlap condition 1
+
+            ps.setString(5, reqStartStr); // overlap condition 2
+            ps.setString(6, reqEndStr); // overlap condition 2
+
+            ps.setString(7, reqStartStr); // overlap condition 3
+            ps.setString(8, reqEndStr); // overlap condition 3
+
+            ps.setString(9, reqStartStr); // overlap condition 4
+            ps.setString(10, reqEndStr); // overlap condition 4
+
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // Nếu có bất kỳ lịch hẹn trùng lặp nào, trả về true (không khả dụng)
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Xử lý ngoại lệ, có thể ném ra một Custom Exception
+        }
+        return false; // Mặc định là khả dụng nếu có lỗi hoặc không có trùng lặp
+    }
+    
 
     public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, List<Integer> serviceIds, float totalAmount, int branchId) {
         String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) VALUES (?, ?, ?, 'Pending', ?)";

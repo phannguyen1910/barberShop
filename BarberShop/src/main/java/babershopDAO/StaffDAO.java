@@ -37,7 +37,7 @@ public class StaffDAO {
     }
 
     public static Staff getStaffByAccountId(int accountId) {
-        String sql = "SELECT s.id, s.accountId, s.firstName, s.lastName, s.img, a.email, a.phoneNumber, a.password, a.role, a.status " +
+        String sql = "SELECT s.id, s.accountId, s.firstName, s.lastName, s.img, s.branchId, a.email, a.phoneNumber, a.password, a.role, a.status " +
                      "FROM Staff s JOIN Account a ON s.accountId = a.id WHERE s.accountId = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -54,7 +54,8 @@ public class StaffDAO {
                 String password = rs.getString("password");
                 String role = rs.getString("role");
                 int status = rs.getInt("status");
-                Staff staff = new Staff(id, accId, firstName, lastName, img, email, phoneNumber, password, role, status);
+                int branchId = rs.getInt("branchId");
+                Staff staff = new Staff(id, accId, firstName, lastName, img, email, phoneNumber, password, role, status, branchId);
                 System.out.println("Found staff for accountId " + accountId + ": " + staff);
                 return staff;
             } else   {

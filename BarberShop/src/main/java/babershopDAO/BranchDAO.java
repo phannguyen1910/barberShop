@@ -29,6 +29,33 @@ public class BranchDAO {
         }
         return null;
     }
+    
+    
+    public String getBranchNameById (int branchId) {
+        String sql = "SELECT name FROM Branch WHERE id = ?";
+
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, branchId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String name = rs.getString("name");
+                return name;
+            } else {
+                System.out.println("⚠️ Không tìm thấy chi nhánh với ID: " + branchId);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi truy vấn tên chi nhánh theo ID: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi không xác định khi tìm chi nhánh: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
 
     public List<Branch> getAllBranches() {
         List<Branch> branches = new ArrayList<>();
