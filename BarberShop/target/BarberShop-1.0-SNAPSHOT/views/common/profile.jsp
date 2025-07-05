@@ -1,16 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    // Kiểm tra xem đối tượng Customer có trong session không
-    if (session.getAttribute("customer") == null) {
-        response.sendRedirect(request.getContextPath() + "/login"); // Chuyển hướng về trang login nếu chưa đăng nhập
-        return;
-    }
-    // Ghi chú: Nếu bạn muốn hiển thị một thông báo lỗi cụ thể khi chưa đăng nhập
-    // sau khi chuyển hướng, bạn có thể đặt một attribute vào request trước khi sendRedirect.
-    // request.getSession().setAttribute("loginMessage", "Bạn cần đăng nhập để xem thông tin.");
-%>
-<!DOCTYPE html>
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -29,14 +19,14 @@
                 background-position: center;
                 background-attachment: fixed;
                 min-height: 100vh;
-                color: #e0e0e0; /* Light text for dark background */
+                color: #e0e0e0;
             }
 
             .section-title {
                 font-family: 'Playfair Display', serif;
                 font-size: 2.5rem;
                 font-weight: 700;
-                color: #DAA520; /* Gold accent color */
+                color: #DAA520;
                 text-align: center;
                 margin-bottom: 2.5rem;
                 position: relative;
@@ -55,62 +45,166 @@
                 border-radius: 2px;
             }
 
-            .status-unknown {
-                color: gray;
-                font-weight: bold;
-            }
-
-            .service-card { /* Reusing name, but acts as a content card */
-                background: rgba(29, 29, 27, 0.9);
-                backdrop-filter: blur(10px);
-                border-radius: 15px;
-                padding: 30px;
-                border: 1px solid rgba(218, 165, 32, 0.2);
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-                color: #e0e0e0;
-                max-width: 800px; /* Limit width for better readability */
-                margin: 0 auto; /* Center the card */
-                margin-bottom: 30px; /* Add space below this card */
-            }
-
-            .table-responsive {
-                margin-top: 20px;
-            }
-
-            .table {
-                color: #e0e0e0;
-            }
-
-            .table-borderless tbody tr td {
-                border: none;
-                padding-top: 10px;
-                padding-bottom: 10px;
-            }
-
-            .fw-bold {
-                color: #DAA520; /* Gold for bold labels */
-                font-weight: 600 !important;
-            }
-
-            .btn-primary {
-                background-color: #DAA520;
-                border-color: #DAA520;
-                color: #1d1d1b; /* Dark text on gold button */
-                font-weight: 500;
-                padding: 10px 20px;
+            /* Modern Profile Card */
+            .profile-card {
+                background: linear-gradient(135deg, #DAA520 0%, #B8860B 100%);
                 border-radius: 25px;
+                padding: 0;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                color: white;
+                overflow: hidden;
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .profile-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+                pointer-events: none;
+            }
+
+            .profile-header {
+                padding: 40px 30px 30px;
+                text-align: center;
+                position: relative;
+                z-index: 2;
+            }
+
+            .profile-avatar {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                border: 4px solid rgba(255, 255, 255, 0.3);
+                margin: 0 auto 20px;
+                overflow: hidden;
+                background: rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3rem;
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            .profile-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .profile-name {
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .profile-role {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin-bottom: 25px;
+            }
+
+            .profile-edit-btn {
+                background: rgba(255, 255, 255, 0.15);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                padding: 12px 30px;
+                border-radius: 25px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            .profile-edit-btn:hover {
+                background: rgba(255, 255, 255, 0.25);
+                border-color: rgba(255, 255, 255, 0.5);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Profile Info Cards */
+            .profile-info {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 0 0 25px 25px;
+                padding: 30px;
+                color: #333;
+                position: relative;
+                z-index: 2;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+                margin-bottom: 30px;
+            }
+
+            .info-item {
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                border-left: 4px solid #DAA520;
                 transition: all 0.3s ease;
             }
 
-            .btn-primary:hover {
-                background-color: #B8860B;
-                border-color: #B8860B;
-                color: #fff; /* White text on hover */
-                transform: translateY(-2px);
+            .info-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
             }
 
-            .btn-primary:active {
-                transform: translateY(0);
+            .info-icon {
+                color: #DAA520;
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+            }
+
+            .info-label {
+                font-size: 0.9rem;
+                color: #666;
+                margin-bottom: 5px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #333;
+                word-break: break-word;
+            }
+
+            .history-btn {
+                background: linear-gradient(135deg, #DAA520, #B8860B);
+                border: none;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-weight: 600;
+                font-size: 1.1rem;
+                width: 100%;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3);
+            }
+
+            .history-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(218, 165, 32, 0.4);
+                background: linear-gradient(135deg, #B8860B, #DAA520);
+            }
+
+            .status-unknown {
+                color: gray;
+                font-weight: bold;
             }
 
             .alert-success {
@@ -135,10 +229,10 @@
 
             /* Enhanced Modal Styles - White background with black text */
             #historyTableModal .modal-content {
-                background: #ffffff; /* White background */
+                background: #ffffff;
                 border-radius: 15px;
-                border: 2px solid #DAA520; /* Gold border */
-                color: #000000; /* Black text */
+                border: 2px solid #DAA520;
+                color: #000000;
                 box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             }
 
@@ -151,13 +245,13 @@
 
             #historyTableModal .modal-title {
                 font-weight: 700;
-                color: #ffffff; /* White text on gold background */
+                color: #ffffff;
                 font-family: 'Playfair Display', serif;
                 font-size: 1.5rem;
             }
 
             #historyTableModal .btn-close {
-                filter: brightness(0) invert(1); /* White close button */
+                filter: brightness(0) invert(1);
             }
 
             #historyTableModal .modal-body {
@@ -166,7 +260,7 @@
             }
 
             #historyTableModal .table {
-                color: #000000; /* Black text */
+                color: #000000;
                 margin-bottom: 0;
                 border-collapse: separate;
                 border-spacing: 0;
@@ -177,7 +271,7 @@
 
             #historyTableModal .table thead th {
                 background: linear-gradient(135deg, #DAA520, #B8860B);
-                color: #ffffff; /* White text on gold background */
+                color: #ffffff;
                 border: none;
                 text-align: center;
                 vertical-align: middle;
@@ -203,11 +297,11 @@
             }
 
             #historyTableModal .table tbody tr:nth-child(even) {
-                background-color: #f8f9fa; /* Light gray stripe */
+                background-color: #f8f9fa;
             }
 
             #historyTableModal .table tbody tr:hover {
-                background-color: #fff3cd; /* Light gold hover effect */
+                background-color: #fff3cd;
                 transform: translateY(-1px);
                 transition: all 0.2s ease;
             }
@@ -289,13 +383,13 @@
                 font-size: 1.1rem;
             }
 
-            /* Footer Styles from dashboard/appointment management */
+            /* Footer Styles */
             .footer {
-                background: rgba(29, 29, 27, 0.95); /* Dark background for consistency */
+                background: rgba(29, 29, 27, 0.95);
                 backdrop-filter: blur(10px);
                 color: #f5f5f5;
                 padding: 40px 0;
-                margin-top: 60px; /* Space above footer */
+                margin-top: 60px;
                 border-top: 2px solid rgba(218, 165, 32, 0.3);
             }
 
@@ -310,15 +404,15 @@
             }
 
             .footer-logo {
-                width: 120px; /* Adjust size as needed */
+                width: 120px;
                 margin-bottom: 20px;
-                filter: brightness(1.2); /* Make logo stand out on dark */
+                filter: brightness(1.2);
             }
 
             .footer-title {
                 font-size: 1.2rem;
                 font-weight: 600;
-                color: #DAA520; /* Gold color for titles */
+                color: #DAA520;
                 margin-bottom: 20px;
             }
 
@@ -338,7 +432,7 @@
             }
 
             .footer-links a:hover {
-                color: #DAA520; /* Gold hover effect */
+                color: #DAA520;
             }
 
             .footer-contact p {
@@ -350,9 +444,9 @@
 
             .footer-contact i {
                 margin-right: 10px;
-                color: #DAA520; /* Gold icons */
+                color: #DAA520;
                 font-size: 1.1em;
-                flex-shrink: 0; /* Prevent icon from shrinking */
+                flex-shrink: 0;
             }
 
             .footer-bottom {
@@ -368,15 +462,36 @@
                 .section-title {
                     font-size: 2rem;
                 }
-                .service-card {
-                    padding: 20px;
+                
+                .profile-card {
+                    margin: 0 10px;
                 }
+                
+                .profile-header {
+                    padding: 30px 20px 20px;
+                }
+                
+                .profile-name {
+                    font-size: 1.5rem;
+                }
+                
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                }
+                
+                .info-item {
+                    padding: 15px;
+                }
+                
                 .footer-col {
                     text-align: center;
                 }
+                
                 .footer-contact p {
                     justify-content: center;
                 }
+                
                 .footer-logo {
                     margin-left: auto;
                     margin-right: auto;
@@ -404,7 +519,6 @@
         <c:if test="${not empty error}">
             <div class="alert alert-danger">${error}</div>
         </c:if>
-        <%-- Hiển thị errorMessage từ Servlet nếu có (ví dụ: chưa đăng nhập) --%>
         <c:if test="${not empty errorMessage}">
             <div class="alert alert-danger">${errorMessage}</div>
         </c:if>
@@ -414,52 +528,77 @@
         <div class="container mt-5">
             <h2 class="section-title">Thông tin cá nhân</h2>
 
-            <div class="service-card shadow-sm">
-                <div class="service-info">
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                        <a href="${pageContext.request.contextPath}/views/common/editProfile.jsp" class="btn btn-primary">
-                            <i class="fa fa-edit"></i> Chỉnh sửa thông tin
-                        </a>
-                        <%-- Nút mở Modal cho Lịch sử đặt lịch --%>
-                        <button id="showHistoryModalBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#historyTableModal">
-                            <i class="fas fa-history"></i> Lịch sử đặt lịch
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr>
-                                    <td class="fw-bold" style="width: 150px;">Họ:</td>
-                                    <td>${sessionScope.customer.lastName}</td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold">Tên:</td>
-                                    <td>${sessionScope.customer.firstName}</td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold">Email:</td>
-                                    <td>${sessionScope.customer.email}</td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold">Số điện thoại:</td>
-                                    <td>${sessionScope.customer.phoneNumber}</td>
-                                </tr>
-                                <%-- Kiểm tra role nếu Customer có thuộc tính role và là Staff --%>
-                                <c:if test="${sessionScope.customer.role == 'Staff'}">
-                                    <tr>
-                                        <td class="fw-bold">Ảnh:</td>
-                                        <td>
-                                            <c:if test="${not empty sessionScope.customer.img}">
-                                                <img src="${pageContext.request.contextPath}/${sessionScope.customer.img}" alt="Staff Image" width="100">
-                                            </c:if>
-                                            <c:if test="${empty sessionScope.customer.img}">
-                                                Không có ảnh
-                                            </c:if>
-                                        </td>
-                                    </tr>
-                                </c:if>
-                            </tbody>
-                        </table>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <c:choose>
+                                    <c:when test="${sessionScope.customer.role == 'Staff' && not empty sessionScope.customer.img}">
+                                        <img src="${pageContext.request.contextPath}/${sessionScope.customer.img}" alt="Profile Picture">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i class="fas fa-user"></i>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="profile-name">
+                                ${sessionScope.customer.lastName} ${sessionScope.customer.firstName}
+                            </div>
+                            <div class="profile-role">
+                                <c:choose>
+                                    <c:when test="${sessionScope.customer.role == 'Staff'}">
+                                        Nhân viên
+                                    </c:when>
+                                    <c:otherwise>
+                                        Khách hàng
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/views/common/editProfile.jsp" class="profile-edit-btn">
+                                <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin
+                            </a>
+                        </div>
+                        
+                        <div class="profile-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="info-label">Họ và tên</div>
+                                    <div class="info-value">${sessionScope.customer.lastName} ${sessionScope.customer.firstName}</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">${sessionScope.customer.email}</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="info-label">Số điện thoại</div>
+                                    <div class="info-value">${sessionScope.customer.phoneNumber}</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="info-label">Số đơn đã đặt</div>
+                                    <div class="info-value">${quantityAppointment}</div>
+                                </div>
+                            </div>
+                            
+                            <button id="showHistoryModalBtn" class="history-btn" data-bs-toggle="modal" data-bs-target="#historyTableModal">
+                                <i class="fas fa-history me-2"></i>Lịch sử đặt lịch
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -478,7 +617,7 @@
                     <div class="modal-body">
                         <div id="historyTableContainer" class="table-responsive">
                             <p id="noHistoryMessage" class="text-center">Đang tải lịch sử đặt lịch...</p>
-                            <table class="table" id="historyTable" style="display: none;"> <%-- Mặc định ẩn bảng --%>
+                            <table class="table" id="historyTable" style="display: none;">
                                 <thead>
                                     <tr>
                                         <th>Thời gian</th>
@@ -488,11 +627,10 @@
                                         <th>Nhân viên</th>
                                         <th>Chi nhánh</th>
                                         <th>Thao tác</th>
-                                        <th>Thanh toán còn lại</th><%-- New column for cancel button --%>
+                                        <th>Thanh toán còn lại</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <%-- Dữ liệu sẽ được điền vào đây bởi JavaScript --%>
                                 </tbody>
                             </table>
                         </div>
@@ -506,40 +644,9 @@
             </div>
         </div>
 
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 footer-col">
-                        <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Cut&Styles Logo" class="footer-logo">                    
-                    </div>
+        <%@ include file="/views/common/footer.jsp" %>
+        
 
-                    <div class="col-lg-4 col-md-6 footer-col">
-                        <h4 class="footer-title">Liên kết nhanh</h4>
-                        <ul class="footer-links">
-                            <li><a href="${pageContext.request.contextPath}/views/common/aboutUs.jsp">Về chúng tôi</a></li>
-                            <li><a href="${pageContext.request.contextPath}/views/common/franchise.jsp">Liên hệ nhượng quyền</a></li>
-                            <li><a href="${pageContext.request.contextPath}/views/commit/details.jsp">Chính sách cam kết</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 footer-col">
-                        <h4 class="footer-title">Thông tin liên hệ</h4>
-                        <div class="footer-contact">
-                            <p><i class="bi bi-geo-alt-fill"></i> <span>Khu đô thị FPT city, Hòa Hải, Ngũ Hành Sơn, Đà Nẵng</span></p>
-                            <p><i class="bi bi-telephone-fill"></i> <span>Liên hệ học nghề tóc: 0774511941</span></p>
-                            <p><i class="bi bi-clock-fill"></i> <span>Giờ phục vụ: Thứ 2 đến Chủ Nhật, 8h30 - 20h30</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row footer-bottom">
-                    <div class="col-12 text-center">
-                        <p>&copy; 2025 Cut&Styles Barber. Tất cả quyền được bảo lưu.</p>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const showHistoryModalBtn = document.getElementById('showHistoryModalBtn');
@@ -741,3 +848,4 @@
             });
         </script>
     </body>
+</html>

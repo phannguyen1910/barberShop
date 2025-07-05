@@ -17,11 +17,22 @@ public class Appointment {
     private int branchId;
     private String staffName;
     private String branchName;
+    private int totalServiceDurationMinutes;
 
     public Appointment(LocalDateTime appointment_time, int customerId1, int staff) {
     }
 
     public Appointment() {
+    }
+
+    public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, int branchId, int totalServiceDurationMinutes) {
+        this.id = id;
+        this.customerId = customerId;
+        this.staffId = staffId;
+        this.appointmentTime = appointmentTime;
+        this.status = status;
+        this.branchId = branchId;
+        this.totalServiceDurationMinutes = totalServiceDurationMinutes;
     }
 
     public Appointment(int id, LocalDateTime appointmentTime, String status, String services, float totalAmount, String staffName, String branchName) {
@@ -33,23 +44,7 @@ public class Appointment {
         this.staffName = staffName;
         this.branchName = branchName;
     }
-
-    public String getStaffName() {
-        return staffName;
-    }
-
-    public void setStaffName(String staffName) {
-        this.staffName = staffName;
-    }
-
-    public String getBranchName() {
-        return branchName;
-    }
-
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
-
+    
     public Appointment(int id, int customerId, int staffId, LocalDateTime appointmentTime, String status, String customerName, String services, float totalAmount, int branchId) {
         this.id = id;
         this.customerId = customerId;
@@ -82,6 +77,30 @@ public class Appointment {
         this.customerName = customerName;
         this.services = services;
         this.branchId = branchId;
+    }
+    
+      public int getTotaltotalServiceDurationMinutes() {
+        return totalServiceDurationMinutes;
+    }
+
+    public void setTotaltotalServiceDurationMinutes(int totaltotalServiceDurationMinutes) {
+        this.totalServiceDurationMinutes = totaltotalServiceDurationMinutes;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
     }
 
     public int getBranchId() {
