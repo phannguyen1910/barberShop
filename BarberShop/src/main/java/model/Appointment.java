@@ -79,11 +79,11 @@ public class Appointment {
         this.branchId = branchId;
     }
     
-      public int getTotaltotalServiceDurationMinutes() {
+      public int getTotalServiceDurationMinutes() {
         return totalServiceDurationMinutes;
     }
 
-    public void setTotaltotalServiceDurationMinutes(int totaltotalServiceDurationMinutes) {
+    public void setTotalServiceDurationMinutes(int totaltotalServiceDurationMinutes) {
         this.totalServiceDurationMinutes = totaltotalServiceDurationMinutes;
     }
 

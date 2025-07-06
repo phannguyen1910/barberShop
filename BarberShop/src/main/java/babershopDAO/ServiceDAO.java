@@ -50,6 +50,45 @@ public class ServiceDAO {
         }
         return null;
     }
+    
+    
+    public int calculateTotalServiceDuration(int[] serviceIds) {
+        if (serviceIds == null || serviceIds.length == 0) {
+            return 0; // Không có dịch vụ nào, tổng thời lượng là 0
+        }
+
+        int totalDuration = 0;
+        // Xây dựng mệnh đề IN cho truy vấn SQL
+        StringBuilder sql = new StringBuilder("SELECT duration FROM Service WHERE id IN (");
+        for (int i = 0; i < serviceIds.length; i++) {
+            sql.append("?");
+            if (i < serviceIds.length - 1) {
+                sql.append(", ");
+            }
+        }
+        sql.append(")");
+
+        try (Connection con = getConnect(); // Sử dụng phương thức getConnect() của ServiceDAO
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            // Đặt các tham số cho mệnh đề IN
+            for (int i = 0; i < serviceIds.length; i++) {
+                ps.setInt(i + 1, serviceIds[i]);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                totalDuration += rs.getInt("duration");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi tính tổng thời lượng dịch vụ: " + e.getMessage());
+            e.printStackTrace();
+            // Tùy chọn: bạn có thể ném một ngoại lệ tùy chỉnh hoặc ném lại SQLException
+            // để chỉ ra rằng có lỗi trong quá trình tính toán.
+            return 0; // Trả về 0 hoặc một giá trị đặc biệt để báo hiệu lỗi
+        }
+        return totalDuration;
+    }
 
     public float getFeeService(String serviceName) {
         String sql = "Select price from Service where name= ?";

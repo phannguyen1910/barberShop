@@ -86,29 +86,32 @@ public class BookingServlet extends HttpServlet {
         // 3. Xử lý Dịch vụ đã chọn
         String serviceNamesParam = request.getParameter("serviceNames");
         String totalPriceStrParam = request.getParameter("totalPrice");
-
         List<String> sessionServiceNames = (List<String>) session.getAttribute("selectedServiceNames");
         Double sessionTotalPriceObj = (Double) session.getAttribute("selectedTotalPrice");
-
+        Integer sessionTotalServiceDuration = (Integer) session.getAttribute("totalServiceDuration");
+        
         List<String> currentServiceNamesList = (sessionServiceNames != null) ? new ArrayList<>(sessionServiceNames) : new ArrayList<>();
         double currentTotalPrice = (sessionTotalPriceObj != null) ? sessionTotalPriceObj.doubleValue() : 0.0;
-
-        if (serviceNamesParam != null) { 
+        int totalServiceDuration = (sessionTotalServiceDuration != null) ? sessionTotalServiceDuration.intValue() : 0;
+        System.out.println("okok" + totalServiceDuration);
+        if (serviceNamesParam != null) {
             if (!serviceNamesParam.isEmpty()) {
                 currentServiceNamesList = Arrays.asList(serviceNamesParam.split(","));
             } else {
-                currentServiceNamesList = new ArrayList<>(); 
+                currentServiceNamesList = new ArrayList<>();
             }
             session.setAttribute("selectedServiceNames", new ArrayList<>(currentServiceNamesList));
-
+            System.out.println("Duration = " + totalServiceDuration);
             try {
                 currentTotalPrice = Double.parseDouble(totalPriceStrParam);
                 session.setAttribute("selectedTotalPrice", currentTotalPrice);
+                
+            
             } catch (NumberFormatException e) {
                 request.setAttribute("error", "Tổng giá dịch vụ không hợp lệ. Đã đặt lại về 0.");
                 currentTotalPrice = 0.0;
                 session.setAttribute("selectedTotalPrice", 0.0);
-          
+
             }
             System.out.println("Session updated with new services from Request: " + currentServiceNamesList + " (Total: " + currentTotalPrice + ")");
         } else {
@@ -117,7 +120,7 @@ public class BookingServlet extends HttpServlet {
 
         request.setAttribute("serviceNames", String.join(",", currentServiceNamesList));
         request.setAttribute("totalPrice", currentTotalPrice);
-
+        request.setAttribute("totalServiceDuration",totalServiceDuration);
         // 4. Lấy danh sách nhân viên
         StaffDAO staffDAO = new StaffDAO();
         List<Staff> staffs = staffDAO.getAllStaffs();
@@ -203,11 +206,10 @@ public class BookingServlet extends HttpServlet {
 
             LocalDate appointmentDate = LocalDate.parse(appointmentDateStr);
             // THÊM LOGIC KIỂM TRA NGÀY NGHỈ LỄ TẠI ĐÂY (NẾU CÓ)
-            HolidayDAO holidayDAO = new HolidayDAO(); 
+            HolidayDAO holidayDAO = new HolidayDAO();
             // if (holidayDAO.isHoliday(appointmentDate)) {
             //     throw new IllegalArgumentException("Ngày " + appointmentDateStr + " là ngày nghỉ lễ. Vui lòng chọn ngày khác!");
             // }
-
 
             LocalTime appointmentTime = LocalTime.parse(appointmentTimeStr);
             LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
@@ -230,7 +232,6 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("totalMoney", totalPrice);
             request.setAttribute("vouchers", vouchers);
 
-        
             session.removeAttribute("selectedBranchName");
             session.removeAttribute("selectedServiceNames");
             session.removeAttribute("selectedTotalPrice");

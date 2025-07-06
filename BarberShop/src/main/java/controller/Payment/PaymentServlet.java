@@ -48,7 +48,6 @@ public class PaymentServlet extends HttpServlet {
         session.setAttribute("customerId", customerId);
         session.setAttribute("staffId", staffId);
         session.setAttribute("appointmentTime", appointmentTime);
-        session.setAttribute("numberOfPeople", numberOfPeople);
         session.setAttribute("serviceIds", serviceIds);
         session.setAttribute("amount", totalAmount);
 

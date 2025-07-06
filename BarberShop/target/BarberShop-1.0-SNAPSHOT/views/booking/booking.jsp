@@ -66,6 +66,7 @@
                                 <%-- Lấy serviceNames và totalPrice từ request attribute, đã được BookingServlet cập nhật từ session --%>
                                 <c:set var="serviceNamesAttr" value="${requestScope.serviceNames}" />
                                 <c:set var="totalPriceAttr" value="${requestScope.totalPrice}" />
+                                <c:set var="totalServiceDuration" value="${requestScope.totalServiceDuration}" />
                                 <c:choose>
                                     <c:when test="${not empty serviceNamesAttr and serviceNamesAttr != ''}">
                                         <h4>Dịch vụ đã chọn:</h4>
@@ -77,6 +78,7 @@
                                             </c:forTokens>
                                         </ul>
                                         <p>Tổng tiền: <fmt:formatNumber value="${totalPriceAttr}" type="number" groupingUsed="true" /> VNĐ</p>
+                                        <p>Thời gian: <fmt:formatNumber value="${totalServiceDuration}" type="number" /> Phút</p>
                                     </c:when>
                                     <c:otherwise>
                                         <p>Chưa có dịch vụ nào được chọn. Vui lòng chọn dịch vụ từ trang dịch vụ.</p>
@@ -154,15 +156,12 @@
         </div>
 
         <form id="bookingForm" action="${pageContext.request.contextPath}/BookingServlet" method="post">
-            <%-- hiddenBranchId sẽ được pre-fill từ requestScope.preSelectedBranchId --%>
             <input type="hidden" name="branchId" id="hiddenBranchId" value="${preSelectedBranchId}">
-            <%-- REMOVED: hiddenNumberOfPeople is no longer needed --%>
-            <%-- <input type="hidden" name="numberOfPeople" id="hiddenNumberOfPeople"> --%>
             <input type="hidden" name="appointmentDate" id="hiddenAppointmentDate">
             <input type="hidden" name="appointmentTime" id="hiddenAppointmentTime">
             <input type="hidden" name="customerId" id="hiddenCustomerId" value="${sessionScope.account.id}"> <%-- Lấy account ID từ session --%>
             <input type="hidden" name="staffId" id="hiddenStaffId" value="">
-            <%-- Service names và total price sẽ được lấy từ session trong BookingServlet doPost, không cần truyền lại ở đây --%>
+           
         </form>
 
         <%@ include file="/views/common/footer.jsp" %>

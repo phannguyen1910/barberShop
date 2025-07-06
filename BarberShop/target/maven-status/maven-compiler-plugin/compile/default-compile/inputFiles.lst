@@ -9,6 +9,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\m
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\ChangeStatusServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\HomeServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\ScheduleServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\TestServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\ChangePasswordServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\BanCustomerServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\CancelAppointmentServlet.java
@@ -22,6 +23,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\m
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\AddCustomerServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\AddStaffServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffAppointment.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffAvailabilityServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\ServiceDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\SendOTPServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\GoogleAccount.java

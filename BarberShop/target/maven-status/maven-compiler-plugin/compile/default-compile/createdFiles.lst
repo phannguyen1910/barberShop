@@ -1,5 +1,6 @@
 babershopDAO\AccountDAO$1.class
 controller\Authentication\ChangePasswordServlet.class
+controller\StaffManagement\StaffAvailabilityServlet$ErrorResponse.class
 model\Branch.class
 controller\CustomerManagement\BanCustomerServlet.class
 controller\Authentication\ForgetPassword.class
@@ -19,6 +20,7 @@ model\Customer.class
 controller\StaffManagement\StaffListServlet.class
 babershopDAO\AppointmentDAO.class
 controller\Authentication\HolidayAPI.class
+controller\StaffManagement\StaffAvailabilityServlet.class
 controller\Authentication\GoogleLogin.class
 controller\StaffManagement\AddStaffServlet.class
 babershopDatabase\databaseInfo.class
@@ -31,6 +33,7 @@ controller\Payment\PaymentServlet.class
 model\Holiday.class
 controller\AppointmentManagement\AddAppointmentServlet.class
 controller\Authentication\SendOTPServlet.class
+controller\StaffManagement\TestServlet.class
 babershopDAO\HolidayDAO.class
 babershopDAO\WorkScheduleDAO.class
 controller\AppointmentManagement\AppointmentManagerServlet.class
@@ -59,6 +62,7 @@ controller\CustomerManagement\ConfirmationServlet.class
 controller\ServiceManagement\ChooseServiceServlet.class
 controller\StaffManagement\BanStaffServlet.class
 model\Validation.class
+controller\StaffManagement\StaffAvailabilityServlet$OccupiedTimeSlot.class
 controller\RevenueManagement\RevenueManagementServlet.class
 controller\Authentication\LogoutServlet.class
 controller\CustomerManagement\AddCustomerServlet.class

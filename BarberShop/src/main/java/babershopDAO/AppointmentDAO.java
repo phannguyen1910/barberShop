@@ -46,62 +46,67 @@ public class AppointmentDAO {
     
     
     
-     public boolean isStaffAvailable(int staffId, LocalDateTime requestedStartDateTime, int durationMinutes) {
-        // Tính toán thời gian kết thúc của lịch hẹn yêu cầu
-        LocalDateTime requestedEndDateTime = requestedStartDateTime.plusMinutes(durationMinutes);
+     public boolean isStaffAvailable(int staffId, LocalDateTime proposedStartTime, int serviceDurationMinutes) throws SQLException {
+        LocalDateTime proposedEndTime = proposedStartTime.plusMinutes(serviceDurationMinutes);
 
-        String sql = "SELECT COUNT(*) FROM Appointments " +
-                     "WHERE StaffID = ? " +
-                     "AND AppointmentDate = ? " + // Chỉ kiểm tra trong cùng một ngày
-                     "AND ( " +
-                     "    (CONVERT(datetime, AppointmentDateTime) < ? AND CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) > ?) " + // Existing appointment starts before requested ends AND ends after requested starts
-                     "    OR (CONVERT(datetime, AppointmentDateTime) >= ? AND CONVERT(datetime, AppointmentDateTime) < ?) " + // Requested starts during existing
-                     "    OR (CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) > ? AND CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) <= ?) " + // Requested ends during existing
-                     "    OR (CONVERT(datetime, AppointmentDateTime) <= ? AND CONVERT(datetime, DATEADD(minute, TotalServiceDuration, AppointmentDateTime)) >= ?) " + // Existing fully contains requested
-                     ")";
+        String sql = "SELECT COUNT(*) FROM Appointment " +
+                     "WHERE staffId = ? " +
+                     "AND status IN ('Pending', 'Confirmed') " +
+                     "AND (? < DATEADD(minute, totalServiceDurationMinutes, appointmentTime)) " +
+                     "AND (appointmentTime < ?)";
 
-        // Chú ý: Cột TotalServiceDuration cần được thêm vào bảng Appointments
-        // hoặc tính toán lại từ các dịch vụ đã chọn khi lưu lịch hẹn
-
-        // Sử dụng PreparedStatement để tránh SQL Injection
-        try (Connection conn = getConnect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, staffId);
-            ps.setString(2, requestedStartDateTime.toLocalDate().toString()); // Ngày của lịch hẹn
+            ps.setTimestamp(2, Timestamp.valueOf(proposedStartTime));
+            ps.setTimestamp(3, Timestamp.valueOf(proposedEndTime));
 
-         
-            String reqStartStr = requestedStartDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String reqEndStr = requestedEndDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-            ps.setString(3, reqEndStr); // overlap condition 1
-            ps.setString(4, reqStartStr); // overlap condition 1
-
-            ps.setString(5, reqStartStr); // overlap condition 2
-            ps.setString(6, reqEndStr); // overlap condition 2
-
-            ps.setString(7, reqStartStr); // overlap condition 3
-            ps.setString(8, reqEndStr); // overlap condition 3
-
-            ps.setString(9, reqStartStr); // overlap condition 4
-            ps.setString(10, reqEndStr); // overlap condition 4
-
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0; // Nếu có bất kỳ lịch hẹn trùng lặp nào, trả về true (không khả dụng)
-                }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Xử lý ngoại lệ, có thể ném ra một Custom Exception
+            System.err.println("Lỗi SQL khi kiểm tra lịch trống của nhân viên: " + e.getMessage());
+            throw e;
         }
-        return false; // Mặc định là khả dụng nếu có lỗi hoặc không có trùng lặp
+        return false;
     }
+
     
 
-    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, List<Integer> serviceIds, float totalAmount, int branchId) {
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) VALUES (?, ?, ?, 'Pending', ?)";
+  
+    public List<Appointment> getAppointmentsByStaffAndDate(int staffId, LocalDate date) {
+        List<Appointment> appointments = new ArrayList<>();
+        // Sử dụng CONVERT(DATE, ...) cho SQL Server để so sánh chỉ phần ngày
+        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId, totalServiceDurationMinutes FROM Appointment " +
+                     "WHERE staffId = ? AND CONVERT(DATE, appointmentTime) = ? AND status IN ('Pending', 'Confirmed', 'Completed')"; // Thêm 'Completed' nếu bạn muốn các lịch hẹn đã hoàn thành cũng chiếm khung giờ
+
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, staffId);
+            ps.setDate(2, java.sql.Date.valueOf(date)); // Chuyển đổi LocalDate sang java.sql.Date
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Appointment appt = new Appointment();
+                appt.setId(rs.getInt("id"));
+                appt.setCustomerId(rs.getInt("customerId"));
+                appt.setStaffId(rs.getInt("staffId"));
+                appt.setAppointmentTime(rs.getTimestamp("appointmentTime").toLocalDateTime());
+                appt.setStatus(rs.getString("status"));
+                appt.setBranchId(rs.getInt("branchId"));
+                // Lấy totalServiceDurationMinutes từ cột mới trong DB
+                appt.setTotalServiceDurationMinutes(rs.getInt("totalServiceDurationMinutes"));
+                appointments.add(appt);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi lấy lịch hẹn của nhân viên theo ngày: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
+    public boolean addAppointment(int customerId, int staffId, LocalDateTime appointmentTime, List<Integer> serviceIds, float totalAmount, int branchId, int serviceDurationMinutes) {
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId, [TotalDurationMinutes]) VALUES (?, ?, ?, 'Pending', ?, ?)";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
         System.out.println(customerId + " " + staffId + " " + appointmentTime + " " + totalAmount + " " + branchId);
@@ -119,6 +124,7 @@ public class AppointmentDAO {
                 ps.setInt(2, staffId);
                 ps.setTimestamp(3, Timestamp.valueOf(appointmentTime));
                 ps.setInt(4, branchId);
+                ps.setInt(5, serviceDurationMinutes);
                 ps.executeUpdate(); // ✅ Sửa lỗi ở đây
 
                 try (ResultSet rs = ps.getGeneratedKeys()) {

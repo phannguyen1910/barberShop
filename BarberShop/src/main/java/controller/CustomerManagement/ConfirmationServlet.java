@@ -31,6 +31,9 @@ public class ConfirmationServlet extends HttpServlet {
         float totalAmount = Float.parseFloat(request.getParameter("totalBill"));
         String branchIdStr = (String) session.getAttribute("selectedBranchId");
         int branchId = Integer.parseInt(branchIdStr);
+        
+        Integer totalServiceDurationStr = (Integer) session.getAttribute("totalServiceDuration");
+        int totalServiceDuration = totalServiceDurationStr.intValue();
         List<Integer> serviceIds = new ArrayList<>();
         if (serviceIdParams != null) {
             for (String s : serviceIdParams) {
@@ -58,8 +61,7 @@ public class ConfirmationServlet extends HttpServlet {
         LocalDateTime dateTime = LocalDateTime.parse(appointmentTime, outputFormatter);
 
         AppointmentDAO appointmentDAO = new AppointmentDAO();
-
-        boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, serviceIds, totalAmount, branchId);
+        boolean check = appointmentDAO.addAppointment(customerId, staffId, dateTime, serviceIds, totalAmount, branchId, totalServiceDuration);
         if (check == true) {
             request.getRequestDispatcher("Payment").forward(request, response);
         } else {
