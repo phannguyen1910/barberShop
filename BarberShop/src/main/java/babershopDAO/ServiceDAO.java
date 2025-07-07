@@ -164,10 +164,7 @@ public class ServiceDAO {
                 int categoryId = rs.getInt("categoryId");
                 Service service = new Service(id, name, price, duration, description, images, categoryId);
                 services.add(service);
-                for(int i =0; i< images.length; i++){
-                                 System.out.println(images[i]);
-   
-                }
+                
                         
             }
            

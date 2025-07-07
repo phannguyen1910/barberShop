@@ -35,6 +35,7 @@ public class ConfirmationServlet extends HttpServlet {
         Integer totalServiceDurationStr = (Integer) session.getAttribute("totalServiceDuration");
         int totalServiceDuration = totalServiceDurationStr.intValue();
         List<Integer> serviceIds = new ArrayList<>();
+  
         if (serviceIdParams != null) {
             for (String s : serviceIdParams) {
                 Integer id = Integer.parseInt(s);

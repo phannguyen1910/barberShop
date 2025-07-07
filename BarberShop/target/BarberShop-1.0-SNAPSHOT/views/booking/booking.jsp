@@ -308,33 +308,34 @@
             bookingDate.max = maxDate.toISOString().split("T")[0];
 
             // Hiển thị khung giờ khả dụng
-            function showAvailableTimes(selectedDateObj) { // Renamed parameter for clarity
+            async function showAvailableTimes(selectedDateObj) {
                 const container = document.getElementById("timeSlots");
                 container.innerHTML = ''; // Clear previous time slots
                 selectedTime = null; // Clear selected time when date changes or slots re-render
 
-                // Get current local time (Vietnam time is implicitly handled by browser's local time)
-                const now = new Date(); // Current local time of the browser
+                const selectedStaffRadio = document.querySelector('input[name="staffId"]:checked');
+                const staffId = selectedStaffRadio ? selectedStaffRadio.value : null;
+                const selectedDate = bookingDate.value;
 
-                // Set selected date to midnight for comparison (to ignore time component)
-                const selectedDateMidnight = new Date(selectedDateObj);
-                selectedDateMidnight.setHours(0, 0, 0, 0);
+                if (!staffId || !selectedDate) {
+                    // Không gọi API nếu thiếu staffId hoặc ngày
+                    return;
+                }
 
-                // Set current date to midnight for comparison
-                const currentMidnight = new Date(now);
-                currentMidnight.setHours(0, 0, 0, 0);
-
-                const isToday = selectedDateMidnight.getTime() === currentMidnight.getTime();
-
-                // Calculate current minutes from midnight for today's comparison
-                // Use a small buffer (e.g., 1 minute) to allow current slot selection
-                const currentMinutesFromMidnight = (now.getHours() * 60 + now.getMinutes());
-                const currentMinutesWithGrace = currentMinutesFromMidnight - 1; // Allow 1 minute grace period for past minutes
-
-                container.style.display = "grid";
-                container.classList.add("expanded");
-                toggleTimeText.textContent = "Thu gọn khung giờ";
-
+                let occupiedSlots = [];
+                try {
+                    const contextPath = '<%=request.getContextPath()%>';
+                    const response = await fetch(`${contextPath}/api/StaffAvailabilityServlet?staffId=${staffId}&appointmentDate=${selectedDate}`);
+                    if (response.ok) {
+                        occupiedSlots = await response.json();
+                        console.log('Occupied slots:', occupiedSlots);
+                    } else {
+                        const errorText = await response.text();
+                        console.error('API error:', errorText);
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi lấy thông tin lịch trống:', error);
+                }
 
                 for (let hour = Math.floor(startHour); hour <= Math.floor(endHour); hour++) {
                     for (let minute of [0, 30]) {
@@ -349,14 +350,26 @@
                         const label = hour.toString().padStart(2, '0') + ':' + (minute === 0 ? '00' : '30');
                         const timeValueMinutes = hour * 60 + minute; // Total minutes from midnight for this slot
 
-                        // isEnabled: true if not today, or if today and time is in future/within grace period
-                        const isEnabled = !isToday || (timeValueMinutes >= currentMinutesWithGrace);
+                        // Kiểm tra slot đã bị đặt lịch
+                        let isOccupied = false;
+                        for (const slot of occupiedSlots) {
+                            // Nếu API trả về ["09:00", ...] thì:
+                            // if (label === slot) { isOccupied = true; break; }
+                            // Nếu API trả về [{startTime, endTime}], dùng đoạn dưới:
+                            const slotStartMinutes = parseInt(slot.startTime.split(':')[0]) * 60 + parseInt(slot.startTime.split(':')[1]);
+                            const slotEndMinutes = parseInt(slot.endTime.split(':')[0]) * 60 + parseInt(slot.endTime.split(':')[1]);
+                            if (timeValueMinutes >= slotStartMinutes && timeValueMinutes < slotEndMinutes) {
+                                isOccupied = true;
+                                break;
+                            }
+                        }
 
                         const btn = document.createElement("button");
-                        btn.className = "time-slot" + (isEnabled ? "" : " disabled");
+                        btn.className = "time-slot" + (isOccupied ? " disabled" : "");
                         btn.innerText = label;
-                        if (!isEnabled) {
+                        if (isOccupied) {
                             btn.disabled = true;
+                            btn.title = "Khung giờ này đã bị đặt lịch";
                         } else {
                             btn.addEventListener("click", () => {
                                 document.querySelectorAll(".time-slot").forEach(b => b.classList.remove("selected"));

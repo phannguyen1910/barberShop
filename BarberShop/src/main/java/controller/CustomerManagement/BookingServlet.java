@@ -117,7 +117,7 @@ public class BookingServlet extends HttpServlet {
         } else {
             System.out.println("No new services from Request. Using session data: " + currentServiceNamesList + " (Total: " + currentTotalPrice + ")");
         }
-
+     
         request.setAttribute("serviceNames", String.join(",", currentServiceNamesList));
         request.setAttribute("totalPrice", currentTotalPrice);
         request.setAttribute("totalServiceDuration",totalServiceDuration);
@@ -203,7 +203,7 @@ public class BookingServlet extends HttpServlet {
                 throw new IllegalArgumentException("Nhân viên không tồn tại!");
             }
             String staffFullName = staff.getFirstName() + " " + staff.getLastName();
-
+            session.setAttribute("staffFullName", staffFullName);
             LocalDate appointmentDate = LocalDate.parse(appointmentDateStr);
             // THÊM LOGIC KIỂM TRA NGÀY NGHỈ LỄ TẠI ĐÂY (NẾU CÓ)
             HolidayDAO holidayDAO = new HolidayDAO();
@@ -215,8 +215,9 @@ public class BookingServlet extends HttpServlet {
             LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String dateTime = appointmentDateTime.format(formatter);
-
+            session.setAttribute("appointmentTime", dateTime);
             List<Service> services = serviceDAO.getChoosedService(serviceNames);
+            
             if (services.isEmpty()) {
                 throw new IllegalArgumentException("Dịch vụ đã chọn không hợp lệ hoặc không tồn tại.");
             }
@@ -232,9 +233,7 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("totalMoney", totalPrice);
             request.setAttribute("vouchers", vouchers);
 
-            session.removeAttribute("selectedBranchName");
-            session.removeAttribute("selectedServiceNames");
-            session.removeAttribute("selectedTotalPrice");
+        
 
             request.getRequestDispatcher("/views/booking/confirmation.jsp").forward(request, response);
         } catch (Exception e) {

@@ -53,7 +53,6 @@ public class PaymentServlet extends HttpServlet {
 
         // ✅ Chuẩn bị dữ liệu gửi VNPAY
         AppointmentDAO dao = new AppointmentDAO();
-        String result = dao.Booking(customerId, staffId, appointmentTime, numberOfPeople, serviceIds);
         int appointmentId = dao.getLastInsertedAppointmentId();
 
         String vnp_TxnRef = "APPT" + appointmentId;

@@ -21,39 +21,10 @@ import model.Payment;
  * @author Admin
  */
 public class PaymentDAO {
-    public static Connection getConnect() {
-        try {
-            Class.forName(DRIVERNAME);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error loading driver" + e);
-        }
-        try {
-            Connection con = DriverManager.getConnection(DBURL, USERDB, PASSDB);
-            return con;
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
-        return null;
-    }
-
-    public boolean insertPayment(Payment payment) {
-    String sql = "INSERT INTO Payment (appointmentId, transactionNo, amount, receivedDate, method) VALUES (?, ?, ?, ?, ?)";
-    try (Connection con = getConnect();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-
-        ps.setInt(1, payment.getAppointmentId());
-        ps.setString(2, payment.getTransactionNo());
-        ps.setFloat(3, (float) payment.getAmount());  // dùng float
-        ps.setTimestamp(4, payment.getReceivedDate());
-        ps.setString(5, payment.getMethod());
-
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return false;
+   
+    
 }
-}
+
 
 
 

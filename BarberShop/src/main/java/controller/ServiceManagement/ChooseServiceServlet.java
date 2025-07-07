@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays; // Import Arrays for splitting string
 import java.util.List;
+import model.Account;
 import model.Service;
 
 @WebServlet(name = "ChooseServiceServlet", urlPatterns = {"/ChooseServiceServlet"})
@@ -39,10 +40,7 @@ public class ChooseServiceServlet extends HttpServlet {
             throws ServletException, IOException {
         ServiceDAO serviceDAO = new ServiceDAO();
         List<Service> services = serviceDAO.getAllService();
-        // The debug print loop is fine, but you might want to remove it in production
-        for (Service s : services) {
-            System.out.println("Service: " + s.getName());
-        }
+       
         request.setAttribute("services", services);
         request.getRequestDispatcher("/views/service/services.jsp").forward(request, response);
     }
@@ -56,7 +54,7 @@ public class ChooseServiceServlet extends HttpServlet {
         String totalPriceStr = request.getParameter("totalPrice"); // Đổi tên biến để tránh nhầm lẫn
         String serviceIdsStr = request.getParameter("serviceIds");
         serviceIdsStr = serviceIdsStr.replace("[", "").replace("]", "");
-
+        session.setAttribute("serviceNames", serviceNames);
 // Tách chuỗi và chuyển thành mảng int
         String[] parts = serviceIdsStr.split(",");
         int[] serviceIds = new int[parts.length];
@@ -79,13 +77,15 @@ public class ChooseServiceServlet extends HttpServlet {
                 double totalPrice = Double.parseDouble(totalPriceStr);
                 session.setAttribute("selectedTotalPrice", totalPrice);
                 session.setAttribute("totalServiceDuration", totalServiceDuration);
-                System.out.println("totalServiceDuration" + totalServiceDuration);
             } catch (NumberFormatException e) {
                 // Xử lý lỗi nếu totalPrice không phải là số hợp lệ
                 System.err.println("Error parsing totalPrice: " + totalPriceStr + ". Setting to 0.0");
                 session.setAttribute("selectedTotalPrice", 0.0);
    
             }
+            Account account = (Account) session.getAttribute("account");
+            String email = account.getEmail();
+            session.setAttribute("customerEmail", email);
 
 
             response.sendRedirect(request.getContextPath() + "/BookingServlet");

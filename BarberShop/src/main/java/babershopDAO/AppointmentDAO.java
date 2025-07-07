@@ -109,10 +109,7 @@ public class AppointmentDAO {
         String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId, [TotalDurationMinutes]) VALUES (?, ?, ?, 'Pending', ?, ?)";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
 
-        System.out.println(customerId + " " + staffId + " " + appointmentTime + " " + totalAmount + " " + branchId);
-        for (int s : serviceIds) {
-            System.out.println(s);
-        }
+        
 
         Connection con = null;
         try {
