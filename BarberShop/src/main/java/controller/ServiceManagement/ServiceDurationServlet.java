@@ -13,46 +13,56 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import model.Service;
 
 @WebServlet(name = "ServiceDurationServlet", urlPatterns = {"/api/service-duration"})
 public class ServiceDurationServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        throws ServletException, IOException {
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
+    PrintWriter out = response.getWriter();
+    Gson gson = new Gson();
 
-        PrintWriter out = response.getWriter();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    try {
+        String[] serviceIds = request.getParameterValues("serviceIds");
+        if (serviceIds == null || serviceIds.length == 0) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.write("{\"error\": \"No service IDs provided\"}");
+            return;
+        }
 
-        try {
-            String[] serviceIds = request.getParameterValues("serviceIds");
-            
-            if (serviceIds == null || serviceIds.length == 0) {
+        List<Integer> serviceIdList = new ArrayList<>();
+        for (String id : serviceIds) {
+            try {
+                serviceIdList.add(Integer.parseInt(id));
+            } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\": \"Không có dịch vụ nào được chọn\"}");
+                out.write("{\"error\": \"Invalid service ID format\"}");
                 return;
             }
-
-            ServiceDAO serviceDAO = new ServiceDAO();
-            int totalDuration = 0;
-            List<Service> services = serviceDAO.getChoosedService(serviceIds);
-
-            for (Service service : services) {
-                totalDuration += service.getDuration();
-            }
-
-            // Trả về tổng thời lượng
-            String jsonOutput = gson.toJson(new ServiceDurationResponse(totalDuration, services));
-            out.print(jsonOutput);
-
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\": \"" + e.getMessage() + "\"}");
-            System.err.println("Lỗi khi tính thời lượng dịch vụ: " + e.getMessage());
         }
+
+        ServiceDAO serviceDAO = new ServiceDAO();
+        List<Service> services = serviceDAO.getServicesByIds(serviceIdList); // New method in ServiceDAO
+        int totalDuration = services.stream().mapToInt(Service::getDuration).sum();
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("totalDurationMinutes", totalDuration);
+        responseData.put("services", services);
+
+        out.write(gson.toJson(responseData));
+    } catch (Exception e) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        out.write("{\"error\": \"Error processing request: " + e.getMessage() + "\"}");
+    } finally {
+        out.close();
     }
+}
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

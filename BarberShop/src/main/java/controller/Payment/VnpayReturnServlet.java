@@ -98,14 +98,6 @@ public class VnpayReturnServlet extends HttpServlet {
                     req.setAttribute("selectedBranchName", branchName);
                     req.setAttribute("customerEmail", email);
 
-                    System.out.println("transResult: " + true);
-                    System.out.println("serviceNamesList: " + serviceNamesList);
-                    System.out.println("staffFullName: " + staffFullName);
-                    System.out.println("appointmentTime: " + appointmentTime);
-                    System.out.println("totalServiceDuration: " + totalServiceDuration);
-                    System.out.println("selectedBranchName: " + branchName);
-                    System.out.println("customerEmail: " + email);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                     req.setAttribute("transResult", false);
@@ -121,7 +113,23 @@ public class VnpayReturnServlet extends HttpServlet {
             e.printStackTrace();
             req.setAttribute("transResult", false);
             req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            // Xóa các session đã dùng sau khi xử lý xong
+            session.removeAttribute("serviceNames");
+            session.removeAttribute("staffFullName");
+            session.removeAttribute("appointmentTime");
+            session.removeAttribute("totalServiceDuration");
+            session.removeAttribute("selectedBranchName");
+            session.removeAttribute("customerEmail");
+            session.removeAttribute("selectedTotalPrice");
+            session.removeAttribute("selectedBranchId");
+            session.removeAttribute("servicesId");
+            session.removeAttribute("preSelectedBranchId");
+            session.removeAttribute("preSelectedBranchName");
+            session.removeAttribute("selectedServiceNames");
+            session.removeAttribute("totalServiceDuration");
             req.getRequestDispatcher("/views/payment/payment-success.jsp").forward(req, resp);
+
         }
+
     }
 }

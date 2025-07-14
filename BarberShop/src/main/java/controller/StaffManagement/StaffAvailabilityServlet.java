@@ -1,27 +1,26 @@
+
 package controller.StaffManagement;
 
-import babershopDAO.AppointmentDAO;
-import com.google.gson.Gson; // Import Gson
-import com.google.gson.GsonBuilder; // Import GsonBuilder nếu muốn định dạng JSON đẹp hơn
 import java.io.IOException;
 import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import babershopDAO.AppointmentDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import model.Appointment;
 
-/**
- * Servlet này cung cấp thông tin về các khung giờ đã bị chiếm của nhân viên
- * vào một ngày cụ thể dưới dạng JSON.
- */
 @WebServlet(name = "StaffAvailabilityServlet", urlPatterns = {"/StaffAvailabilityServlet"})
 public class StaffAvailabilityServlet extends HttpServlet {
 
@@ -31,7 +30,7 @@ public class StaffAvailabilityServlet extends HttpServlet {
         String endTime;   // HH:mm
 
         public OccupiedTimeSlot(LocalTime startTime, LocalTime endTime) {
-            // Định dạng thời gian để dễ đọc ở frontend
+            // Định dạng thời gian để khớp với HH:mm ở frontend
             this.startTime = startTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
             this.endTime = endTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
         }
@@ -49,9 +48,25 @@ public class StaffAvailabilityServlet extends HttpServlet {
         int staffId;
         LocalDate appointmentDate;
 
+        String staffIdParam = request.getParameter("staffId");
+        String appointmentDateParam = request.getParameter("appointmentDate");
+        
+        System.out.println("staffIdParam" + staffIdParam);
+        System.out.println("staffIdParam" + appointmentDateParam);
+        // Kiểm tra null/rỗng trước khi parse
+        if (staffIdParam == null || staffIdParam.trim().isEmpty() ||
+            appointmentDateParam == null || appointmentDateParam.trim().isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            String errorJson = gson.toJson(new ErrorResponse("Thiếu staffId hoặc appointmentDate.", "staffId hoặc appointmentDate bị null/rỗng"));
+            out.print(errorJson);
+            System.err.println("Lỗi tham số trong StaffAvailabilityServlet: staffId hoặc appointmentDate bị null/rỗng");
+            out.close();
+            return;
+        }
+
         try {
-            staffId = Integer.parseInt(request.getParameter("staffId"));
-            appointmentDate = LocalDate.parse(request.getParameter("appointmentDate"));
+            staffId = Integer.parseInt(staffIdParam);
+            appointmentDate = LocalDate.parse(appointmentDateParam);
 
             AppointmentDAO appointmentDAO = new AppointmentDAO();
             List<Appointment> staffAppointments = appointmentDAO.getAppointmentsByStaffAndDate(staffId, appointmentDate);
@@ -59,7 +74,7 @@ public class StaffAvailabilityServlet extends HttpServlet {
             List<OccupiedTimeSlot> occupiedSlots = new ArrayList<>();
             for (Appointment appt : staffAppointments) {
                 LocalDateTime startDateTime = appt.getAppointmentTime();
-                // Thời gian kết thúc = thời gian bắt đầu + tổng thời lượng dịch vụ
+                // Tính thời gian kết thúc bằng cách cộng tổng thời lượng dịch vụ
                 LocalDateTime endDateTime = startDateTime.plusMinutes(appt.getTotalServiceDurationMinutes());
 
                 // Chỉ lấy phần giờ và phút
@@ -105,8 +120,7 @@ public class StaffAvailabilityServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Có thể cấu hình để doPost cũng gọi doGet hoặc xử lý tương tự nếu cần
-        doGet(request, response);
+        doGet(request, response); // Gọi lại doGet cho POST
     }
 
     @Override

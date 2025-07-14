@@ -17,4 +17,10 @@
         <url-pattern>/login</url-pattern>
         <url-pattern>/updatePhone</url-pattern>
     </servlet-mapping>
+
+ <servlet-mapping>
+      <servlet-name>RegisterServlet</servlet-name>
+      <url-pattern>/RegisterServlet</url-pattern>
+  </servlet-mapping>
+
 </web-app>

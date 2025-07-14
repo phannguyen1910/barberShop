@@ -1,20 +1,7 @@
 package controller.CustomerManagement;
 
-import babershopDAO.AppointmentDAO;
-import babershopDAO.BranchDAO;
-import babershopDAO.CustomerDAO;
-import babershopDAO.HolidayDAO;
-import babershopDAO.ServiceDAO;
-import babershopDAO.StaffDAO;
-import babershopDAO.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,8 +10,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import babershopDAO.AppointmentDAO;
+import babershopDAO.CustomerDAO;
+import babershopDAO.HolidayDAO;
+import babershopDAO.ServiceDAO;
+import babershopDAO.StaffDAO;
+import babershopDAO.VoucherDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Account;
-import model.Branch;
 import model.Service;
 import model.Staff;
 import model.Voucher;
@@ -101,18 +100,24 @@ public class BookingServlet extends HttpServlet {
                 currentServiceNamesList = new ArrayList<>();
             }
             session.setAttribute("selectedServiceNames", new ArrayList<>(currentServiceNamesList));
-            System.out.println("Duration = " + totalServiceDuration);
+            
             try {
                 currentTotalPrice = Double.parseDouble(totalPriceStrParam);
                 session.setAttribute("selectedTotalPrice", currentTotalPrice);
                 
-            
+                // Cập nhật totalServiceDuration từ session nếu có
+                Integer updatedTotalServiceDuration = (Integer) session.getAttribute("totalServiceDuration");
+                if (updatedTotalServiceDuration != null) {
+                    totalServiceDuration = updatedTotalServiceDuration.intValue();
+                }
+                
             } catch (NumberFormatException e) {
                 request.setAttribute("error", "Tổng giá dịch vụ không hợp lệ. Đã đặt lại về 0.");
                 currentTotalPrice = 0.0;
                 session.setAttribute("selectedTotalPrice", 0.0);
-
             }
+            
+            System.out.println("Duration = " + totalServiceDuration);
             System.out.println("Session updated with new services from Request: " + currentServiceNamesList + " (Total: " + currentTotalPrice + ")");
         } else {
             System.out.println("No new services from Request. Using session data: " + currentServiceNamesList + " (Total: " + currentTotalPrice + ")");
@@ -176,7 +181,7 @@ public class BookingServlet extends HttpServlet {
             String appointmentDateStr = request.getParameter("appointmentDate");
             String appointmentTimeStr = request.getParameter("appointmentTime");
             int staffId = Integer.parseInt(request.getParameter("staffId"));
-
+ 
             List<String> serviceNamesList = (List<String>) session.getAttribute("selectedServiceNames");
             if (serviceNamesList == null || serviceNamesList.isEmpty()) {
                 throw new IllegalArgumentException("Vui lòng chọn ít nhất một dịch vụ!");

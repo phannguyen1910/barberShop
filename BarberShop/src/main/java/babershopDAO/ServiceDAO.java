@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import model.Service;
 import model.Staff;
@@ -30,6 +31,30 @@ public class ServiceDAO {
         }
         return null;
     }
+    
+    
+    public List<Service> getServicesByIds(List<Integer> serviceIds) {
+    List<Service> services = new ArrayList<>();
+    String query = "SELECT * FROM services WHERE id IN (" + String.join(",", Collections.nCopies(serviceIds.size(), "?")) + ")";
+    try (Connection con = getConnect();
+         PreparedStatement stmt = con.prepareStatement(query)) {
+        for (int i = 0; i < serviceIds.size(); i++) {
+            stmt.setInt(i + 1, serviceIds.get(i));
+        }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Service service = new Service();
+            service.setId(rs.getInt("id"));
+            service.setName(rs.getString("name"));
+            service.setDuration(rs.getInt("duration"));
+            service.setPrice(rs.getFloat("price"));
+            services.add(service);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return services;
+}
 
     public Service getService(int id) {
         String sql = "Select name ,price ,duration ,description from Service where id= ?";

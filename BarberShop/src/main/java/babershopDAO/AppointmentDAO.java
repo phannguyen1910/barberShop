@@ -1,9 +1,5 @@
 package babershopDAO;
 
-import static babershopDatabase.databaseInfo.DBURL;
-import static babershopDatabase.databaseInfo.DRIVERNAME;
-import static babershopDatabase.databaseInfo.PASSDB;
-import static babershopDatabase.databaseInfo.USERDB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,6 +13,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static babershopDatabase.databaseInfo.DBURL;
+import static babershopDatabase.databaseInfo.DRIVERNAME;
+import static babershopDatabase.databaseInfo.PASSDB;
+import static babershopDatabase.databaseInfo.USERDB;
 import model.Appointment;
 import model.AppointmentService;
 import model.Customer;
@@ -52,7 +53,7 @@ public class AppointmentDAO {
         String sql = "SELECT COUNT(*) FROM Appointment " +
                      "WHERE staffId = ? " +
                      "AND status IN ('Pending', 'Confirmed') " +
-                     "AND (? < DATEADD(minute, totalServiceDurationMinutes, appointmentTime)) " +
+                     "AND (? < DATEADD(minute, TotalDurationMinutes, appointmentTime)) " +
                      "AND (appointmentTime < ?)";
 
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -77,8 +78,8 @@ public class AppointmentDAO {
     public List<Appointment> getAppointmentsByStaffAndDate(int staffId, LocalDate date) {
         List<Appointment> appointments = new ArrayList<>();
         // Sử dụng CONVERT(DATE, ...) cho SQL Server để so sánh chỉ phần ngày
-        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId, totalServiceDurationMinutes FROM Appointment " +
-                     "WHERE staffId = ? AND CONVERT(DATE, appointmentTime) = ? AND status IN ('Pending', 'Confirmed', 'Completed')"; // Thêm 'Completed' nếu bạn muốn các lịch hẹn đã hoàn thành cũng chiếm khung giờ
+        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId, TotalDurationMinutes as totalServiceDurationMinutes FROM Appointment " +
+                     "WHERE staffId = ? AND CONVERT(DATE, appointmentTime) = ? AND status IN ('Pending', 'Confirmed', 'Completed')"; // Bao gồm cả 'Pending' để tránh đặt trùng lịch
 
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, staffId);

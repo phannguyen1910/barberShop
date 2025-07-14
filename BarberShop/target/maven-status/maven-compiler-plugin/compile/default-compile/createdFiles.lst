@@ -1,12 +1,15 @@
 babershopDAO\AccountDAO$1.class
 controller\Authentication\ChangePasswordServlet.class
+controller\ServiceManagement\ServiceDurationServlet.class
 controller\StaffManagement\StaffAvailabilityServlet$ErrorResponse.class
 model\Branch.class
 controller\CustomerManagement\BanCustomerServlet.class
 controller\Authentication\ForgetPassword.class
 controller\CustomerManagement\ChooseBranchServlet.class
+babershopDAO\AdviseDAO.class
 controller\Authentication\ProfileServlet.class
 babershopDAO\StaffDAO.class
+model\Advise.class
 controller\ServiceManagement\VoucherServlet$2.class
 model\WorkSchedule.class
 controller\Authentication\LoginServlet.class
@@ -43,10 +46,12 @@ controller\CustomerManagement\HistoryAppointmentServlet$1.class
 controller\StaffManagement\StaffAppointment.class
 babershopDAO\BranchDAO.class
 controller\AppointmentManagement\DashBoardServlet.class
+controller\ServiceManagement\ServiceDurationServlet$ServiceDurationResponse.class
 babershopDAO\VoucherDAO.class
 model\Staff.class
 controller\ServiceManagement\VoucherServlet$ResponseWrapper.class
 controller\Payment\VnpayReturnServlet.class
+model\ChatMessage.class
 model\CustomerVoucher.class
 controller\AppointmentManagement\ChangeStatusServlet.class
 controller\Authentication\ResendOTPServlet.class
@@ -62,6 +67,7 @@ controller\CustomerManagement\ConfirmationServlet.class
 controller\ServiceManagement\ChooseServiceServlet.class
 controller\StaffManagement\BanStaffServlet.class
 model\Validation.class
+controller\ChatServlet.class
 controller\StaffManagement\StaffAvailabilityServlet$OccupiedTimeSlot.class
 controller\RevenueManagement\RevenueManagementServlet.class
 controller\Authentication\LogoutServlet.class
@@ -79,6 +85,7 @@ controller\AppointmentManagement\EditAppointmentServlet.class
 controller\Authentication\RegisterServlet.class
 babershopDAO\FeedbackDAO.class
 controller\Authentication\HolidayServlet.class
+chatbot\GeminiApiClient.class
 babershopDAO\AdminDAO.class
 babershopDAO\CustomerDAO.class
 babershopDAO\AccountDAO.class
