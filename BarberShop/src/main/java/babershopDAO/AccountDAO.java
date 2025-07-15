@@ -1,6 +1,6 @@
 package babershopDAO;
 
-import static babershopDAO.CustomerDAO.getConnect;
+
 import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;

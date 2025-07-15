@@ -6,6 +6,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Quản lý Phản hồi - Barbershop Admin</title>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/feedbackManagement.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -420,6 +421,12 @@
                 white-space: pre-wrap;
             }
 
+            .feedback-date {
+                color: #ccc;
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+
             .mobile-menu-btn {
                 display: none;
                 position: fixed;
@@ -534,7 +541,7 @@
     <body>
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="index.jsp">
                     <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -544,7 +551,7 @@
                     <div class="d-flex gap-2 align-items-center">
                         <div class="text-warning d-none d-lg-block me-3">
                             <i class="fas fa-user-shield me-1"></i>
-                            <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
+                             <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
                         </div>
                         <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
                             <i class="fas fa-sign-out-alt me-1"></i>
@@ -589,7 +596,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -613,7 +620,13 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
+                            <i class="fas fa-handshake"></i>
+                            <span>Quản lý Nhượng quyền</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
                         </a>
@@ -644,6 +657,45 @@
                             <i class="fas fa-plus"></i>
                             Thêm phản hồi
                         </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 id="totalFeedbacks">0</h3>
+                            <p>Tổng số phản hồi</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: linear-gradient(45deg, #FFC107, #FF9800);">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 id="avgRating">0.0</h3>
+                            <p>Đánh giá trung bình</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 id="uniqueCustomers">0</h3>
+                            <p>Khách hàng đã phản hồi</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: linear-gradient(45deg, #9C27B0, #7B1FA2);">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 id="uniqueStaff">0</h3>
+                            <p>Nhân viên được đánh giá</p>
+                        </div>
                     </div>
                 </div>
 
@@ -694,9 +746,10 @@
                                 <th>Tên khách hàng</th>
                                 <th>Đánh giá sao</th>
                                 <th>Phản hồi</th>
+                                <th>Ngày gửi</th>
                             </tr>
                         </thead>
-                        <tbody id="feedbackTableBody"></tbody>
+                            <tbody id="feedbackTableBody"></tbody>
                     </table>
                 </div>
             </main>
@@ -747,175 +800,212 @@
         </div>
 
         <script>
-            // Sample feedback data
-            let feedbacks = [
-                {
-                    appointmentId: "APPT001",
-                    staffName: "Nguyễn Văn A",
-                    customerName: "Trần Minh Cường",
-                    rating: 4,
-                    feedback: "Dịch vụ rất tốt, nhân viên thân thiện. "
-                },
-                {
-                    appointmentId: "APPT002",
-                    staffName: "Trần Thị C",
-                    customerName: "Lê Văn D",
-                    rating: 5,
-                    feedback: "Tuyệt vời, sẽ quay lại lần sau!"
-                },
-                {
-                    appointmentId: "APPT003",
-                    staffName: "Lê Văn E",
-                    customerName: "Phạm Thị F",
-                    rating: 3,
-                    feedback: "Dịch vụ ổn, nhưng chờ hơi lâu."
+        let feedbacks = [];
+        let filteredFeedbacks = [];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchFeedbacks();
+        });
+
+        function fetchFeedbacks() {
+            fetch('${pageContext.request.contextPath}/admin/api/feedback')
+                .then(response => response.json())
+                .then(data => {
+                    feedbacks = data;
+                    filteredFeedbacks = [...feedbacks];
+                    renderFeedbacks();
+                    updateStatistics();
+                })
+                .catch(error => {
+                    console.error('Error fetching feedbacks:', error);
+                });
+        }
+
+        function renderFeedbacks() {
+            const tableBody = document.getElementById('feedbackTableBody');
+            if (!tableBody) return;
+            tableBody.innerHTML = '';
+
+            filteredFeedbacks.forEach(feedback => {
+                const row = document.createElement('tr');
+
+                // Appointment ID
+                const idCell = document.createElement('td');
+                idCell.className = 'appointment-id';
+                idCell.textContent = feedback.appointmentId || 'N/A';
+                row.appendChild(idCell);
+
+                // Staff Name
+                const staffCell = document.createElement('td');
+                staffCell.textContent = feedback.staffName || 'N/A';
+                row.appendChild(staffCell);
+
+                // Customer Name with Avatar
+                const customerCell = document.createElement('td');
+                customerCell.className = 'customer-info';
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'customer-avatar';
+                
+                // Get first letter of customer name for avatar
+                let customerInitial = '?';
+                if (feedback.customerName) {
+                    customerInitial = feedback.customerName.charAt(0).toUpperCase();
+                } else if (feedback.customerId) {
+                    customerInitial = feedback.customerId.toString().charAt(0);
                 }
-            ];
+                
+                avatarDiv.textContent = customerInitial;
+                const nameDiv = document.createElement('div');
+                nameDiv.textContent = feedback.customerName || 'Khách hàng #' + feedback.customerId;
+                customerCell.appendChild(avatarDiv);
+                customerCell.appendChild(nameDiv);
+                row.appendChild(customerCell);
 
-            // Filtered feedbacks
-            let filteredFeedbacks = [...feedbacks];
+                // Star Rating
+                const ratingCell = document.createElement('td');
+                ratingCell.className = 'star-rating';
+                const rating = feedback.rate || feedback.rating || 0;
+                for (let i = 0; i < 5; i++) {
+                    const star = document.createElement('i');
+                    star.className = 'fas fa-star';
+                    star.style.color = i < rating ? '#FFC107' : '#ccc';
+                    ratingCell.appendChild(star);
+                }
+                row.appendChild(ratingCell);
 
-            // Initialize page
-            document.addEventListener('DOMContentLoaded', function () {
-                renderFeedbacks();
+                // Feedback Text
+                const feedbackCell = document.createElement('td');
+                feedbackCell.className = 'feedback-text';
+                feedbackCell.textContent = feedback.comment || 'Chưa có phản hồi';
+                row.appendChild(feedbackCell);
+
+                // Date
+                const dateCell = document.createElement('td');
+                dateCell.className = 'feedback-date';
+                if (feedback.feedbackTime) {
+                    const date = new Date(feedback.feedbackTime);
+                    dateCell.textContent = date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+                } else {
+                    dateCell.textContent = 'N/A';
+                }
+                row.appendChild(dateCell);
+
+                tableBody.appendChild(row);
             });
 
-            // Toggle sidebar for mobile
-            function toggleSidebar() {
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar) {
-                    sidebar.classList.toggle('active');
-                }
+            updateTableInfo();
+        }
+
+        function updateTableInfo() {
+            const tableInfo = document.getElementById('tableInfo');
+            if (tableInfo) {
+                tableInfo.textContent = 'Hiển thị ' + filteredFeedbacks.length + ' phản hồi';
+            }
+        }
+
+        function updateStatistics() {
+            // Calculate total feedbacks
+            document.getElementById('totalFeedbacks').textContent = feedbacks.length;
+
+            // Calculate average rating
+            if (feedbacks.length > 0) {
+                const totalRating = feedbacks.reduce((sum, feedback) => {
+                    return sum + (feedback.rate || feedback.rating || 0);
+                }, 0);
+                const avgRating = (totalRating / feedbacks.length).toFixed(1);
+                document.getElementById('avgRating').textContent = avgRating;
             }
 
-            // Render feedbacks
-            function renderFeedbacks() {
-                const tableBody = document.getElementById('feedbackTableBody');
-                if (!tableBody)
-                    return;
+            // Calculate unique customers
+            const uniqueCustomers = new Set(feedbacks.map(feedback => feedback.customerId)).size;
+            document.getElementById('uniqueCustomers').textContent = uniqueCustomers;
 
-                tableBody.innerHTML = '';
+            // Calculate unique staff
+            const uniqueStaff = new Set(feedbacks.map(feedback => feedback.staffId)).size;
+            document.getElementById('uniqueStaff').textContent = uniqueStaff;
+        }
 
-                filteredFeedbacks.forEach(feedback => {
-                    const row = document.createElement('tr');
+        function searchFeedbacks() {
+            const searchTerm = document.getElementById('searchFeedback').value.toLowerCase();
+            const ratingFilter = document.getElementById('searchRating').value;
+            
+            filteredFeedbacks = feedbacks.filter(feedback => {
+                const customerNameMatch = !searchTerm || 
+                    (feedback.customerName && feedback.customerName.toLowerCase().includes(searchTerm)) ||
+                    (feedback.appointmentId && feedback.appointmentId.toString().includes(searchTerm));
+                
+                const ratingMatch = !ratingFilter || 
+                    (feedback.rate && feedback.rate.toString() === ratingFilter) ||
+                    (feedback.rating && feedback.rating.toString() === ratingFilter);
+                
+                return customerNameMatch && ratingMatch;
+            });
+            
+            renderFeedbacks();
+        }
 
-                    // Appointment ID
-                    const idCell = document.createElement('td');
-                    idCell.className = 'appointment-id';
-                    idCell.textContent = feedback.appointmentId || 'N/A';
-                    row.appendChild(idCell);
+        function resetFilters() {
+            document.getElementById('searchFeedback').value = '';
+            document.getElementById('searchRating').value = '';
+            filteredFeedbacks = [...feedbacks];
+            renderFeedbacks();
+        }
 
-                    // Staff Name
-                    const staffCell = document.createElement('td');
-                    staffCell.textContent = feedback.staffName || 'N/A';
-                    row.appendChild(staffCell);
+        function addFeedback() {
+            const staffName = document.getElementById('staffName').value;
+            const customerName = document.getElementById('customerName').value;
+            const appointmentId = document.getElementById('appointmentId').value;
+            const rating = document.getElementById('rating').value;
+            const feedbackText = document.getElementById('feedbackText').value;
 
-                    // Customer Name
-                    const customerCell = document.createElement('td');
-                    customerCell.className = 'customer-info';
-                    const avatarDiv = document.createElement('div');
-                    avatarDiv.className = 'customer-avatar';
-                    avatarDiv.textContent = feedback.customerName?.charAt(0) || '?';
-                    const nameDiv = document.createElement('div');
-                    nameDiv.textContent = feedback.customerName || 'N/A';
-                    customerCell.appendChild(avatarDiv);
-                    customerCell.appendChild(nameDiv);
-                    row.appendChild(customerCell);
-
-                    // Star Rating
-                    const ratingCell = document.createElement('td');
-                    ratingCell.className = 'star-rating';
-                    for (let i = 0; i < 5; i++) {
-                        const star = document.createElement('i');
-                        star.className = 'fas fa-star';
-                        star.style.color = i < feedback.rating ? '#FFC107' : '#ccc';
-                        ratingCell.appendChild(star);
-                    }
-                    row.appendChild(ratingCell);
-
-                    // Feedback
-                    const feedbackCell = document.createElement('td');
-                    feedbackCell.className = 'feedback-text';
-                    feedbackCell.textContent = feedback.feedback || 'Chưa có phản hồi';
-                    row.appendChild(feedbackCell);
-
-                    tableBody.appendChild(row);
-                });
-
-                const tableInfo = document.getElementById('tableInfo');
-                if (tableInfo) {
-                    tableInfo.textContent = 'Hiển thị ' + filteredFeedbacks.length + ' phản hồi';
-                }
+            if (!staffName || !customerName || !appointmentId || !feedbackText) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
             }
 
-            // Search feedbacks
-            function searchFeedbacks() {
-                const query = document.getElementById('searchFeedback').value.toLowerCase();
-                const rating = document.getElementById('searchRating').value;
+            // Here you would typically send an AJAX request to add the feedback
+            console.log('Adding feedback:', {
+                staffName,
+                customerName,
+                appointmentId,
+                rating,
+                feedbackText
+            });
 
-                filteredFeedbacks = feedbacks.filter(function (feedback) {
-                    const matchesQuery = (feedback.customerName || '').toLowerCase().includes(query) ||
-                            (feedback.appointmentId || '').toLowerCase().includes(query);
-                    const matchesRating = !rating || feedback.rating === parseInt(rating);
-
-                    return matchesQuery && matchesRating;
-                });
-
-                renderFeedbacks();
+            alert('Phản hồi đã được thêm thành công!');
+            
+            // Reset form and close modal
+            document.getElementById('staffName').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('appointmentId').value = '';
+            document.getElementById('rating').value = '5';
+            document.getElementById('feedbackText').value = '';
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addFeedbackModal'));
+            if (modal) {
+                modal.hide();
             }
+        }
 
-            // Reset filters
-            function resetFilters() {
-                document.getElementById('searchFeedback').value = '';
-                document.getElementById('searchRating').value = '';
-                filteredFeedbacks = [...feedbacks];
-                renderFeedbacks();
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function (event) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+
+            if (window.innerWidth <= 768 &&
+                    !sidebar.contains(event.target) &&
+                    !mobileBtn.contains(event.target) &&
+                    sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
             }
-
-            // Add feedback
-            function addFeedback() {
-                const staffName = document.getElementById('staffName').value;
-                const customerName = document.getElementById('customerName').value;
-                const appointmentId = document.getElementById('appointmentId').value;
-                const rating = parseInt(document.getElementById('rating').value);
-                const feedbackText = document.getElementById('feedbackText').value;
-
-                if (!staffName || !customerName || !appointmentId || !rating || !feedbackText) {
-                    alert('Vui lòng điền đầy đủ thông tin!');
-                    return;
-                }
-
-                const newFeedback = {
-                    appointmentId: appointmentId,
-                    staffName: staffName,
-                    customerName: customerName,
-                    rating: rating,
-                    feedback: feedbackText
-                };
-
-                feedbacks.push(newFeedback);
-                filteredFeedbacks = [...feedbacks];
-                renderFeedbacks();
-                resetAddModal();
-
-                if (typeof bootstrap !== 'undefined') {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addFeedbackModal'));
-                    modal.hide();
-                } else {
-                    document.getElementById('addFeedbackModal').classList.remove('show');
-                    document.body.classList.remove('modal-open');
-                    document.querySelector('.modal-backdrop').remove();
-                }
-            }
-
-            // Reset add modal
-            function resetAddModal() {
-                document.getElementById('staffName').value = '';
-                document.getElementById('customerName').value = '';
-                document.getElementById('appointmentId').value = '';
-                document.getElementById('rating').value = '1';
-                document.getElementById('feedbackText').value = '';
-            }
+        });
         </script>
     </body>
 </html>

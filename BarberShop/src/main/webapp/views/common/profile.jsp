@@ -628,6 +628,7 @@
                                         <th>Chi nhánh</th>
                                         <th>Thao tác</th>
                                         <th>Thanh toán còn lại</th>
+                                        <th>Feedback</th>
                                     </tr>
                                 </thead>
                                 <tbody>

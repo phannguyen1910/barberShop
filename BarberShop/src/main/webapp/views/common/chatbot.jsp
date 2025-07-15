@@ -1,8 +1,3 @@
-<%-- 
-    Document   : chatbot
-    Created on : Jul 3, 2025, 11:26:57 AM
-    Author     : LENOVO
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
