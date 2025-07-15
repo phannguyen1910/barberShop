@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -52,7 +53,7 @@ public class GeminiApiClient {
         StringBuilder response = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
                 connection.getResponseCode() == 200
-                ? connection.getInputStream() : connection.getErrorStream()))) {
+                ? connection.getInputStream() : connection.getErrorStream(), "UTF-8"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 response.append(line);

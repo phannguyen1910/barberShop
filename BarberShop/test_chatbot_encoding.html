@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Chatbot Encoding</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .chat-container {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .message {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .user-message {
+        background-color: #e3f2fd;
+        text-align: right;
+      }
+      .ai-message {
+        background-color: #f5f5f5;
+      }
+      .input-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .test-buttons {
+        margin-bottom: 20px;
+      }
+      .test-buttons button {
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Chatbot Encoding UTF-8</h1>
+
+    <div class="test-buttons">
+      <h3>Test Cases:</h3>
+      <button onclick="sendTestMessage('Xin chào')">Xin chào</button>
+      <button onclick="sendTestMessage('Tư vấn kiểu tóc cắt moi cho nam')">
+        Tư vấn kiểu tóc cắt moi
+      </button>
+      <button onclick="sendTestMessage('Giá cắt tóc nam bao nhiêu?')">
+        Hỏi giá
+      </button>
+      <button onclick="sendTestMessage('Cách chăm sóc tóc nam')">
+        Chăm sóc tóc
+      </button>
+      <button onclick="sendTestMessage('Kiểu tóc phù hợp với khuôn mặt tròn')">
+        Kiểu tóc khuôn mặt tròn
+      </button>
+    </div>
+
+    <div class="chat-container">
+      <div id="chat-messages">
+        <div class="message ai-message">
+          <strong>Chatbot:</strong> Xin chào! Tôi có thể giúp bạn tư vấn dịch
+          vụ, kiểu tóc, giá cả, ưu đãi... Bạn muốn hỏi gì hôm nay?
+        </div>
+      </div>
+
+      <div class="input-container">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Nhập tin nhắn của bạn..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button onclick="sendMessage()">Gửi</button>
+      </div>
+    </div>
+
+    <script>
+      function sendTestMessage(message) {
+        document.getElementById("message-input").value = message;
+        sendMessage();
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      }
+
+      function sendMessage() {
+        const messageInput = document.getElementById("message-input");
+        const message = messageInput.value.trim();
+
+        if (!message) return;
+
+        // Hiển thị tin nhắn người dùng
+        appendMessage(message, "user");
+        messageInput.value = "";
+
+        // Gửi request đến server
+        fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          body: "message=" + encodeURIComponent(message),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            appendMessage(data.message, "ai");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            appendMessage(
+              "Xin lỗi, có lỗi xảy ra khi kết nối với server.",
+              "ai"
+            );
+          });
+      }
+
+      function appendMessage(content, sender) {
+        const chatMessages = document.getElementById("chat-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}-message`;
+
+        const senderText = sender === "user" ? "Bạn:" : "Chatbot:";
+        messageDiv.innerHTML = `<strong>${senderText}</strong> ${content}`;
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    </script>
+  </body>
+</html>

@@ -10,19 +10,19 @@
             <!-- Slides -->
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="${pageContext.request.contextPath}/image/image_banner/banner1.png" class="d-block w-100" alt="Ảnh 1">
+                    <img src="${pageContext.request.contextPath}/image/image_banner/banner1.jpg" class="d-block w-100" alt="Ảnh 1">
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/image/image_banner/banner2.png" class="d-block w-100" alt="Ảnh 2">
+                    <img src="${pageContext.request.contextPath}/image/image_banner/banner2.jpg" class="d-block w-100" alt="Ảnh 2">
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/image/image_banner/banner3.png" class="d-block w-100" alt="Ảnh 3">
+                    <img src="${pageContext.request.contextPath}/image/image_banner/banner3.jpg" class="d-block w-100" alt="Ảnh 3">
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/image/image_banner/banner4.png" class="d-block w-100" alt="Ảnh 4">
+                    <img src="${pageContext.request.contextPath}/image/image_banner/banner4.jpg" class="d-block w-100" alt="Ảnh 4">
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/image/image_banner/banner5.png" class="d-block w-100" alt="Ảnh 5">
+                    <img src="${pageContext.request.contextPath}/image/image_banner/banner5.jpg" class="d-block w-100" alt="Ảnh 5">
                 </div>
             </div>
 

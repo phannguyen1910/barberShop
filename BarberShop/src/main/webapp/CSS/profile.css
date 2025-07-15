@@ -176,10 +176,10 @@ html, body {
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-gold), #B8860B) !important;
     border: none !important;
-    padding: 0.8rem 1.5rem !important; /* Giảm padding */
+    padding: 0.3rem 1.2rem !important; /* Giảm padding */
     border-radius: 30px !important;
     font-weight: 600 !important;
-    font-size: 1rem !important; /* Giảm kích thước font */
+    font-size: 0.7rem !important; /* Giảm kích thước font */
     letter-spacing: 0.8px !important;
     text-transform: uppercase !important;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;

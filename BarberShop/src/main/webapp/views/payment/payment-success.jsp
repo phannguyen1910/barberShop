@@ -85,6 +85,10 @@
                     <h2>Thanh toán thành công!</h2>
                     <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Thông tin lịch hẹn đã được gửi đến email của bạn.</p>
                 </div>
+                <div class="text-center" style="margin-top: 20px;">
+                    <a href="${pageContext.request.contextPath}/views/common/home.jsp" class="btn btn-primary" style="margin-right: 10px;">← Trở về trang chủ</a>
+                    <a href="${pageContext.request.contextPath}/views/booking/chooseBranch.jsp" class="btn btn-success">📅 Đặt lịch mới</a>
+                </div>
             </c:when>
             <c:otherwise>
                 <div class="text-center">
@@ -92,10 +96,12 @@
                     <h2>Thanh toán thất bại!</h2>
                     <p>Đã xảy ra lỗi: ${error != null ? error : 'Vui lòng thử lại hoặc liên hệ qua hotline 0774511941.'}</p>
                 </div>
+                <div class="text-center" style="margin-top: 20px;">
+                    <a href="${pageContext.request.contextPath}/views/common/home.jsp" class="btn btn-primary" style="margin-right: 10px;">← Trở về trang chủ</a>
+                    <a href="${pageContext.request.contextPath}/views/booking/chooseBranch.jsp" class="btn btn-success">🔄 Thử lại</a>
+                </div>
             </c:otherwise>
         </c:choose>
-
-        <a href="${pageContext.request.contextPath}/views/common/home.jsp" class="btn btn-primary">← Trở về trang chủ</a>
     </div>
 
  

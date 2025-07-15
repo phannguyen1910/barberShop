@@ -1,10 +1,11 @@
 package controller;
 
-import babershopDAO.AdviseDAO;
-import chatbot.GeminiApiClient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import babershopDAO.AdviseDAO;
+import chatbot.GeminiApiClient;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,12 +22,21 @@ public class ChatServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Thiết lập encoding UTF-8
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+        
         request.getRequestDispatcher("/WEB-INF/chat.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Thiết lập encoding UTF-8
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        
         String userMessage = request.getParameter("message");
         if (userMessage != null && !userMessage.trim().isEmpty()) {
             HttpSession session = request.getSession();
@@ -39,7 +49,7 @@ public class ChatServlet extends HttpServlet {
             String aiResponse = generateAIResponse(userMessage, chatHistory, request);
             chatHistory.add(new ChatMessage(aiResponse, "ai"));
             if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-                response.setContentType("application/json");
+                response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write("{\"message\": \"" +
                         aiResponse.replace("\"", "\\\"").replace("\n", "\\n") + "\"}");
                 return;
