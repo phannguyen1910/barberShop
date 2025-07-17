@@ -1,0 +1,294 @@
+/* General Styling */
+body {
+    background-color: #f9fafb;
+    color: #201E15;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+}
+
+/* Navbar */
+.custom-navbar {
+    background-color: #201E15;
+    padding: 0.75rem 0;
+}
+
+.custom-navbar .navbar-brand {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.6rem;
+    transition: color 0.3s ease;
+}
+
+.custom-navbar .nav-link {
+    color: #f5f5f5;
+    font-weight: 500;
+    font-size: 1.05rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #d4af37;
+}
+
+.custom-navbar .btn-outline-primary {
+    border-color: #d4af37;
+    color: #d4af37;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .btn-outline-primary:hover {
+    background-color: #d4af37;
+    color: #201E15;
+}
+
+.custom-navbar .btn-primary {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .btn-primary:hover {
+    background-color: #b8972e;
+    border-color: #b8972e;
+}
+
+/* Combo Title */
+.combo-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #0d3b66;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Banner */
+.banner-section {
+    display: flex;
+    justify-content: center;
+    padding: 0 15px;
+}
+
+.banner-img {
+    max-height: 450px;
+    max-width: 1200px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.banner-img:hover {
+    transform: scale(1.02);
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d3b66;
+    border-left: 5px solid #d4af37;
+    padding-left: 12px;
+    margin-bottom: 1.5rem;
+}
+
+/* Process and Feature Sections */
+.process-item, .feature-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.process-item:hover, .feature-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.process-item img, .feature-item img {
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid #d4af37;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.process-item img:hover, .feature-item img:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.process-item p, .feature-item p {
+    font-size: 1rem;
+    color: #201E15;
+    margin-bottom: 0;
+}
+
+/* Fixed Buttons */
+.fixed-buttons {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.fixed-buttons .btn {
+    width: 55px;
+    height: 55px;
+    font-size: 1.3rem;
+    background-color: #d4af37;
+    border-color: #d4af37;
+    transition: all 0.3s ease;
+}
+
+.fixed-buttons .btn:hover {
+    background-color: #b8972e;
+    border-color: #b8972e;
+    transform: scale(1.1);
+}
+
+/* Booking CTA Section */
+.booking-cta {
+    background: linear-gradient(rgba(32, 30, 21, 0.9), rgba(32, 30, 21, 0.9)), url('../image/haircut/booking-bg.jpg') no-repeat center;
+    background-size: cover;
+    color: #ffffff;
+    padding: 5rem 0;
+}
+
+.booking-cta h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+}
+
+.booking-cta .lead {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}
+
+.booking-cta .btn-primary {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.booking-cta .btn-primary:hover {
+    background-color: #ffffff;
+    color: #201E15;
+    border-color: #ffffff;
+}
+
+/* Footer */
+.footer {
+    background-color: #1A1810;
+    color: #f5f5f5;
+    padding-top: 4rem;
+}
+
+.footer-logo {
+    max-width: 130px;
+    margin-bottom: 1.5rem;
+}
+
+.footer-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #d4af37;
+    margin-bottom: 1.5rem;
+}
+
+.footer-links a, .footer-contact li {
+    color: #f5f5f5;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #d4af37;
+}
+
+.footer-contact i {
+    color: #d4af37;
+    margin-right: 10px;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 2rem;
+    margin-top: 2rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .combo-title {
+        font-size: 2.3rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+
+    .process-item img, .feature-item img {
+        height: 160px;
+    }
+
+    .booking-cta h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .combo-title {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .process-item img, .feature-item img {
+        height: 140px;
+    }
+
+    .process-item p, .feature-item p {
+        font-size: 0.9rem;
+    }
+
+    .booking-cta {
+        padding: 3rem 0;
+    }
+
+    .booking-cta h2 {
+        font-size: 1.8rem;
+    }
+
+    .footer-logo {
+        max-width: 110px;
+    }
+}
+
+@media (max-width: 576px) {
+    .custom-navbar .navbar-brand {
+        font-size: 1.3rem;
+    }
+
+    .custom-navbar .nav-link {
+        font-size: 0.95rem;
+    }
+
+    .banner-img {
+        max-height: 300px;
+    }
+
+    .fixed-buttons .btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+}
