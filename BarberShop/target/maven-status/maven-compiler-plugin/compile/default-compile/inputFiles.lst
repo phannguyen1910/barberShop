@@ -28,6 +28,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\c
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffAvailabilityServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\ServiceDAO.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\SendOTPServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AdminFeedbackApiServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\GoogleAccount.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Holiday.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AppointmentDAO.java
@@ -68,6 +69,7 @@ D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\c
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Service.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\WorkSchedule.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\FeedbackDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AddFeedbackServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\ChatMessage.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\RevenueManagement\RevenueManagementServlet.java
 D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Validation.java

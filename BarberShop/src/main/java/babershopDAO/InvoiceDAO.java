@@ -116,7 +116,7 @@ public class InvoiceDAO {
 
         if (periodType != null && !periodType.trim().isEmpty()) {
             if ("day".equalsIgnoreCase(periodType) && periodValue != null && !periodValue.trim().isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                sql += " AND DATE(i.receivedDate) = ?";
+                sql += " AND CONVERT(date, i.receivedDate) = ?";
                 hasTimeFilter = true;
             } else if ("month".equalsIgnoreCase(periodType) && periodValue != null && periodValue.matches("\\d{4}-\\d{2}")) {
                 String[] parts = periodValue.split("-");
@@ -135,7 +135,7 @@ public class InvoiceDAO {
             return getAllInvoice();
         }
 
-        System.out.println("Executing SQL: " + sql + " with periodValue: " + periodValue + ", year: " + year + ", branchId: " + branchId);
+        System.out.println("Executing SQL: " + sql + " with periodType: " + periodType + ", periodValue: " + periodValue + ", year: " + year + ", branchId: " + branchId);
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             int paramIndex = 1;
             if (branchId != null && !branchId.isEmpty()) {
@@ -143,7 +143,9 @@ public class InvoiceDAO {
             }
             if (hasTimeFilter) {
                 if ("day".equalsIgnoreCase(periodType)) {
-                    ps.setString(paramIndex++, periodValue);
+                    String dateParam = normalizeDate(periodValue);
+                    System.out.println("[DEBUG] Search by day, param: " + dateParam);
+                    ps.setString(paramIndex++, dateParam);
                 } else if ("month".equalsIgnoreCase(periodType)) {
                     String[] parts = periodValue.split("-");
                     ps.setInt(paramIndex++, Integer.parseInt(parts[1])); // Tháng
@@ -183,7 +185,7 @@ public class InvoiceDAO {
 
         if (periodType != null && !periodType.trim().isEmpty()) {
             if ("day".equalsIgnoreCase(periodType) && periodValue != null && !periodValue.trim().isEmpty() && periodValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                sql += " AND DATE(i.receivedDate) = ?";
+                sql += " AND CONVERT(date, i.receivedDate) = ?";
                 hasTimeFilter = true;
             } else if ("month".equalsIgnoreCase(periodType) && periodValue != null && periodValue.matches("\\d{4}-\\d{2}")) {
                 String[] parts = periodValue.split("-");
@@ -327,4 +329,12 @@ public boolean updateInvoiceStatus(int appointmentId, String status) {
     return false;
 }
 
+private static String normalizeDate(String input) {
+    // Nếu input là dd/MM/yyyy thì chuyển về yyyy-MM-dd
+    if (input != null && input.matches("\\d{2}/\\d{2}/\\d{4}")) {
+        String[] parts = input.split("/");
+        return parts[2] + "-" + parts[1] + "-" + parts[0];
+    }
+    return input;
+}
 }

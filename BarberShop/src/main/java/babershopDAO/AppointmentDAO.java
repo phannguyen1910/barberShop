@@ -184,6 +184,26 @@ public class AppointmentDAO {
         }
     }
 
+    
+    public static int getStaffIdByAppointmentId(int appointmentId) {
+        String sql = "SELECT staffId FROM Appointment WHERE id = ?";
+        try (Connection con = getConnect();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("staffId");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getStaffIdByAppointmentId: " + e);
+        }
+        return 0; // hoặc -1 nếu muốn báo lỗi rõ hơn
+    }
+
+
+    
+    
     // Inside your AppointmentDAO class
     public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int branchId, List<Integer> serviceIds) {
         String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId, TotalDurationMinutes) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Confirmed', ?, ?)";

@@ -23,6 +23,7 @@ controller\Payment\VnpayReturnServlet.class
 model\ChatMessage.class
 model\CustomerVoucher.class
 controller\Authentication\ResendOTPServlet.class
+controller\Authentication\SendOTPServlet$1.class
 controller\Authentication\ValidateOTP.class
 model\Account.class
 controller\CustomerManagement\ConfirmationServlet.class
@@ -51,6 +52,7 @@ model\Advise.class
 controller\ServiceManagement\VoucherServlet$2.class
 model\WorkSchedule.class
 controller\Authentication\LoginServlet.class
+controller\AddFeedbackServlet.class
 controller\CustomerManagement\BookingServlet.class
 controller\Authentication\HomeServlet.class
 model\Voucher.class
