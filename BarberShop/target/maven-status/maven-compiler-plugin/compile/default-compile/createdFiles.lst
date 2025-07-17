@@ -23,7 +23,6 @@ controller\Payment\VnpayReturnServlet.class
 model\ChatMessage.class
 model\CustomerVoucher.class
 controller\Authentication\ResendOTPServlet.class
-controller\Authentication\SendOTPServlet$1.class
 controller\Authentication\ValidateOTP.class
 model\Account.class
 controller\CustomerManagement\ConfirmationServlet.class

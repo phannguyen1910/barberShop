@@ -746,6 +746,44 @@
                                         } else {
                                             remainCell.textContent = '-';
                                         }
+                                        const feedbackCell = row.insertCell();
+                                if (appointment.status === 'Completed') {
+                                    const feedbackForm = document.createElement('form');
+                                    feedbackForm.action = '${pageContext.request.contextPath}/views/common/feedback.jsp';
+                                    feedbackForm.method = 'get';
+                                    feedbackForm.style.display = 'flex';
+                                    feedbackForm.style.flexDirection = 'column';
+                                    feedbackForm.style.alignItems = 'center';
+                                    const feedbackLabel = document.createElement('span');
+                                    feedbackLabel.textContent = 'Feedback';
+                                    feedbackLabel.style.fontWeight = 'bold';
+                                    feedbackLabel.style.marginBottom = '4px';
+                                    feedbackForm.appendChild(feedbackLabel);
+                                    const inputCustomer = document.createElement('input');
+                                    inputCustomer.type = 'hidden';
+                                    inputCustomer.name = 'customerId';
+                                    inputCustomer.value = appointment.customerId || '${sessionScope.customer.id}';
+                                    feedbackForm.appendChild(inputCustomer);
+                                    const inputStaff = document.createElement('input');
+                                    inputStaff.type = 'hidden';
+                                    inputStaff.name = 'staffId';
+                                    inputStaff.value = appointment.staffId || '';
+                                    feedbackForm.appendChild(inputStaff);
+                                    const inputAppointment = document.createElement('input');
+                                    inputAppointment.type = 'hidden';
+                                    inputAppointment.name = 'appointmentId';
+                                    inputAppointment.value = appointment.id;
+                                    feedbackForm.appendChild(inputAppointment);
+                                    const feedbackBtn = document.createElement('button');
+                                    feedbackBtn.type = 'submit';
+                                    feedbackBtn.className = 'btn btn-primary';
+                                    feedbackBtn.style.marginTop = '4px';
+                                    feedbackBtn.textContent = 'Gửi Feedback';
+                                    feedbackForm.appendChild(feedbackBtn);
+                                    feedbackCell.appendChild(feedbackForm);
+                                } else {
+                                    feedbackCell.textContent = '-';
+                                }
 
                                     });
 

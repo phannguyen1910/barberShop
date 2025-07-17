@@ -554,20 +554,21 @@ async function showAvailableTimes(selectedDateObj, reason = '') {
 
             // Toggle form khung giờ
             toggleTimeGrid.addEventListener("click", () => {
-                const container = document.getElementById("timeSlots");
-                // const staffId = document.getElementById('hiddenStaffId').value; // Không cần kiểm tra staffId nữa
-
+                const container = document.getElementById("timeSlots"); // Re-get inside function for scope consistency
+                const staffId = document.getElementById('hiddenStaffId').value;
+                
                 if (container.classList.contains("expanded")) {
                     container.classList.remove("expanded");
                     container.style.display = "none";
                     toggleTimeText.textContent = "Xem khung giờ";
-                } else if (bookingDate.value) { // Chỉ cần kiểm tra ngày
+                } else if (bookingDate.value && staffId && !isNaN(staffId) && Number(staffId) > 0) { // Ensure both date and staff are selected
                     container.classList.add("expanded");
                     container.style.display = "grid";
                     toggleTimeText.textContent = "Thu gọn khung giờ";
-                    // Gọi showAvailableTimes như cũ
+                    // If opening, re-generate just in case to show current availability
                     showAvailableTimes(new Date(bookingDate.value), 'toggle time grid');
-                } else {
+                
+                } else if (!bookingDate.value) {
                     alert("Vui lòng chọn ngày trước để xem khung giờ khả dụng");
                 }
             });

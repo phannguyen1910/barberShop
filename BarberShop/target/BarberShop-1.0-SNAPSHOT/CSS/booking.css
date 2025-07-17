@@ -24,7 +24,12 @@
 }
 
 body {
-  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial,
+  font-family:
+    "Noto Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
     sans-serif;
   line-height: 1.7;
   color: var(--text-dark);
@@ -481,6 +486,7 @@ body {
 
 .step-content {
   padding-left: 52px;
+  text-align: center;
 }
 
 /* Button Styles */
@@ -568,8 +574,11 @@ body {
 }
 
 .btn-full {
-  width: 100%;
-  justify-content: center;
+  width: 50%;
+  justify-content: center !important;
+  display: inline-flex;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 /* People Selection */

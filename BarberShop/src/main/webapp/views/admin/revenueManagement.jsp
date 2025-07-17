@@ -572,39 +572,39 @@
                 </div>
             </div>
 
-            <div class="search-section">
-                <div class="search-row">
-                    <div class="search-group">
-                        <label>Tìm kiếm theo ngày:</label>
-                        <input type="date" id="searchDay" name="periodValue" value="${param.periodValue}" class="search-input" onchange="submitForm()">
-                    </div>
-                    <div class="search-group">
-                        <label>Tìm kiếm theo tháng:</label>
-                        <input type="month" id="searchMonthYear" name="periodValue" value="${param.periodValue}" class="search-input" onchange="submitForm()">
-                    </div>
-                    <div class="search-group">
-                        <label>Tìm kiếm theo năm:</label>
-                        <input type="number" id="searchYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm" min="2000" max="2025" onchange="submitForm()">
-                    </div>
-                    <div class="search-group">
-                        <label>Tìm kiếm theo chi nhánh:</label>
-                        <select id="searchBranch" name="branchId" class="search-select" onchange="submitForm()">
-                            <option value="">-- Chọn chi nhánh --</option>
-                            <c:forEach var="branch" items="${branches}">
-                                <option value="${branch.id}" ${param.branchId == branch.id ? 'selected' : ''}>${branch.name} (${branch.city})</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="search-group">
-                        <button type="button" class="btn btn-secondary" onclick="resetFilters()">
-                            <i class="fas fa-trash"></i>
-                            Xóa
-                        </button>
+            <form id="filterForm" method="GET" action="${pageContext.request.contextPath}/RevenueManagementServlet">
+                <div class="search-section">
+                    <div class="search-row">
+                        <div class="search-group">
+                            <label>Tìm kiếm theo ngày:</label>
+                            <input type="date" id="searchDay" name="periodValue" value="${param.periodValue}" class="search-input" onchange="submitForm('day')">
+                        </div>
+                        <div class="search-group">
+                            <label>Tìm kiếm theo tháng:</label>
+                            <input type="month" id="searchMonthYear" name="periodValue" class="search-input" onchange="submitForm('month')" value="${param.periodValue}" />
+                        </div>
+                        <div class="search-group">
+                            <label>Tìm kiếm theo năm:</label>
+                            <input type="number" id="searchYear" name="year" value="${param.year}" class="search-input" placeholder="Nhập năm" min="2000" max="2025" onchange="submitForm('year')">
+                        </div>
+                        <div class="search-group">
+                            <label>Tìm kiếm theo chi nhánh:</label>
+                            <select id="searchBranch" name="branchId" class="search-select" onchange="submitForm()">
+                                <option value="">-- Chọn chi nhánh --</option>
+                                <c:forEach var="branch" items="${branches}">
+                                    <option value="${branch.id}" ${param.branchId == branch.id ? 'selected' : ''}>${branch.name} (${branch.city})</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                        <div class="search-group">
+                            <button type="button" class="btn btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-trash"></i>
+                                Xóa
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <form id="filterForm" method="GET" action="${pageContext.request.contextPath}/RevenueManagementServlet">
-                <!-- Hidden inputs will be populated by JavaScript -->
+                <input type="hidden" id="periodType" name="periodType" value="${param.periodType}" />
             </form>
             <div class="stats-card">
                 <div class="stats-icon">
@@ -684,47 +684,46 @@
                 </table>
             </div>
             <script>
-                function submitForm() {
-                    const form = document.getElementById('filterForm');
-                    const searchDay = document.getElementById('searchDay').value;
-                    const searchMonthYear = document.getElementById('searchMonthYear').value;
-                    const searchYear = document.getElementById('searchYear').value;
-                    const searchBranch = document.getElementById('searchBranch').value;
-
-                    let periodValue = searchDay || searchMonthYear || '';
-                    let year = searchYear || (searchMonthYear ? searchMonthYear.split('-')[0] : '');
-                    let branchId = searchBranch || '';
-
-                    console.log('Submitting - periodValue:', periodValue, 'year:', year, 'branchId:', branchId);
-
-                    form.innerHTML = `
-                <input type="hidden" name="periodValue" value="${periodValue}">
-                <input type="hidden" name="year" value="${year}">
-                <input type="hidden" name="branchId" value="${branchId}">
-            `;
-                    form.submit();
+                function submitForm(changed) {
+                    if (changed === 'month') {
+                        document.getElementById('searchDay').value = '';
+                        document.getElementById('searchYear').value = '';
+                    } else if (changed === 'day') {
+                        document.getElementById('searchMonthYear').value = '';
+                        document.getElementById('searchYear').value = '';
+                    } else if (changed === 'year') {
+                        document.getElementById('searchDay').value = '';
+                        document.getElementById('searchMonthYear').value = '';
+                    }
+                    document.getElementById('filterForm').submit();
                 }
 
+                function setOrUpdateHidden(name, value) {
+                    var input = document.getElementById('hidden_' + name);
+                    if (!input) {
+                        input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.id = 'hidden_' + name;
+                        input.name = name;
+                        document.getElementById('filterForm').appendChild(input);
+                    }
+                    input.value = value;
+                }
+                function removeHidden(name) {
+                    var input = document.getElementById('hidden_' + name);
+                    if (input) input.parentNode.removeChild(input);
+                }
                 function resetFilters() {
                     document.getElementById('searchDay').value = '';
                     document.getElementById('searchMonthYear').value = '';
                     document.getElementById('searchYear').value = '';
                     document.getElementById('searchBranch').value = '';
-                    const form = document.getElementById('filterForm');
-                    form.innerHTML = `
-                <input type="hidden" name="periodValue" value="">
-                <input type="hidden" name="year" value="">
-                <input type="hidden" name="branchId" value="">
-            `;
-                    form.submit();
+                    document.getElementById('filterForm').submit();
                 }
-
                 window.onload = function () {
                     const today = new Date().toISOString().split('T')[0];
                     document.getElementById('searchDay').max = today;
-                    // Loại bỏ giới hạn max cho searchMonthYear
                 };
-
                 function toggleSidebar() {
                     const sidebar = document.getElementById('sidebar');
                     sidebar.classList.toggle('active');

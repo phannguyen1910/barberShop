@@ -2,6 +2,7 @@ package controller.Authentication;
 
 import babershopDAO.AccountDAO;
 import babershopDAO.AdminDAO;
+import babershopDAO.AppointmentDAO;
 import babershopDAO.BranchDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.StaffDAO;
@@ -45,9 +46,13 @@ public class ProfileServlet extends HttpServlet {
                         session.setAttribute("lastName", customer.getLastName());
                         session.setAttribute("email", customer.getEmail());
                         session.setAttribute("phoneNumber", customer.getPhoneNumber());
+
                         session.removeAttribute("password");
-            request.setAttribute("account", account);
-            request.getRequestDispatcher("/views/common/profile.jsp").forward(request, response);
+                        AppointmentDAO appointmentDAO = new AppointmentDAO();
+                        int quantityAppointment = appointmentDAO.nunmberOfAppointmnetsByCustomerId(customer.getId());
+                        request.setAttribute("quantityAppointment", quantityAppointment);
+                        request.setAttribute("account", account);
+                        request.getRequestDispatcher("/views/common/profile.jsp").forward(request, response);
                     } else {
                         request.setAttribute("errorMessage", "Không tìm thấy thông tin khách hàng.");
                     }
@@ -66,9 +71,9 @@ public class ProfileServlet extends HttpServlet {
                         session.setAttribute("phoneNumber", staff.getPhoneNumber());
                         session.setAttribute("img", staff.getImg());
                         session.setAttribute("branchName", branchName);
-                                 session.removeAttribute("password");
-            request.setAttribute("account", account);
-            request.getRequestDispatcher("/views/staff/profileOfStaff.jsp").forward(request, response);
+                        session.removeAttribute("password");
+                        request.setAttribute("account", account);
+                        request.getRequestDispatcher("/views/staff/profileOfStaff.jsp").forward(request, response);
                     } else {
                         request.setAttribute("errorMessage", "Không tìm thấy thông tin nhân viên.");
                     }
@@ -87,7 +92,7 @@ public class ProfileServlet extends HttpServlet {
                         request.setAttribute("errorMessage", "Không tìm thấy thông tin nhân viên.");
                     }
                     break;
-                    
+
                 default:
                     request.setAttribute("errorMessage", "Vai trò không hợp lệ.");
                     break;

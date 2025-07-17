@@ -172,7 +172,7 @@ public class AddAppointmentServlet extends HttpServlet {
                         + ", ServiceIDs=" + serviceIds);
 
                 boolean success = appointmentDAO.addAppointmentByAdmin(customerId, staffId, appointmentDateTime, branchId, serviceIds);
-
+    
                 System.out.println("DEBUG: DAO addAppointment returned: " + success);
 
                 if (success) {

@@ -186,9 +186,9 @@ public class AppointmentDAO {
 
     // Inside your AppointmentDAO class
     public boolean addAppointmentByAdmin(int customerId, int staffId, LocalDateTime appointmentTime, int branchId, List<Integer> serviceIds) {
-        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Confirmed', ?)";
+        String sql1 = "INSERT INTO Appointment (customerId, staffId, appointmentTime, status, branchId, TotalDurationMinutes) OUTPUT INSERTED.ID VALUES (?, ?, ?, 'Confirmed', ?, ?)";
         String sql2 = "INSERT INTO Appointment_Service ([appointmentId], [serviceId]) VALUES (?, ?)";
-
+        int totalDuration = takeTotalDurationOfAppointment(serviceIds);
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -203,6 +203,7 @@ public class AppointmentDAO {
             ps.setInt(2, staffId);
             ps.setTimestamp(3, java.sql.Timestamp.valueOf(appointmentTime));
             ps.setInt(4, branchId);
+            ps.setInt(5, totalDuration);
 
             boolean hasResultSet = ps.execute();
 
@@ -321,6 +322,25 @@ public class AppointmentDAO {
             }
         }
     }
+    
+    private int takeTotalDurationOfAppointment (List<Integer> serviceIds){
+        String sql = "Select duration from Service where id=?";
+        int totalDuration = 0;
+        try(Connection con = getConnect()){
+            for (Integer serviceId : serviceIds) {
+                    PreparedStatement ps = con.prepareStatement(sql);
+                    ps.setInt(1, serviceId);
+                    ResultSet rs = ps.executeQuery();
+                    if(rs.next()){
+                        totalDuration = totalDuration+rs.getInt("duration");
+                    }
+                }
+        }catch(Exception e){
+            
+        }
+        return totalDuration;
+    }
+    
 
     public boolean editAppointmentService(int appointmentId, int[] serviceIds, String status) throws SQLException {
         String sqlUpdateAppointment = "UPDATE Appointment SET status = ? WHERE id = ?";
@@ -419,7 +439,7 @@ public class AppointmentDAO {
 
     public List<Appointment> getAllAppointmentsWithDetails() {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId FROM Appointment";
+        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId, [TotalDurationMinutes] FROM Appointment";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -432,7 +452,7 @@ public class AppointmentDAO {
                 appointment.setAppointmentTime(rs.getObject("appointmentTime", LocalDateTime.class));
                 appointment.setStatus(rs.getString("status"));
                 appointment.setBranchId(rs.getInt("branchId"));
-
+                appointment.setTotalServiceDurationMinutes(rs.getInt("TotalDurationMinutes"));
                 // Lấy tên khách hàng
                 Customer customer = customerDAO.getCustomerById(appointment.getCustomerId());
                 if (customer != null) {
@@ -862,6 +882,18 @@ public class AppointmentDAO {
     return 0f;
 }
 
-
+ public int nunmberOfAppointmnetsByCustomerId(int customerId) throws SQLException {
+    String sql = "SELECT id FROM Appointment WHERE customerId=? and status='Completed'";
+    int count = 0;
+    try (Connection conn = getConnect();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, customerId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ++count;
+        }
+    }
+    return count;
+}
 
 }

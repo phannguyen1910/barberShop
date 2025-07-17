@@ -1,5 +1,8 @@
 package controller.Authentication;
 
+import java.io.File;
+import java.io.IOException;
+
 import babershopDAO.AccountDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.StaffDAO;
@@ -14,8 +17,6 @@ import jakarta.servlet.http.Part;
 import model.Account;
 import model.Customer;
 import model.Staff;
-import java.io.File;
-import java.io.IOException;
 
 @WebServlet(name = "EditProfileServlet", urlPatterns = {"/EditProfileServlet"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
@@ -62,13 +63,21 @@ public class EditProfileServlet extends HttpServlet {
                 if (!phoneNumber.matches("^[0-9]{10,15}$")) {
                     message = "Số điện thoại phải chứa 10-15 chữ số.";
                     request.setAttribute("error", message);
-                    request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                    if ("staff".equalsIgnoreCase(account.getRole())) {
+                        request.getRequestDispatcher("/views/staff/editStaffProfile.jsp").forward(request, response);
+                    } else {
+                        request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                    }
                     return;
                 }
                 if (!phoneNumber.equals(account.getPhoneNumber()) && CustomerDAO.checkPhoneExist(phoneNumber)) {
                     message = "Số điện thoại đã được sử dụng.";
                     request.setAttribute("error", message);
-                    request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                    if ("staff".equalsIgnoreCase(account.getRole())) {
+                        request.getRequestDispatcher("/views/staff/editStaffProfile.jsp").forward(request, response);
+                    } else {
+                        request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                    }
                     return;
                 }
             } else {
@@ -80,14 +89,22 @@ public class EditProfileServlet extends HttpServlet {
                 if (AccountDAO.checkExistedEmail(email)) {
                     message = "Email đã được sử dụng.";
                     request.setAttribute("error", message);
-                    request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                    if ("staff".equalsIgnoreCase(account.getRole())) {
+                        request.getRequestDispatcher("/views/staff/editStaffProfile.jsp").forward(request, response);
+                    } else {
+                        request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                    }
                     return;
                 } else {
                     boolean updated = AccountDAO.updateEmail(account.getId(), email);
                     if (!updated) {
                         message = "Lỗi khi cập nhật email.";
                         request.setAttribute("error", message);
-                        request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                        if ("staff".equalsIgnoreCase(account.getRole())) {
+                            request.getRequestDispatcher("/views/staff/editStaffProfile.jsp").forward(request, response);
+                        } else {
+                            request.getRequestDispatcher("/views/common/editProfile.jsp").forward(request, response);
+                        }
                         return;
                     }
                 }
@@ -173,7 +190,11 @@ public class EditProfileServlet extends HttpServlet {
         }
 
         request.setAttribute("message", message);
-        request.getRequestDispatcher("/views/common/profile.jsp").forward(request, response);
+        if ("staff".equalsIgnoreCase(account.getRole())) {
+            request.getRequestDispatcher("/views/staff/profileOfStaff.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("/views/common/profile.jsp").forward(request, response);
+        }
     }
 
     private String extractFileName(Part part) {

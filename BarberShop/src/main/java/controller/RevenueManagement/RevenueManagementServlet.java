@@ -51,6 +51,7 @@ public class RevenueManagementServlet extends HttpServlet {
             branchId = branchId == null ? "" : branchId.trim();
 
             String month = "";
+            // Nếu periodValue là yyyy-MM thì tách year, month từ periodValue
             if (!periodValue.isEmpty() && periodValue.matches("\\d{4}-\\d{2}")) {
                 String[] parts = periodValue.split("-");
                 year = parts[0];

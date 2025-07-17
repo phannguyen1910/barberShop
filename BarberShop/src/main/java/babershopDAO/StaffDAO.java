@@ -56,7 +56,7 @@ public class StaffDAO {
                 int status = rs.getInt("status");
                 int branchId = rs.getInt("branchId");
                 Staff staff = new Staff(id, accId, firstName, lastName, img, email, phoneNumber, password, role, status, branchId);
-                System.out.println("Found staff for accountId " + accountId + ": " + staff);
+                System.out.println("Found staff for accountId " + accountId + ": " + staff.getFirstName());
                 return staff;
             } else   {
                 System.out.println("No staff found for accountId: " + accountId);

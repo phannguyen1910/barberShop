@@ -129,10 +129,9 @@
                 min-height: 100vh;
                 overflow-x: hidden;
                 font-family: 'Inter', sans-serif;
-                line-height: 1.4; /* Giảm line-height */
+                line-height: 1.4; 
                 color: var(--dark-charcoal);
-                background: linear-gradient(135deg, rgba(32, 30, 21, 0.9), rgba(212, 175, 55, 0.1)),
-                    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
+                background-color: #ccce09;
                 background-size: cover;
                 background-position: center;
                 background-attachment: fixed;
@@ -140,7 +139,7 @@
             }
 
             :root {
-                /* Color Palette - Luxury & Premium */
+                
                 --primary-gold: #D4AF37;
                 --primary-dark: #1a1a1a;
                 --secondary-dark: #2c2c2c;
@@ -154,7 +153,7 @@
                 --hover-gold: rgba(212, 175, 55, 0.1);
                 --shadow-dark: rgba(0, 0, 0, 0.5);
                 --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #CD7F32 100%);
-                --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+             
 
                 /* Typography */
                 --font-primary: 'Noto Sans', sans-serif;
@@ -187,7 +186,6 @@
             body {
                 font-family: var(--font-primary);
                 font-weight: var(--font-weight-normal);
-                background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
                 background-size: cover;
                 background-position: center;
                 background-attachment: fixed;
@@ -511,8 +509,7 @@
             }
 
             .add-to-cart {
-                width: 100%;
-                padding: var(--spacing-md);
+                width: 50%;
                 background: var(--gradient-gold);
                 color: var(--primary-dark);
                 border: none;
@@ -527,12 +524,16 @@
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
                 margin-top: auto;
+                display: flex;
+                justify-content: center;
+                align-self: center;
             }
 
             .add-to-cart::before {
                 content: '';
                 position: absolute;
                 top: 0;
+                text-align: center;
                 left: -100%;
                 width: 100%;
                 height: 100%;
@@ -562,6 +563,7 @@
 
             /* ===== CART SUMMARY STYLING - FIXED ===== */
             .cart-summary {
+                margin-top: 70px;
                 position: fixed;
                 bottom: 20px; /* FIXED: Thay đổi từ bottom: 0 thành bottom: 20px */
                 right: 20px;  /* FIXED: Thêm right: 20px để đặt ở góc phải */
@@ -577,6 +579,9 @@
                 box-shadow: var(--shadow-lg);
                 border-radius: var(--radius-lg); /* FIXED: Thêm bo góc */
                 transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .cart-summary.hidden {
@@ -585,6 +590,7 @@
             }
 
             .cart-summary-content {
+                
                 display: flex;
                 flex-direction: column; /* FIXED: Thay đổi layout thành dọc */
                 gap: var(--spacing-sm);
@@ -592,7 +598,9 @@
             }
 
             .cart-info {
+              
                 display: flex;
+                 flex-direction: column;
                 justify-content: space-between;
                 align-items: center;
                 gap: var(--spacing-md);
@@ -626,12 +634,14 @@
                 font-weight: var(--font-weight-bold);
                 color: var(--primary-gold);
                 text-shadow: 0 2px 4px var(--shadow-dark);
+
             }
 
             .checkout-btn {
                 padding: var(--spacing-sm) var(--spacing-md); /* FIXED: Giảm padding */
                 background: var(--gradient-gold);
                 color: var(--primary-dark);
+                width: 50%;
                 border: none;
                 border-radius: var(--radius-md);
                 font-size: 0.95rem; /* FIXED: Giảm font size */
@@ -643,6 +653,10 @@
                 letter-spacing: 0.5px;
                 box-shadow: var(--shadow-md);
                 white-space: nowrap;
+                display: flex;
+                justify-content: center;
+                align-self: center;
+                margin: 16px auto 0 auto;
             }
 
             .checkout-btn:hover {
@@ -948,7 +962,9 @@
                 margin-left: 230px; /* Để tránh bị che bởi sidebar cố định */
             }
             @media (max-width: 900px) {
-                .service-layout { flex-direction: column; }
+                .service-layout {
+                    flex-direction: column;
+                }
                 .category-mini-sidebar {
                     position: static;
                     flex-direction: row;
@@ -993,14 +1009,7 @@
                     </div>
                 </div>
 
-                <!-- Category Mini Table -->
-                <div class="category-mini-table" style="display: flex; justify-content: center; gap: 16px; margin: 24px 0 12px 0; flex-wrap: wrap;">
-                    <button class="category-mini-item" onclick="filterByCategory(1, this); return false;" data-category="1">Cắt Tóc</button>
-                    <button class="category-mini-item" onclick="filterByCategory(2, this); return false;" data-category="2">Uốn Tóc</button>
-                    <button class="category-mini-item" onclick="filterByCategory(3, this); return false;" data-category="3">Nhuộm Tóc</button>
-                    <button class="category-mini-item" onclick="filterByCategory(4, this); return false;" data-category="4">Spa & Thư Giãn</button>
-                    <button class="category-mini-item" onclick="filterByCategory(5, this); return false;" data-category="5">Lấy Ráy Tai</button>
-                </div>
+
 
                 <%-- Section: Cắt Tóc Chuyên Nghiệp (categoryId = 1) --%>
                 <section class="service-section" id="category-1">
@@ -1497,13 +1506,14 @@
                 document.querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
                 document.querySelectorAll('.category-mini-item').forEach(btn => btn.classList.remove('active'));
                 // Thêm active cho filter được chọn
-                if (el) el.classList.add('active');
+                if (el)
+                    el.classList.add('active');
                 // Scroll mượt đến section tương ứng, KHÔNG scroll lên đầu trang
                 const section = document.getElementById('category-' + categoryId);
                 if (section) {
                     const yOffset = -60; // offset để không bị che bởi navbar
                     const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    window.scrollTo({top: y, behavior: 'smooth'});
                 }
             }
 
@@ -1581,7 +1591,7 @@
                 // Thêm hiệu ứng active cho bảng mini
                 const miniItems = document.querySelectorAll('.category-mini-item');
                 miniItems.forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         miniItems.forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
                     });

@@ -1,6 +1,7 @@
 package controller.CustomerManagement;
 
 import babershopDAO.AppointmentDAO;
+import babershopDAO.FeedbackDAO;
 import babershopDAO.StaffDAO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,11 +32,13 @@ public class HistoryAppointmentServlet extends HttpServlet {
     private AppointmentDAO appointmentDAO;
     private StaffDAO staffDAO;
 
+    
     @Override
     public void init() throws ServletException {
         super.init();
         appointmentDAO = new AppointmentDAO();
         staffDAO = new StaffDAO();
+       
     }
 
     @Override
@@ -67,7 +70,7 @@ public class HistoryAppointmentServlet extends HttpServlet {
         
             
             
-            // Chuyển đổi danh sách thành JSON với custom LocalDateTime serializer
+     
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDateTime.class, new JsonSerializer<LocalDateTime>() {
                         @Override
