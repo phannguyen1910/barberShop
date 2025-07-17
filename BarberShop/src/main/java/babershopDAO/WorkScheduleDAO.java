@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import model.Branch;
 import model.WorkSchedule;
 
 public class WorkScheduleDAO {
@@ -26,13 +27,13 @@ public class WorkScheduleDAO {
         try {
             Class.forName(DRIVERNAME);
         } catch (ClassNotFoundException e) {
-            System.out.println("Error loading driver" + e);
+            System.out.println("Error loading driver: " + e.getMessage());
         }
         try {
             Connection con = DriverManager.getConnection(DBURL, USERDB, PASSDB);
             return con;
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
+            System.out.println("Error connecting to database: " + e.getMessage());
         }
         return null;
     }
@@ -134,8 +135,11 @@ public class WorkScheduleDAO {
 
     public List<WorkSchedule> getAllOffSchedules() {
         List<WorkSchedule> schedules = new ArrayList<>();
-        String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName "
-                + "FROM [WorkSchedule] ws JOIN [Staff] s ON ws.staffId = s.id WHERE ws.status = 'off'";
+        String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName, b.name AS branch "
+                + "FROM [WorkSchedule] ws "
+                + "JOIN [Staff] s ON ws.staffId = s.id "
+                + "LEFT JOIN [Branch] b ON s.branchId = b.id " // Đảm bảo LEFT JOIN để lấy chi nhánh
+                + "WHERE ws.status = 'off'";
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -146,13 +150,33 @@ public class WorkScheduleDAO {
                 ws.setStatus(rs.getString("status"));
                 ws.setFirstName(rs.getString("firstName"));
                 ws.setLastName(rs.getString("lastName"));
+                ws.setBranch(rs.getString("branch") != null ? rs.getString("branch") : "Chưa xác định"); // Lấy tên chi nhánh hoặc giá trị mặc định
                 schedules.add(ws);
-                System.out.println("Fetched schedule: " + ws.getId() + ", " + ws.getStaffId() + ", " + ws.getWorkDate());
+                System.out.println("Fetched schedule: ID=" + ws.getId() + ", StaffID=" + ws.getStaffId() + ", Date=" + ws.getWorkDate() + ", Branch=" + ws.getBranch());
             }
         } catch (SQLException e) {
-            System.out.println("Error fetching all off schedules: " + e.getMessage());
+            System.out.println("Error fetching all off schedules: " + e.getMessage() + ". SQL: " + sql);
         }
         return schedules;
+    }
+
+    public List<Branch> getAllBranches() {
+        List<Branch> branches = new ArrayList<>();
+        String sql = "SELECT id, name FROM [Branch]"; // Điều chỉnh tên bảng và cột nếu cần
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Branch branch = new Branch();
+                branch.setId(rs.getInt("id"));
+                branch.setName(rs.getString("name"));
+                branches.add(branch);
+                System.out.println("Fetched branch: ID=" + branch.getId() + ", Name=" + branch.getName());
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching branches: " + e.getMessage());
+        }
+        System.out.println("Total branches fetched: " + branches.size());
+        return branches;
     }
 
     public List<LocalDate> getDisallowedDays() {
@@ -234,7 +258,6 @@ public class WorkScheduleDAO {
         return 0;
     }
 
-    // Thêm phương thức isDuplicateSchedule
     public boolean isDuplicateSchedule(int staffId, LocalDate workDate) {
         String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND workDate = ? AND status = 'off'";
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {

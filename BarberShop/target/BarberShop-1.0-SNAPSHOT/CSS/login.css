@@ -1,0 +1,406 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+    background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75));
+    z-index: -1;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    padding: 50px 40px;
+    position: relative;
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.logo h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2c2c2c;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.logo span {
+    color: #d4a017;
+}
+
+.logo p {
+    font-size: 15px;
+    color: #666;
+    margin-top: 8px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.logo::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #d4a017, #a67c00);
+    margin: 20px auto 0;
+    border-radius: 2px;
+}
+
+.form-group {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 16px 16px 50px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    background: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #d4a017;
+    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.15);
+    background: #fff;
+    outline: none;
+}
+
+.form-group i {
+    position: absolute;
+    left: 18px;
+    top: 48px;
+    color: #999;
+    font-size: 18px;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.checkbox input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: #d4a017;
+}
+
+.checkbox label {
+    font-size: 14px;
+    color: #555;
+    font-weight: 400;
+}
+
+.forgot-link {
+    font-size: 14px;
+    color: #d4a017;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.forgot-link:hover {
+    color: #a67c00;
+    text-decoration: underline;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 20px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f0c14b, #d4a017);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(212, 160, 23, 0.4);
+    transition: all 0.4s ease;
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 8px 25px rgba(212, 160, 23, 0.4);
+    }
+    50% {
+        box-shadow: 0 12px 35px rgba(212, 160, 23, 0.6);
+    }
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: 0.5s ease;
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.login-btn:hover {
+    transform: scale(1.03) translateY(-4px);
+    background: linear-gradient(135deg, #ffd700, #e6b800);
+    box-shadow: 0 14px 40px rgba(212, 160, 23, 0.6);
+}
+
+.login-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 6px 20px rgba(212, 160, 23, 0.3);
+}
+
+.social-login {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.social-login p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.social-login p::before,
+.social-login p::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.social-login p::before {
+    left: 0;
+}
+
+.social-login p::after {
+    right: 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.social-icon.google {
+    width: 240px;
+    height: 54px;
+    border-radius: 27px;
+    background: linear-gradient(135deg, #ffffff, #f8f8f8);
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid #d4a017;
+    position: relative;
+    overflow: hidden;
+    animation: subtleGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes subtleGlow {
+    0%, 100% {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 8px 24px rgba(212, 160, 23, 0.3);
+    }
+}
+
+.social-icon.google::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.4), transparent);
+    transition: 0.5s ease;
+}
+
+.social-icon.google:hover::before {
+    left: 100%;
+}
+
+.social-icon.google:hover {
+    background: linear-gradient(135deg, #d4a017, #b38f00);
+    color: #fff;
+    transform: scale(1.04) translateY(-3px);
+    box-shadow: 0 10px 25px rgba(212, 160, 23, 0.5);
+    border-color: #e6b800;
+}
+
+.social-icon.google i {
+    margin-right: 14px;
+    font-size: 24px;
+    color: #db4437;
+    transition: all 0.4s ease;
+}
+
+.social-icon.google:hover i {
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.social-icon.google span {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 18px;
+    top: 48px;
+    color: #999;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 15px;
+    color: #555;
+}
+
+.register-link a {
+    color: #d4a017;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: 6px;
+    transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #a67c00;
+    text-decoration: underline;
+}
+
+.scissor-icon {
+    position: absolute;
+    font-size: 40px;
+    color: #d4a017;
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+}
+
+.scissor-1 {
+    top: 25px;
+    right: 35px;
+    transform: rotate(45deg);
+}
+
+.scissor-2 {
+    bottom: 25px;
+    left: 35px;
+    transform: rotate(-45deg);
+}
+
+.login-container:hover .scissor-icon {
+    opacity: 0.3;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 40px 25px;
+    }
+
+    .logo h1 {
+        font-size: 30px;
+    }
+
+    .form-group input {
+        padding: 14px 14px 14px 45px;
+        font-size: 15px;
+    }
+
+    .form-group i,
+    .toggle-password {
+        top: 46px;
+    }
+
+    .login-btn {
+        padding: 18px;
+        font-size: 16px;
+    }
+
+    .social-icon.google {
+        width: 200px;
+        height: 50px;
+        font-size: 14px;
+    }
+
+    .social-icon.google i {
+        font-size: 22px;
+    }
+}

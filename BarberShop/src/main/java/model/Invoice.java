@@ -1,29 +1,37 @@
 package model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Invoice {
-    private int id;
-    private double totalAmount;
-    private String paymentStatus;
-    private LocalDate receivedDate;
-    private int appointmentId;
-    private String voucherCode;
-    private String paymentMethod;
-    
-    public Invoice(double amount, String paymentStatus1, LocalDate receivedDate1, int appointmentId1, Integer voucherId) {
-    }
 
-    public Invoice(double amount, String paymentStatus, LocalDate receivedDate, int appointmentId, String voucherCode, String paymentMethod) {
-        this.totalAmount = amount;
-        this.paymentStatus = paymentStatus;
+    private int id;
+    private float totalAmount;
+    private LocalDateTime receivedDate;
+    private int appointmentId;
+    private String status;
+
+    public Invoice(float totalAmount, String status, LocalDateTime receivedDate, int appointmentId) {
+        this.totalAmount =  totalAmount;
+        this.status = status;
         this.receivedDate = receivedDate;
         this.appointmentId = appointmentId;
-        this.voucherCode = voucherCode;
-        this.paymentMethod = paymentMethod;
     }
 
-  
+    public Invoice(int id, float totalAmount, LocalDateTime receivedDate, int appointmentId, String status) {
+        this.id = id;
+        this.totalAmount = totalAmount;
+        this.receivedDate = receivedDate;
+        this.appointmentId = appointmentId;
+        this.status = status;
+    }
+
+    public Invoice(int id, float totalAmount, LocalDateTime receivedDate) {
+        this.id = id;
+        this.totalAmount = totalAmount;
+        this.receivedDate = receivedDate;
+    }
+
+
     // Getters and Setters
     public int getId() {
         return id;
@@ -33,28 +41,29 @@ public class Invoice {
         this.id = id;
     }
 
-    public double getAmount() {
+
+    public float getTotalAmount() {
         return totalAmount;
     }
 
-    public void setAmount(double amount) {
-        this.totalAmount = amount;
+    public void setTotalAmount(float totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public LocalDate getReceivedDate() {
+    public LocalDateTime getReceivedDate() {
         return receivedDate;
     }
 
-    public void setReceivedDate(LocalDate receivedDate) {
+    public void setReceivedDate(LocalDateTime receivedDate) {
         this.receivedDate = receivedDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public int getAppointmentId() {
@@ -64,22 +73,4 @@ public class Invoice {
     public void setAppointmentId(int appointmentId) {
         this.appointmentId = appointmentId;
     }
-
-    public String getVoucherCode() {
-        return voucherCode;
-    }
-
-    public void setVoucherCode(String voucherCode) {
-        this.voucherCode = voucherCode;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-   
 }

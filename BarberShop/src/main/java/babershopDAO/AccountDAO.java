@@ -1,6 +1,6 @@
 package babershopDAO;
 
-import static babershopDAO.CustomerDAO.getConnect;
+
 import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;
@@ -57,6 +57,18 @@ public class AccountDAO {
         return null;
     }
 
+    public static boolean updateEmail(int accountId, String newEmail) {
+        String sql = "UPDATE Account SET email = ? WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newEmail);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
     public static boolean checkExistedEmail(String email) {
         String sql = "Select * FROM Account WHERE email = ?";
         try (Connection conn = getConnect(); PreparedStatement st = conn.prepareStatement(sql)) {
@@ -85,7 +97,7 @@ public class AccountDAO {
         try (Connection conn = getConnect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setString(2, phoneNumber != null ? phoneNumber : "");
-            stmt.setString(3, "google-auth"); // Gán giá trị mặc định cho password khi đăng nhập = gg
+            stmt.setString(3, "google-auth"); // Gán giá trị mặc đinhj cho password khi đăng nhập = gg
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -115,7 +127,7 @@ public class AccountDAO {
         return null;
     }
 
-    public static Account getAccountById(int id) {
+public static Account getAccountById(int id) {
         String sql = "SELECT id, email, phoneNumber, password, role FROM [Account] WHERE id = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -134,6 +146,26 @@ public class AccountDAO {
         return null;
     }
 
+public static Account getAllAccount() {
+        String sql = "SELECT email, phoneNumber, status FROM [Account] WHERE phoneNumber = ? and status = 1 and role = 'Customer'";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phoneNumber");
+                int status = rs.getInt("status");
+                return new Account(email, phoneNumber, status) {};
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+
+
+
     public String changePassword(String email, String currentPassword, String newPassword) {
         String sql1 = "SELECT password FROM Account WHERE email = ?";
         String sql2 = "UPDATE Account SET password = ? WHERE email = ?";
@@ -144,13 +176,17 @@ public class AccountDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
+                // Kiểm tra nếu mật khẩu cũ không đúng
                 if (rs.getString(1).equals(currentPassword)) {
+                    System.out.println(currentPassword);
+                    // Kiểm tra mật khẩu mới khác với mật khẩu cũ
                     if (currentPassword.equals(newPassword)) {
                         return "Mật khẩu mới cần khác với mật khẩu hiện tại";
                     } else {
+                        // Cập nhật mật khẩu mới
                         try (PreparedStatement ps2 = con.prepareStatement(sql2)) {
-                            ps2.setString(1, newPassword);
-                            ps2.setString(2, email);
+                            ps2.setString(1, newPassword); // Thay đổi mật khẩu
+                            ps2.setString(2, email); // Điều kiện cập nhật
                             if (ps2.executeUpdate() > 0) {
                                 return null; // Cập nhật thành công
                             } else {
@@ -173,23 +209,23 @@ public class AccountDAO {
         }
     }
 
-    public String editProfile(int idAccount, String firstName, String lastName, String phoneNumber) {
+    public String editProfile(int idAcount, String firstName, String lastName, String phoneNumber) {
         String sqlGetRole = "SELECT role FROM Account WHERE id=?";
         String sqlUpdatePhone = "UPDATE Account SET phoneNumber=? WHERE id=?";
-        String sqlUpdateCustomer = "UPDATE Customer SET firstName=?, lastName=? WHERE accountId=?";
-        String sqlUpdateStaff = "UPDATE Staff SET firstName=?, lastName=? WHERE accountId=?";
-        String sqlUpdateAdmin = "UPDATE Admin SET firstName=?, lastName=? WHERE accountId=?";
+        String sqlUpdateCustomer = "UPDATE Customer SET firstName=?, lastName=? WHERE accountID=?";
+        String sqlUpdateStaff = "UPDATE Staff SET firstName=?, lastName=? WHERE accountID=?";
+        String sqlUpdateAdmin = "UPDATE Admin SET firstName=?, lastName=? WHERE accountID=?";
 
         try (Connection con = getConnect(); PreparedStatement psGetRole = con.prepareStatement(sqlGetRole)) {
-            psGetRole.setInt(1, idAccount);
+
+            psGetRole.setInt(1, idAcount);
             try (ResultSet rs = psGetRole.executeQuery()) {
                 if (rs.next()) {
                     String role = rs.getString("role");
 
-                    // Cập nhật phoneNumber
                     try (PreparedStatement psUpdatePhone = con.prepareStatement(sqlUpdatePhone)) {
-                        psUpdatePhone.setString(1, (phoneNumber != null && !phoneNumber.trim().isEmpty()) ? phoneNumber : "");
-                        psUpdatePhone.setInt(2, idAccount);
+                        psUpdatePhone.setString(1, phoneNumber);
+                        psUpdatePhone.setInt(2, idAcount);
                         psUpdatePhone.executeUpdate();
                     }
 
@@ -208,9 +244,9 @@ public class AccountDAO {
 
                     if (updateSQL != null) {
                         try (PreparedStatement psUpdate = con.prepareStatement(updateSQL)) {
-                            psUpdate.setString(1, firstName != null ? firstName : "");
-                            psUpdate.setString(2, lastName != null ? lastName : "");
-                            psUpdate.setInt(3, idAccount);
+                            psUpdate.setString(1, firstName);
+                            psUpdate.setString(2, lastName);
+                            psUpdate.setInt(3, idAcount);
                             int check = psUpdate.executeUpdate();
                             return (check > 0) ? "Change profile successful" : "Không thể edit profile";
                         }
@@ -223,13 +259,14 @@ public class AccountDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Lỗi khi cập nhật thông tin: " + e.getMessage();
+            return "Lỗi khi cập nhật thông tin";
         }
     }
 
     public String checkRole(int accountId) {
         String sql = "Select role from Account where id=?";
         try (Connection con = getConnect()) {
+
             PreparedStatement ps1 = con.prepareStatement(sql);
             ps1.setInt(1, accountId);
             ResultSet rs = ps1.executeQuery();
@@ -238,6 +275,7 @@ public class AccountDAO {
                 return role;
             }
         } catch (Exception e) {
+
         }
         return "Khong tim thay role";
     }
@@ -253,12 +291,13 @@ public class AccountDAO {
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                String phoneNumber = rs.getString("phoneNumber"); // Sửa lỗi typo "phoneNUmber"
+                String phoneNumber = rs.getString("phoneNUmber");
                 Customer customer = new Customer(email, phoneNumber, password, "Customer", 1, firstName, lastName);
                 customers.add(customer);
             }
             return customers;
         } catch (Exception e) {
+
         }
         return null;
     }
@@ -274,12 +313,13 @@ public class AccountDAO {
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                String phoneNumber = rs.getString("phoneNumber"); // Sửa lỗi typo "phoneNUmber"
-                Staff staff = new Staff(firstName, lastName, email, phoneNumber, password, "Staff", 1);
+                String phoneNumber = rs.getString("phoneNUmber");
+                Staff staff = new Staff(firstName, lastName, email, phoneNumber, password, email, 1);
                 staffs.add(staff);
             }
             return staffs;
         } catch (Exception e) {
+
         }
         return null;
     }
@@ -295,25 +335,18 @@ public class AccountDAO {
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                String phoneNumber = rs.getString("phoneNumber"); // Sửa lỗi typo "phoneNUmber"
-                Admin admin = new Admin(1, firstName, lastName, email, phoneNumber, password, "Admin", 1);
+                String phoneNumber = rs.getString("phoneNUmber");
+                Admin admin = new Admin(email, phoneNumber, password, email, 1, firstName, lastName);
                 admins.add(admin);
             }
             return admins;
         } catch (Exception e) {
+
         }
         return null;
     }
+    
+    
+    
 
-    public Customer getCustomerByAccountId(Integer accountId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public Staff getStaffByAccountId(Integer accountId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public Admin getAdminByAccountId(Integer accountId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

@@ -502,10 +502,9 @@
                     <div class="logo-subtitle">Staff Dashboard</div>
                 </div>
                 <div class="nav-menu">
-                    <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/dashboard.jsp" class="nav-link" aria-label="Trang tổng quan"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
                     <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/registerForAShift.jsp" class="nav-link active" aria-label="Đăng ký lịch làm việc"><i class="fas fa-calendar-alt"></i><span>Đăng ký Lịch Làm</span></a></div>
-                    <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/appointments.jsp" class="nav-link" aria-label="Lịch hẹn của tôi"><i class="fas fa-clock"></i><span>Lịch Hẹn của Tôi</span></a></div>
-                    <div class="nav-item"><a href="${pageContext.request.contextPath}/views/staff/profile.jsp" class="nav-link" aria-label="Thông tin cá nhân"><i class="fas fa-user"></i><span>Thông Tin Cá Nhân</span></a></div>
+                    <div class="nav-item"><a href="${pageContext.request.contextPath}/StaffAppointment" class="nav-link" aria-label="Lịch hẹn của tôi"><i class="fas fa-clock"></i><span>Lịch Hẹn của Tôi</span></a></div>
+                    <div class="nav-item"><a href="${pageContext.request.contextPath}/profile" class="nav-link" aria-label="Thông tin cá nhân"><i class="fas fa-user"></i><span>Thông Tin Cá Nhân</span></a></div>
                 </div>
             </nav>
 

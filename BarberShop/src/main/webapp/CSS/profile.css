@@ -1,0 +1,468 @@
+/* Navbar */
+.custom-navbar {
+    background-color: #201E15 !important;
+}
+
+/* Logo: nổi bật và rõ */
+.custom-navbar .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+/* Các item ở giữa (menu) rõ hơn, đẹp hơn */
+.custom-navbar .nav-link {
+    color: #f5f5f5 !important;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+/* Gạch chân nhỏ khi hover (nhẹ nhàng sang trọng) */
+.custom-navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+    background-color: #d4af37; /* vàng sang */
+    transition: width 0.3s ease-in-out;
+}
+
+.custom-navbar .nav-link:hover::after,
+.custom-navbar .nav-link:focus::after {
+    width: 100%;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #ffe58a !important;
+}
+
+/* Nút đăng nhập / đăng ký: màu tinh tế hơn */
+.custom-navbar .btn-outline-primary {
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    font-weight: 500;
+    padding: 6px 16px;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .btn-outline-primary:hover {
+    background-color: #d4af37;
+    color: #201E15;
+}
+
+/* Responsive chỉnh nhẹ khoảng cách */
+@media (max-width: 992px) {
+    .custom-navbar .btn-outline-primary {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* khung carousel */
+.carousel-item {
+    aspect-ratio: 18 / 5; /* Giảm tỉ lệ chiều cao để không quá dày */
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        aspect-ratio: 4 / 3; /* Tỉ lệ cao hơn chút cho màn nhỏ */
+    }
+}
+
+.carousel-container {
+    margin-top: 20px;
+    margin-bottom: 30px; /* Giảm khoảng cách dưới carousel */
+}
+
+:root {
+    --primary-gold: #D4AF37;
+    --dark-charcoal: #2D2D2D;
+    --light-gray: #f8f9fa;
+    --text-muted: #8B8B8B;
+    --shadow-luxury: 0 12px 25px rgba(0, 0, 0, 0.1);
+    --shadow-soft: 0 8px 25px rgba(212, 175, 55, 0.15);
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4; /* Giảm line-height */
+    color: var(--dark-charcoal);
+    background: linear-gradient(135deg, rgba(32, 30, 21, 0.9), rgba(212, 175, 55, 0.1)),
+        url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+/* Container styling */
+.container {
+    position: relative;
+    z-index: 1;
+    margin-top: 1rem !important; /* Giảm khoảng cách trên */
+}
+
+/* Section title styling */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem !important; /* Giảm kích thước font */
+    font-weight: 700 !important;
+    color: var(--primary-gold) !important;
+    text-align: center;
+    margin-bottom: 1.5rem !important; /* Giảm khoảng cách dưới */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+/* Service card (main profile container) */
+.service-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 25px !important;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-luxury) !important;
+    padding: 2rem !important; /* Giảm padding */
+    margin: 1rem auto !important; /* Giảm margin */
+    max-width: 900px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-gold), #B8860B);
+    border-radius: 25px 25px 0 0;
+}
+
+/* Service info section */
+.service-info {
+    position: relative;
+    z-index: 2;
+}
+
+/* Button styling */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold), #B8860B) !important;
+    border: none !important;
+    padding: 0.3rem 1.2rem !important; /* Giảm padding */
+    border-radius: 30px !important;
+    font-weight: 600 !important;
+    font-size: 0.7rem !important; /* Giảm kích thước font */
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    overflow: hidden;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+    transition: left 0.6s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4) !important;
+    background: linear-gradient(135deg, #E6C547, var(--primary-gold)) !important;
+    color: white !important;
+}
+
+/* Table styling */
+.table {
+    margin-bottom: 0 !important;
+    background: transparent !important;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.1) !important;
+    transform: translateX(5px);
+}
+
+.table tbody tr:last-child {
+    border-bottom: none !important;
+}
+
+.table td {
+    padding: 1rem !important; /* Giảm padding cho ô bảng */
+    vertical-align: middle !important;
+    border: none !important;
+}
+
+.table td.fw-bold {
+    font-weight: 600 !important;
+    color: var(--dark-charcoal) !important;
+    font-size: 1.1rem !important; /* Giảm kích thước font */
+    letter-spacing: 0.5px !important;
+    position: relative;
+}
+
+.table td.fw-bold::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: var(--primary-gold);
+    border-radius: 2px;
+}
+
+.table td:not(.fw-bold) {
+    font-size: 1.1rem !important; /* Giảm kích thước font */
+    color: var(--dark-charcoal) !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+}
+
+/* Image styling for staff */
+.table img {
+    border-radius: 15px !important;
+    border: 3px solid var(--primary-gold) !important;
+    box-shadow: var(--shadow-soft) !important;
+    transition: all 0.3s ease !important;
+}
+
+.table img:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4) !important;
+}
+
+/* Alert styling */
+.alert-danger {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(200, 35, 51, 0.9)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 15px !important;
+    backdrop-filter: blur(10px) !important;
+    font-weight: 500 !important;
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Footer styling */
+.footer {
+    background: rgba(32, 30, 21, 0.95) !important;
+    backdrop-filter: blur(20px);
+    color: #f5f5f5 !important;
+    padding: 2rem 0 1rem !important; /* Giảm padding */
+    margin-top: 4rem !important;
+    border-top: 3px solid var(--primary-gold);
+}
+
+.footer-col {
+    margin-bottom: 2rem;
+}
+
+.footer-logo {
+    max-width: 150px;
+    height: auto;
+    filter: brightness(1.1);
+}
+
+.footer-title {
+    color: var(--primary-gold) !important;
+    font-size: 1.2rem !important; /* Giảm kích thước font */
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important; /* Giảm khoảng cách dưới */
+    letter-spacing: 0.5px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem; /* Giảm khoảng cách dưới */
+}
+
+.footer-links a {
+    color: #f5f5f5 !important;
+    text-decoration: none !important;
+    font-size: 1rem !important; /* Giảm kích thước font */
+    transition: all 0.3s ease !important;
+    position: relative;
+}
+
+.footer-links a::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--primary-gold);
+    transition: width 0.3s ease;
+}
+
+.footer-links a:hover::before {
+    width: 100%;
+}
+
+.footer-links a:hover {
+    color: var(--primary-gold) !important;
+    transform: translateX(5px);
+}
+
+.footer-contact p {
+    color: #f5f5f5 !important;
+    font-size: 1rem !important; /* Giảm kích thước font */
+    margin-bottom: 1rem !important;
+    display: flex;
+    align-items: center;
+}
+
+.footer-contact i {
+    color: var(--primary-gold) !important;
+    margin-right: 1rem !important;
+    width: 20px;
+    font-size: 1.2rem !important;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(212, 175, 55, 0.3);
+    padding-top: 2rem !important;
+    margin-top: 2rem !important;
+}
+
+.footer-bottom p {
+    color: #f5f5f5 !important;
+    font-size: 0.9rem !important; /* Giảm kích thước font */
+    margin: 0 !important;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.8rem !important; /* Giảm kích thước cho màn hình nhỏ */
+    }
+
+    .service-card {
+        padding: 1.5rem !important; /* Giảm padding */
+        margin: 1rem !important; /* Giảm margin */
+    }
+
+    .table td.fw-bold {
+        font-size: 1rem !important; /* Giảm kích thước font */
+        width: 120px !important;
+    }
+
+    .table td:not(.fw-bold) {
+        font-size: 1rem !important; /* Giảm kích thước font */
+    }
+
+    .btn-primary {
+        padding: 0.5rem 1rem !important; /* Giảm padding cho nút */
+        font-size: 0.9rem !important; /* Giảm kích thước font */
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .footer {
+        padding: 1.5rem 0 1rem !important; /* Giảm padding */
+    }
+
+    .footer-title {
+        font-size: 1.1rem !important; /* Giảm kích thước font */
+    }
+
+    .footer-links a,
+    .footer-contact p {
+        font-size: 0.9rem !important; /* Giảm kích thước font */
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 1.6rem !important; /* Giảm kích thước cho màn hình nhỏ hơn */
+    }
+
+    .service-card {
+        padding: 1rem !important; /* Giảm padding */
+    }
+
+    .table td {
+        padding: 0.5rem !important; /* Giảm padding cho ô bảng */
+    }
+
+    .table td.fw-bold {
+        font-size: 0.9rem !important; /* Giảm kích thước font */
+        width: 100px !important;
+    }
+
+    .table td:not(.fw-bold) {
+        font-size: 0.9rem !important; /* Giảm kích thước font */
+    }
+}

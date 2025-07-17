@@ -7,9 +7,8 @@ public class Service {
     private float price;
     private int duration;
     private String description;
-    private String image;
-    private int categoryID;
-
+    private String [] image;
+    private int categoryId;
     // Constructor
 
     public Service(String name1, double price, int duration1, String description1) {
@@ -18,9 +17,25 @@ public class Service {
     public Service() {
     }
 
+    public Service(int id, String name, float price, int duration, String description, String[] image, int categoryId) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.duration = duration;
+        this.description = description;
+        this.image = image;
+        this.categoryId = categoryId;
+    }
 
+    public int getCategoryId() {
+        return categoryId;
+    }
 
-    public Service(int id, String name, float price, int duration, String description, String image) {
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Service(int id, String name, float price, int duration, String description, String[] image) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -29,7 +44,7 @@ public class Service {
         this.image = image;
     }
 
-    public Service(String name, float price, int duration, String description, String image) {
+    public Service(String name, float price, int duration, String description, String[] image) {
         this.name = name;
         this.price = price;
         this.duration = duration;
@@ -37,22 +52,11 @@ public class Service {
         this.image = image;
     }
 
-    public Service(String name, float price, int duration, String description, int categoryID) {
+    public Service(String name, float price, int duration, String description) {
         this.name = name;
         this.price = price;
         this.duration = duration;
         this.description = description;
-        this.categoryID = categoryID;
-    }
-
-    public Service(int id, String name, float price, int duration, String description, String image, int categoryID) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.duration = duration;
-        this.description = description;
-        this.image = image;
-        this.categoryID = categoryID;
     }
 
     public Service(int id, String name, float price) {
@@ -104,23 +108,13 @@ public class Service {
         this.description = description;
     }
 
-    public String getImage() {
+    public String[] getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(String[] image) {
         this.image = image;
     }
-
-    public int getCategoryID() {
-        return categoryID;
-    }
-
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
-    }
-
-    
     
     
 }

@@ -18,22 +18,22 @@ public class CustomerDAO {
     }
 
     public static Customer getCustomer(int id) {
-        String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status " +
-                     "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE c.id = ?";
+        String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status "
+                + "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE c.id = ?";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Customer(
-                    rs.getInt("id"),
-                    rs.getInt("accountId"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getString("email"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("password"),
-                    rs.getString("role"),
-                    rs.getInt("status")
+                        rs.getInt("id"),
+                        rs.getInt("accountId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getInt("status")
                 );
             }
         } catch (Exception e) {
@@ -43,22 +43,22 @@ public class CustomerDAO {
     }
 
     public static Customer getCustomerByAccountId(int accountId) {
-        String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status " +
-                     "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE c.accountId = ?";
+        String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status "
+                + "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE c.accountId = ?";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Customer(
-                    rs.getInt("id"),
-                    rs.getInt("accountId"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getString("email"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("password"),
-                    rs.getString("role"),
-                    rs.getInt("status")
+                        rs.getInt("id"),
+                        rs.getInt("accountId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getInt("status")
                 );
             }
         } catch (Exception e) {
@@ -66,6 +66,7 @@ public class CustomerDAO {
         }
         return null;
     }
+
     public static int getCustomerIdByAccountId(int accountId) {
         String sql = "SELECT id FROM [Customer] WHERE accountId = ?";
         try (Connection con = getConnect()) {
@@ -81,7 +82,8 @@ public class CustomerDAO {
         }
         return 0;
     }
-    public static Customer getCustomerById(int id) {
+
+    public Customer getCustomerById(int id) {
         String sql = "SELECT * FROM [Customer] WHERE id = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -106,22 +108,22 @@ public class CustomerDAO {
         return c != null ? c.getLastName() + " " + c.getFirstName() : "Unknown";
     }
 
-    public static List<Customer> getAllCustomer() {
+    public List<Customer> getAllCustomer() {
         List<Customer> customers = new ArrayList<>();
-        String sql = "SELECT DISTINCT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status " +
-                     "FROM Customer c JOIN Account a ON c.accountId = a.id";
+        String sql = "SELECT DISTINCT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status "
+                + "FROM Customer c JOIN Account a ON c.accountId = a.id";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 customers.add(new Customer(
-                    rs.getInt("id"),
-                    rs.getInt("accountId"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getString("email"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("password"),
-                    rs.getString("role"),
-                    rs.getInt("status")
+                        rs.getInt("id"),
+                        rs.getInt("accountId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getInt("status")
                 ));
             }
         } catch (Exception e) {
@@ -129,6 +131,34 @@ public class CustomerDAO {
         }
         return customers;
     }
+
+    public List <Customer> getAllCustomerInformation() {
+        List <Customer> customers = new ArrayList<>();
+        String sql = "SELECT DISTINCT c.id, c.firstName, c.lastName, a.email, a.phoneNumber "
+                + "FROM Customer c "
+                + "JOIN Account a ON c.accountId = a.id "
+                + "WHERE a.role = 'Customer' AND a.status = 1";
+
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery(); 
+            
+            while(rs.next()) {
+               Customer customer = new Customer(
+                        rs.getInt("id"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber")
+                );
+               customers.add(customer);
+            };
+        } catch (Exception e) {
+            System.out.println("🔥 ERROR in getAllCustomerInformation(): " + e);
+        }
+        return customers;
+    }
+
     public static boolean checkEmailExist(String email) {
         String sql = "Select id from Account where email=?";
         try (Connection con = getConnect()) {
@@ -143,6 +173,7 @@ public class CustomerDAO {
         }
         return false;
     }
+
     public static boolean checkPhoneExist(String phoneNummber) {
         String sql = "Select id from Account where phoneNumber=?";
         try (Connection con = getConnect()) {
@@ -157,47 +188,44 @@ public class CustomerDAO {
         }
         return false;
 
-  
-}
-    
+    }
 
     public static void insertCustomer(Customer customer) {
-    String sqlAccount = "INSERT INTO Account (email, phoneNumber, password, role, status) VALUES (?, ?, ?, ?, ?)";
-    String sqlCustomer = "INSERT INTO Customer (accountId, firstName, lastName) VALUES (?, ?, ?)";
+        String sqlAccount = "INSERT INTO Account (email, phoneNumber, password, role, status) VALUES (?, ?, ?, ?, ?)";
+        String sqlCustomer = "INSERT INTO Customer (accountId, firstName, lastName) VALUES (?, ?, ?)";
 
-    try (Connection con = getConnect()) {
-        con.setAutoCommit(false);
+        try (Connection con = getConnect()) {
+            con.setAutoCommit(false);
 
-        // 1. Thêm vào Account
-        PreparedStatement psAcc = con.prepareStatement(sqlAccount, Statement.RETURN_GENERATED_KEYS);
-        psAcc.setString(1, customer.getEmail());
-        psAcc.setString(2, customer.getPhoneNumber());
-        psAcc.setString(3, customer.getPassword());
-        psAcc.setString(4, customer.getRole());
-        psAcc.setInt(5, customer.getStatus());
-        psAcc.executeUpdate();
+            // 1. Thêm vào Account
+            PreparedStatement psAcc = con.prepareStatement(sqlAccount, Statement.RETURN_GENERATED_KEYS);
+            psAcc.setString(1, customer.getEmail());
+            psAcc.setString(2, customer.getPhoneNumber());
+            psAcc.setString(3, customer.getPassword());
+            psAcc.setString(4, customer.getRole());
+            psAcc.setInt(5, customer.getStatus());
+            psAcc.executeUpdate();
 
-        // 2. Lấy accountId mới sinh
-        ResultSet rs = psAcc.getGeneratedKeys();
-        int accountId = -1;
-        if (rs.next()) {
-            accountId = rs.getInt(1);
+            // 2. Lấy accountId mới sinh
+            ResultSet rs = psAcc.getGeneratedKeys();
+            int accountId = -1;
+            if (rs.next()) {
+                accountId = rs.getInt(1);
+            }
+
+            // 3. Thêm vào Customer
+            PreparedStatement psCus = con.prepareStatement(sqlCustomer);
+            psCus.setInt(1, accountId);
+            psCus.setString(2, customer.getFirstName());
+            psCus.setString(3, customer.getLastName());
+            psCus.executeUpdate();
+
+            con.commit();
+            System.out.println("✅ Thêm khách hàng thành công vào cả Account và Customer!");
+        } catch (Exception e) {
+            System.out.println("🔥 ERROR in insertCustomer(Customer): " + e);
         }
-
-        // 3. Thêm vào Customer
-        PreparedStatement psCus = con.prepareStatement(sqlCustomer);
-        psCus.setInt(1, accountId);
-        psCus.setString(2, customer.getFirstName());
-        psCus.setString(3, customer.getLastName());
-        psCus.executeUpdate();
-
-        con.commit();
-        System.out.println("✅ Thêm khách hàng thành công vào cả Account và Customer!");
-    } catch (Exception e) {
-        System.out.println("🔥 ERROR in insertCustomer(Customer): " + e);
     }
-}
-
 
     public static void updateCustomer(int id, String firstName, String lastName, String email, String password, String phoneNumber) {
         String sqlCustomer = "UPDATE Customer SET firstName = ?, lastName = ? WHERE id = ?";
@@ -235,7 +263,8 @@ public class CustomerDAO {
         }
         return false;
     }
-     // ✅ BAN/UNBAN CUSTOMER
+    // ✅ BAN/UNBAN CUSTOMER
+
     public static boolean banCustomer(int accountId, boolean ban) {
         String sql = "UPDATE Account SET status = ? WHERE id = ?";
         try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -247,7 +276,8 @@ public class CustomerDAO {
             return false;
         }
     }
-     public static void insertCustomer(String firstName, String lastName, String email, String password, String phoneNumber) {
+
+    public static void insertCustomer(String firstName, String lastName, String email, String password, String phoneNumber) {
         String sql1 = "INSERT INTO Account (email, phoneNumber, password , role) VALUES (?,?,?,?)";
         String sql2 = "INSERT INTO Customer (accountId, firstName, lastName) VALUES (?,?,?)";
         try (Connection con = getConnect()) {
@@ -294,13 +324,10 @@ public class CustomerDAO {
         }
     }
 
-
-
-
     public static List<Customer> searchAndSortCustomers(String name, String email, String phone, String sort) {
         List<Customer> list = new ArrayList<>();
-        String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status " +
-                     "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE 1=1 ";
+        String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status "
+                + "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE 1=1 ";
 
         if (name != null && !name.isEmpty()) {
             sql += "AND (c.firstName LIKE ? OR c.lastName LIKE ?) ";
@@ -314,10 +341,18 @@ public class CustomerDAO {
 
         if (sort != null) {
             switch (sort) {
-                case "id": sql += "ORDER BY c.id ASC"; break;
-                case "name": sql += "ORDER BY c.lastName ASC, c.firstName ASC"; break;
-                case "email": sql += "ORDER BY a.email ASC"; break;
-                case "phone": sql += "ORDER BY a.phoneNumber ASC"; break;
+                case "id":
+                    sql += "ORDER BY c.id ASC";
+                    break;
+                case "name":
+                    sql += "ORDER BY c.lastName ASC, c.firstName ASC";
+                    break;
+                case "email":
+                    sql += "ORDER BY a.email ASC";
+                    break;
+                case "phone":
+                    sql += "ORDER BY a.phoneNumber ASC";
+                    break;
             }
         }
 
@@ -337,15 +372,15 @@ public class CustomerDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(new Customer(
-                    rs.getInt("id"),
-                    rs.getInt("accountId"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getString("email"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("password"),
-                    rs.getString("role"),
-                    rs.getInt("status")
+                        rs.getInt("id"),
+                        rs.getInt("accountId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getInt("status")
                 ));
             }
         } catch (Exception e) {
@@ -353,6 +388,7 @@ public class CustomerDAO {
         }
         return list;
     }
+
     public static void insertCustomer(int accountId, String firstName, String lastName) {
         String sql = "INSERT INTO Customer (accountId, firstName, lastName) VALUES (?, ?, ?)";
         try (Connection con = getConnect()) {
@@ -368,5 +404,4 @@ public class CustomerDAO {
         }
     }
 
-    
-} 
+}

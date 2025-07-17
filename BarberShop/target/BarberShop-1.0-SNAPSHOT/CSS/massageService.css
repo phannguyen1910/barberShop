@@ -1,0 +1,429 @@
+/* 
+    Updated CSS for hairStylesService.css
+    Focused on making service cards layout similar to the example image
+*/
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ---------- Navbar Styles ---------- */
+/* Keeping original navbar styling */
+.custom-navbar {
+    background-color: #201E15 !important;
+}
+
+.custom-navbar .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.custom-navbar .nav-link {
+    color: #f5f5f5 !important;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+.custom-navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+    background-color: #d4af37;
+    transition: width 0.3s ease-in-out;
+}
+
+.custom-navbar .nav-link:hover::after,
+.custom-navbar .nav-link:focus::after {
+    width: 100%;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #ffe58a !important;
+}
+
+.custom-navbar .btn-outline-primary {
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    font-weight: 500;
+    padding: 6px 16px;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .btn-outline-primary:hover {
+    background-color: #d4af37;
+    color: #201E15;
+}
+
+@media (max-width: 992px) {
+    .custom-navbar .btn-outline-primary {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+
+/* ---------- Service Section Styles ---------- */
+.service-section {
+    padding: 40px 0 60px;
+    background-color: #f8f9fa;
+    margin-top: -40px;
+}
+
+.section-title {
+    color: #3c3c3c;
+    font-size: 2.2rem;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 15px;
+    margin-top: -20px;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 3px;
+    background-color: #d4af37;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto 40px; 
+}
+
+.service-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.service-header {
+    padding: 16px 16px 8px;
+}
+
+.service-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #201E15;
+    margin-bottom: 6px;
+    margin-top: 10px;
+}
+
+.service-details p {
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Image styling updated to match example */
+.service-images {
+    padding: 0 15px;
+}
+
+.main-image {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.main-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: 6/3; /* Fixed aspect ratio */
+    transition: transform 0.3s ease;
+}
+
+.main-image img:hover {
+    transform: scale(1.03);
+}
+
+.sub-images {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.sub-images img {
+    width: calc(50% - 6px);
+    border-radius: 6px;
+    aspect-ratio: 6/3; /* Fixed aspect ratio */
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.sub-images img:hover {
+    transform: scale(1.05);
+}
+
+.service-footer {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    margin-top: auto;
+}
+
+/* Price styling */
+.price {
+    font-weight: 600;
+    color: #201E15;
+}
+
+.amount {
+    color: #d4af37;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: inline-block;
+    background-color: #f9f5e7;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.more-info {
+    color: #d4af37;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.more-info:hover {
+    color: #b8941f;
+}
+
+/* Duration badge */
+.duration {
+    position: absolute;
+    bottom: 50px;
+    left: 16px;
+    font-weight: 600;
+    color: #201E15;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ---------- Booking CTA Section ---------- */
+/* Keeping original booking CTA styling */
+.booking-cta {
+    margin-top: -100px; 
+    padding: 80px 0; 
+    background-color: #F8F9FA; 
+}
+
+.booking-cta .btn-primary {
+    background-color: #d4af37; 
+    border-color: #d4af37; 
+    color: #201E15;
+    font-weight: 600;
+    font-size: 1.25rem; 
+    padding: 15px 40px; 
+    border-radius: 30px; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.booking-cta .btn-primary:hover {
+    background-color: #ffe58a; 
+    color: #201E15; 
+    border-color: #ffe58a; 
+    transform: translateY(-3px); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+}
+
+.booking-cta .btn-primary:focus {
+    outline: none; 
+    box-shadow: 0 0 5px 2px #d4af37; 
+}
+
+@media (max-width: 768px) {
+    .booking-cta .btn-primary {
+        font-size: 1.1rem; 
+        padding: 12px 30px; 
+    }
+}
+
+/* ---------- Footer Styles ---------- */
+/* Keeping original footer styling */
+.footer {
+    background-color: #201E15;
+    color: #F5F5F5;
+    padding: 60px 0 20px;
+    margin-top: 20px;
+}
+
+.footer-col {
+    margin-bottom: 40px;
+}
+
+.footer-logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.footer-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #d4af37;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.footer-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 2px;
+    background-color: #d4af37;
+}
+
+.footer-links {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 30px;
+}
+
+.footer-links li {
+    margin-bottom: 15px;
+}
+
+.footer-links a {
+    color: #F5F5F5;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.footer-links a:hover {
+    color: #d4af37;
+    opacity: 1;
+}
+
+.footer-contact p {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.footer-contact i {
+    color: #d4af37;
+    margin-right: 15px;
+    min-width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-top: 3px;
+}
+
+.footer-contact span {
+    display: inline-block;
+    opacity: 0.9;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    margin-top: 40px;
+}
+
+.footer-bottom p {
+    margin-bottom: 0;
+    opacity: 0.7;
+}
+
+.social-icons {
+    margin-top: 20px;
+}
+
+.social-icons a {
+    display: inline-block;
+    color: #F5F5F5;
+    margin-right: 15px;
+    font-size: 20px;
+    transition: color 0.2s ease;
+}
+
+.social-icons a:hover {
+    color: #d4af37;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .service-card {
+        margin-bottom: 25px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    .row.g-4 {
+        --bs-gutter-y: 2rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .footer-col {
+        margin-bottom: 40px;
+    }
+
+    .service-banner h1 {
+        font-size: 2.5rem;
+    }
+
+    .service-banner p {
+        font-size: 1rem;
+    }
+
+    .booking-cta h2 {
+        font-size: 2rem;
+    }
+    
+    .service-header h3 {
+        font-size: 1.2rem;
+    }
+}

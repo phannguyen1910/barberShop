@@ -1,0 +1,734 @@
+/* General Body Styling */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Navbar */
+.custom-navbar {
+    background-color: #201E15 !important;
+}
+
+/* Logo: nổi bật và rõ */
+.custom-navbar .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+/* Các item ở giữa (menu) rõ hơn, đẹp hơn */
+.custom-navbar .nav-link {
+    color: #f5f5f5 !important;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+/* Gạch chân nhỏ khi hover (nhẹ nhàng sang trọng) */
+.custom-navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+    background-color: #d4af37; /* vàng sang */
+    transition: width 0.3s ease-in-out;
+}
+
+.custom-navbar .nav-link:hover::after,
+.custom-navbar .nav-link:focus::after {
+    width: 100%;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #ffe58a !important;
+}
+
+/* Nút đăng nhập / đăng ký: màu tinh tế hơn */
+.custom-navbar .btn-outline-primary {
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    font-weight: 500;
+    padding: 6px 16px;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .btn-outline-primary:hover {
+    background-color: #d4af37;
+    color: #201E15;
+}
+
+/* Responsive chỉnh nhẹ khoảng cách */
+@media (max-width: 992px) {
+    .custom-navbar .btn-outline-primary {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* khung carousel */
+.carousel-item {
+    aspect-ratio: 18 / 5; /* Giảm tỉ lệ chiều cao để không quá dày */
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        aspect-ratio: 4 / 3; /* Tỉ lệ cao hơn chút cho màn nhỏ */
+    }
+}
+
+.carousel-container {
+    margin-top: 20px;
+    margin-bottom: 30px; /* Giảm khoảng cách dưới carousel */
+}
+
+/* Service */
+.section-title {
+    font-weight: bold;
+    color: #0d3b66;
+    margin-bottom: 20px;
+    padding-left: 5px;
+    border-left: 4px solid #4a90e2;
+    margin-top: -20px;
+}
+
+.service-card {
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.service-card img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+
+.service-info {
+    padding: 16px;
+    color: #333;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.service-info h5 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.service-info p {
+    font-size: 0.95rem;
+    color: #1e3a8a;
+    margin: 0;
+    font-weight: 500;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.row.mb-4 {
+    margin-bottom: 30px;
+}
+
+/* Cam kết dịch vụ section */
+.commitment-section {
+    background-color: #FFFFFF;
+    padding: 40px 0;
+    margin-top: -80px;
+}
+
+.commitment-header {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.commitment-title {
+    font-weight: bold;
+    color: #0d3b66;
+    margin: 0 0 10px 0;
+    padding-left: 5px;
+    border-left: 4px solid #4a90e2;
+    font-size: 1.5rem;
+}
+
+.subtitle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.commitment-subtitle {
+    color: #666;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.commitment-link {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 15px;
+    white-space: nowrap;
+}
+
+.commitment-link:hover {
+    color: #0056b3;
+}
+
+/* Banner styling similar to screenshot */
+.commitment-banner {
+    background-color: #1e3a5f;
+    height: 200px;
+    border-radius: 16px;
+    position: relative;
+    margin-bottom: 30px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.commitment-banner-content {
+    position: relative;
+    text-align: center;
+    color: white;
+    padding: 0 15px;
+}
+
+.banner-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.banner-subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+/* Feature boxes - now with 2 columns */
+.commitment-features {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.commitment-feature {
+    text-align: center;
+    padding: 20px 15px;
+}
+
+.feature-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.feature-number {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.feature-unit {
+    font-size: 1.3rem;
+    color: #1e3a8a;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.feature-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.feature-description {
+    color: #555;
+    font-size: 1.1rem;
+}
+
+/* Mobile Responsiveness for Commitment Section */
+@media (max-width: 768px) {
+    .subtitle-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .commitment-link {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+
+    .commitment-feature {
+        margin-bottom: 15px;
+    }
+
+    .banner-title {
+        font-size: 1.5rem;
+    }
+
+    .banner-subtitle {
+        font-size: 1rem;
+    }
+
+    .feature-number {
+        font-size: 3.5rem;
+    }
+
+    .feature-title {
+        font-size: 1.7rem;
+    }
+}
+
+/* Antam Tintruong Section */
+.antam-tintruong-section {
+    background-color: #FFFFFF;
+    padding: 40px 0;
+    margin-top: -100px;
+}
+
+.section-header {
+    margin-bottom: 30px;
+    text-align: relative;
+}
+
+.section-title {
+    font-weight: bold;
+    color: #0d3b66;
+    margin: 0 0 10px 0;
+    padding-left: 5px;
+    border-left: 4px solid #4a90e2;
+    font-size: 1.5rem;
+    display: inline-block;
+}
+
+.section-subtitle {
+    color: #666;
+    margin: 10px 0 0 0;
+    font-size: 1.1rem;
+}
+
+.service-row {
+    margin-top: 20px;
+}
+
+.service-support-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-support-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.service-support-img {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.service-support-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.service-support-card:hover .service-support-img img {
+    transform: scale(1.05);
+}
+
+.service-support-info {
+    padding: 20px;
+    text-align: center;
+    background-color: #fff;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.service-support-info h5 {
+    font-weight: 600;
+    color: #1e3a8a;
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
+.card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Combo Page Specific Styles */
+.combo-title {
+    font-weight: bold;
+    color: #0d3b66;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.combo-banner {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.combo-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.combo-main-img {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.process-img {
+    width: 223px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.fixed-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fixed-buttons .btn {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+/* Responsive adjustments for process images */
+@media (max-width: 768px) {
+    .process-img {
+        width: 100%;
+        height: 150px;
+    }
+}
+
+/* Booking CTA Section */
+.booking-cta {
+    background: linear-gradient(rgba(32, 30, 21, 0.9), rgba(32, 30, 21, 0.9)), url('../image/haircut/booking-bg.jpg') no-repeat center;
+    background-size: cover;
+    color: #FFFFFF;
+    padding: 80px 0;
+    margin-top: 30px;
+}
+
+.booking-cta h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.booking-cta p {
+    opacity: 0.9;
+    margin-bottom: 30px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.booking-cta .btn-primary {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #201E15;
+    font-weight: 600;
+    padding: 12px 30px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.booking-cta .btn-primary:hover {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    transform: translateY(-3px);
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #1A1810;
+    color: #F5F5F5;
+    padding: 80px 0 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #d4af37, transparent);
+}
+
+.footer-col {
+    margin-bottom: 50px;
+    transition: transform 0.3s ease;
+}
+
+.footer-col:hover {
+    transform: translateY(-5px);
+}
+
+.footer-logo {
+    max-width: 170px;
+    margin-bottom: 25px;
+    filter: brightness(1.1);
+    transition: transform 0.3s ease;
+}
+
+.footer-logo:hover {
+    transform: scale(1.05);
+}
+
+.footer-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #d4af37;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #d4af37, transparent);
+}
+
+.footer-links {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 30px;
+}
+
+.footer-links li {
+    margin-bottom: 18px;
+}
+
+.footer-links a {
+    color: #F5F5F5;
+    text-decoration: none;
+    font-size: 1.05rem;
+    opacity: 0.85;
+    position: relative;
+    padding-left: 20px;
+    transition: all 0.3s ease;
+}
+
+.footer-links a::before {
+    content: '\f105';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+}
+
+.footer-links a:hover {
+    color: #d4af37;
+    opacity: 1;
+    padding-left: 25px;
+}
+
+.footer-contact p {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.footer-contact i {
+    color: #d4af37;
+    margin-right: 15px;
+    min-width: 25px;
+    font-size: 1.2rem;
+    margin-top: 5px;
+    transition: transform 0.3s ease;
+}
+
+.footer-contact p:hover i {
+    transform: scale(1.2);
+}
+
+.footer-contact span {
+    opacity: 0.9;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 30px;
+    margin-top: 50px;
+}
+
+.footer-bottom p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+}
+
+.social-icons {
+    margin-top: 25px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.social-icons a {
+    color: #F5F5F5;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.social-icons a:hover {
+    color: #d4af37;
+    background: rgba(212, 175, 55, 0.2);
+    transform: translateY(-3px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .service-card {
+        margin-bottom: 30px;
+    }
+
+    .row.g-4 {
+        --bs-gutter-y: 2rem;
+    }
+
+    .footer-col {
+        margin-bottom: 40px;
+    }
+
+    .footer {
+        padding: 60px 0 20px;
+    }
+
+    .footer-logo {
+        max-width: 150px;
+    }
+
+    .social-icons {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .footer-col {
+        text-align: center;
+    }
+
+    .service-banner h1 {
+        font-size: 2.5rem;
+    }
+
+    .service-banner p {
+        font-size: 1rem;
+    }
+
+    .booking-cta h2 {
+        font-size: 2rem;
+    }
+
+    .footer-contact p {
+        justify-content: center;
+    }
+
+    .footer-links a {
+        padding-left: 0;
+    }
+
+    .footer-links a::before {
+        display: none;
+    }
+
+    .social-icons {
+        justify-content: center;
+    }
+}
