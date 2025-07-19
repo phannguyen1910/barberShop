@@ -581,7 +581,7 @@
                         </div>
                         <div class="search-group">
                             <label>Tìm kiếm theo tháng:</label>
-                            <input type="month" id="searchMonthYear" name="periodValue" value="${param.periodValue}" class="search-input" onchange="submitForm('month')">
+                            <input type="month" id="searchMonthYear" name="periodValue" class="search-input" onchange="submitForm('month')" value="${param.periodValue}" />
                         </div>
                         <div class="search-group">
                             <label>Tìm kiếm theo năm:</label>
@@ -685,32 +685,19 @@
             </div>
             <script>
                 function submitForm(changed) {
-                    if (changed === 'day') {
-                        document.getElementById('searchMonthYear').value = '';
-                        document.getElementById('searchYear').value = '';
-                        document.getElementById('periodType').value = 'day';
-                    } else if (changed === 'month') {
+                    if (changed === 'month') {
                         document.getElementById('searchDay').value = '';
                         document.getElementById('searchYear').value = '';
-                        document.getElementById('periodType').value = 'month';
-                        // Tách năm và tháng từ input type="month"
-                        var monthValue = document.getElementById('searchMonthYear').value; // yyyy-MM
-                        if (monthValue) {
-                            var parts = monthValue.split('-');
-                            if (parts.length === 2) {
-                                setOrUpdateHidden('year', parts[0]);
-                                setOrUpdateHidden('month', parts[1]);
-                            }
-                        }
+                    } else if (changed === 'day') {
+                        document.getElementById('searchMonthYear').value = '';
+                        document.getElementById('searchYear').value = '';
                     } else if (changed === 'year') {
                         document.getElementById('searchDay').value = '';
                         document.getElementById('searchMonthYear').value = '';
-                        document.getElementById('periodType').value = 'year';
                     }
                     document.getElementById('filterForm').submit();
                 }
 
-                // Hàm phụ để tạo hoặc cập nhật input hidden
                 function setOrUpdateHidden(name, value) {
                     var input = document.getElementById('hidden_' + name);
                     if (!input) {
@@ -721,6 +708,10 @@
                         document.getElementById('filterForm').appendChild(input);
                     }
                     input.value = value;
+                }
+                function removeHidden(name) {
+                    var input = document.getElementById('hidden_' + name);
+                    if (input) input.parentNode.removeChild(input);
                 }
                 function resetFilters() {
                     document.getElementById('searchDay').value = '';

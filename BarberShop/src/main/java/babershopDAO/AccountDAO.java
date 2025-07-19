@@ -20,7 +20,7 @@ import model.Staff;
 
 public class AccountDAO {
 
-    private static String password;
+    private static String password; 
 
     public static Connection getConnect() {
         try {
@@ -68,7 +68,7 @@ public class AccountDAO {
         }
         return false;
     }
-    
+
     public static boolean checkExistedEmail(String email) {
         String sql = "Select * FROM Account WHERE email = ?";
         try (Connection conn = getConnect(); PreparedStatement st = conn.prepareStatement(sql)) {
@@ -127,7 +127,7 @@ public class AccountDAO {
         return null;
     }
 
-public static Account getAccountById(int id) {
+    public static Account getAccountById(int id) {
         String sql = "SELECT id, email, phoneNumber, password, role FROM [Account] WHERE id = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -138,7 +138,8 @@ public static Account getAccountById(int id) {
                 String phoneNumber = rs.getString("phoneNumber");
                 String password = rs.getString("password");
                 String role = rs.getString("role");
-                return new Account(id, email, password, role, 1, phoneNumber) {};
+                return new Account(id, email, password, role, 1, phoneNumber) {
+                };
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -146,7 +147,7 @@ public static Account getAccountById(int id) {
         return null;
     }
 
-public static Account getAllAccount() {
+    public static Account getAllAccount() {
         String sql = "SELECT email, phoneNumber, status FROM [Account] WHERE phoneNumber = ? and status = 1 and role = 'Customer'";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -155,16 +156,14 @@ public static Account getAllAccount() {
                 String email = rs.getString("email");
                 String phoneNumber = rs.getString("phoneNumber");
                 int status = rs.getInt("status");
-                return new Account(email, phoneNumber, status) {};
+                return new Account(email, phoneNumber, status) {
+                };
             }
         } catch (Exception e) {
             System.out.println(e);
         }
         return null;
     }
-
-
-
 
     public String changePassword(String email, String currentPassword, String newPassword) {
         String sql1 = "SELECT password FROM Account WHERE email = ?";
@@ -345,8 +344,5 @@ public static Account getAllAccount() {
         }
         return null;
     }
-    
-    
-    
 
 }

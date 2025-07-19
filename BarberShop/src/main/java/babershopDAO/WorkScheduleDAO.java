@@ -138,8 +138,8 @@ public class WorkScheduleDAO {
         String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName, b.name AS branch "
                 + "FROM [WorkSchedule] ws "
                 + "JOIN [Staff] s ON ws.staffId = s.id "
-                + "LEFT JOIN [Branch] b ON s.branchId = b.id " // Đảm bảo LEFT JOIN để lấy chi nhánh
-                + "WHERE ws.status = 'off'";
+                + "LEFT JOIN [Branch] b ON s.branchId = b.id "
+                + "WHERE ws.status IN ('accept', 'pending', 'reject')"; // Sửa chỗ này!
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -152,7 +152,7 @@ public class WorkScheduleDAO {
                 ws.setLastName(rs.getString("lastName"));
                 ws.setBranch(rs.getString("branch") != null ? rs.getString("branch") : "Chưa xác định"); // Lấy tên chi nhánh hoặc giá trị mặc định
                 schedules.add(ws);
-                System.out.println("Fetched schedule: ID=" + ws.getId() + ", StaffID=" + ws.getStaffId() + ", Date=" + ws.getWorkDate() + ", Branch=" + ws.getBranch());
+                System.out.println("Fetched schedule: ID=" + ws.getId() + ", Status=" + ws.getStatus());
             }
         } catch (SQLException e) {
             System.out.println("Error fetching all off schedules: " + e.getMessage() + ". SQL: " + sql);
@@ -193,9 +193,9 @@ public class WorkScheduleDAO {
         return disallowedDays;
     }
 
-    public Map<String, Integer> getRegisteredDaysForStaff(int staffId, int year, int month) {
-        Map<String, Integer> registeredDays = new HashMap<>();
-        String sql = "SELECT workDate FROM [WorkSchedule] WHERE staffId = ? AND YEAR(workDate) = ? AND MONTH(workDate) = ? AND status = 'off'";
+    public Map<String, String> getRegisteredDaysForStaff(int staffId, int year, int month) {
+        Map<String, String> registeredDays = new HashMap<>();
+        String sql = "SELECT workDate, status FROM [WorkSchedule] WHERE staffId = ? AND YEAR(workDate) = ? AND MONTH(workDate) = ?";
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, staffId);
             ps.setInt(2, year);
@@ -203,7 +203,8 @@ public class WorkScheduleDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 LocalDate date = rs.getObject("workDate", LocalDate.class);
-                registeredDays.put(date.toString(), 1);
+                String status = rs.getString("status");
+                registeredDays.put(date.toString(), status);
             }
         } catch (SQLException e) {
             System.out.println("Error fetching registered days for staff: " + e.getMessage());
@@ -259,7 +260,7 @@ public class WorkScheduleDAO {
     }
 
     public boolean isDuplicateSchedule(int staffId, LocalDate workDate) {
-        String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND workDate = ? AND status = 'off'";
+        String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND workDate = ?";
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, staffId);
             ps.setObject(2, workDate);
@@ -269,6 +270,37 @@ public class WorkScheduleDAO {
             }
         } catch (SQLException e) {
             System.out.println("Error checking duplicate schedule: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Đếm số ngày accept của nhân viên trong tháng
+    public int countStaffAcceptForMonth(int staffId, int year, int month) {
+        String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND YEAR(workDate) = ? AND MONTH(workDate) = ? AND status = 'accept'";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, staffId);
+            ps.setInt(2, year);
+            ps.setInt(3, month);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error counting staff accept for month: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // Cập nhật trạng thái lịch nghỉ (accept/reject) theo id
+    public boolean updateScheduleStatus(int id, String status) {
+        String sql = "UPDATE [WorkSchedule] SET status = ? WHERE id = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, id);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            System.out.println("Error updating schedule status: " + e.getMessage());
         }
         return false;
     }

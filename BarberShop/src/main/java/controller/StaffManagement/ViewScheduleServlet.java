@@ -71,10 +71,18 @@ public class ViewScheduleServlet extends HttpServlet {
                 }
                 jsonResponse.put("data", daysArray);
             } else if ("getRegisteredDays".equals(action)) {
-                int staffId = Integer.parseInt(request.getParameter("staffId"));
-                int year = Integer.parseInt(request.getParameter("year"));
-                int month = Integer.parseInt(request.getParameter("month"));
-                Map<String, Integer> registeredDays = workScheduleDAO.getRegisteredDaysForStaff(staffId, year, month);
+                String staffIdStr = request.getParameter("staffId");
+                String yearStr = request.getParameter("year");
+                String monthStr = request.getParameter("month");
+                if (staffIdStr == null || staffIdStr.isEmpty() || yearStr == null || yearStr.isEmpty() || monthStr == null || monthStr.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\":false,\"message\":\"Thiếu tham số!\"}");
+                    return;
+                }
+                int staffId = Integer.parseInt(staffIdStr);
+                int year = Integer.parseInt(yearStr);
+                int month = Integer.parseInt(monthStr);
+                Map<String, String> registeredDays = workScheduleDAO.getRegisteredDaysForStaff(staffId, year, month);
                 jsonResponse.put("data", new JSONObject(registeredDays));
             } else if ("getAllOffSchedules".equals(action)) {
                 List<WorkSchedule> schedules = workScheduleDAO.getAllOffSchedules();
@@ -92,6 +100,29 @@ public class ViewScheduleServlet extends HttpServlet {
                     schedulesArray.put(obj);
                 }
                 jsonResponse.put("data", schedulesArray);
+            } else if ("updateStatus".equals(action)) {
+                // Xử lý cập nhật trạng thái lịch nghỉ (admin)
+                try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    String status = request.getParameter("status"); // accept hoặc reject
+                    boolean ok = workScheduleDAO.updateScheduleStatus(id, status);
+                    JSONObject result = new JSONObject();
+                    result.put("success", ok);
+                    if (ok) {
+                        result.put("message", "Cập nhật trạng thái thành công!");
+                    } else {
+                        result.put("message", "Cập nhật thất bại!");
+                    }
+                    response.setContentType("application/json");
+                    response.getWriter().write(result.toString());
+                } catch (Exception ex) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    JSONObject result = new JSONObject();
+                    result.put("success", false);
+                    result.put("message", "Lỗi: " + ex.getMessage());
+                    response.getWriter().write(result.toString());
+                }
+                return;
             } else {
                 jsonResponse.put("success", false);
                 jsonResponse.put("message", "Invalid action");

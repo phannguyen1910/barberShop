@@ -49,8 +49,19 @@ public class ScheduleServlet extends HttpServlet {
         try {
             switch (action) {
                 case "getRegisteredDays":
-                    Map<String, Integer> registeredDays = workScheduleDAO.getRegisteredDaysForStaff(staffId, LocalDate.now().getYear(), LocalDate.now().getMonthValue());
-                    jsonResponse.put("registeredDays", new JSONArray(registeredDays.keySet()));
+                    String staffIdStr = request.getParameter("staffId");
+                    String yearStr = request.getParameter("year");
+                    String monthStr = request.getParameter("month");
+                    if (staffIdStr == null || staffIdStr.isEmpty() || yearStr == null || yearStr.isEmpty() || monthStr == null || monthStr.isEmpty()) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        response.getWriter().write("{\"success\":false,\"message\":\"Thiếu tham số!\"}");
+                        return;
+                    }
+                    int id = Integer.parseInt(staffIdStr);
+                    int year = Integer.parseInt(yearStr);
+                    int month = Integer.parseInt(monthStr);
+                    Map<String, String> registeredDays = workScheduleDAO.getRegisteredDaysForStaff(staffId, year, month);
+                    jsonResponse.put("data", new JSONObject(registeredDays));
                     break;
                 case "getDisallowedDays":
                     jsonResponse.put("disallowedDays", new JSONArray(workScheduleDAO.getDisallowedDays().toArray()));
@@ -64,7 +75,7 @@ public class ScheduleServlet extends HttpServlet {
             }
             response.getWriter().write(jsonResponse.toString());
         } catch (Exception e) {
-            sendErrorResponse(response, "Lỗi khi lấy dữ liệu: " + e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            sendErrorResponse(response, "Lỗi lấy dữ liệu: " + e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -119,14 +130,10 @@ public class ScheduleServlet extends HttpServlet {
             }
 
             LocalDate firstDay = LocalDate.parse(daysOffArray.getString(0));
-            int existingCount = workScheduleDAO.countStaffRegistrationsForMonth(staffId, firstDay.getYear(), firstDay.getMonthValue());
-            System.out.println("Existing registrations for staff " + staffId + " in month " + firstDay.getMonthValue() + "/" + firstDay.getYear() + ": " + existingCount);
+            int existingAcceptCount = workScheduleDAO.countStaffAcceptForMonth(staffId, firstDay.getYear(), firstDay.getMonthValue());
+            System.out.println("Existing ACCEPT registrations for staff " + staffId + " in month " + firstDay.getMonthValue() + "/" + firstDay.getYear() + ": " + existingAcceptCount);
 
-            if (existingCount + daysOffArray.length() > 4) {
-                sendErrorResponse(response, "Vượt quá giới hạn 4 ngày nghỉ mỗi tháng! (Đã đăng ký: " + existingCount + ")", HttpServletResponse.SC_BAD_REQUEST);
-                return;
-            }
-
+            int acceptCount = existingAcceptCount;
             boolean allSaved = true;
             List<LocalDate> savedDays = new ArrayList<>();
             List<String> errorMessages = new ArrayList<>();
@@ -169,9 +176,15 @@ public class ScheduleServlet extends HttpServlet {
                 WorkSchedule schedule = new WorkSchedule();
                 schedule.setStaffId(staffId);
                 schedule.setWorkDate(workDate);
-                schedule.setStatus("off");
+                // Phân loại trạng thái
+                if (acceptCount < 4) {
+                    schedule.setStatus("accept");
+                    acceptCount++;
+                } else {
+                    schedule.setStatus("pending");
+                }
 
-                System.out.println("Attempting to save schedule: staffId=" + staffId + ", date=" + workDate);
+                System.out.println("Attempting to save schedule: staffId=" + staffId + ", date=" + workDate + ", status=" + schedule.getStatus());
                 if (workScheduleDAO.addWorkSchedule(schedule)) {
                     savedDays.add(workDate);
                     System.out.println("Successfully saved schedule for " + dateStr);
