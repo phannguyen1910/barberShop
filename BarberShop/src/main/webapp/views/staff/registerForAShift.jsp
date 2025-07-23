@@ -429,9 +429,18 @@
                 font-size: 1rem;
             }
 
-            .day-accept { background: #4CAF50 !important; color: #fff !important; }
-            .day-pending { background: #FF9800 !important; color: #fff !important; }
-            .day-reject { background: #F44336 !important; color: #fff !important; }
+            .day-accept {
+                background: #4CAF50 !important;
+                color: #fff !important;
+            }
+            .day-pending {
+                background: #FF9800 !important;
+                color: #fff !important;
+            }
+            .day-reject {
+                background: #F44336 !important;
+                color: #fff !important;
+            }
 
             @media (max-width: 768px) {
                 .mobile-menu-btn {
@@ -469,6 +478,10 @@
                 }
             }
         </style>
+        <script>
+            const contextPath = '${pageContext.request.contextPath}';
+        </script>
+
     </head>
     <body>
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
@@ -598,8 +611,7 @@
                 }
 
                 formatDateString(date) {
-                    // date là đối tượng Date
-                    return date.toISOString().split('T')[0]; // yyyy-MM-dd
+                    return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
                 }
 
                 showToast(message, type = 'success') {
@@ -637,7 +649,10 @@
                     const y = this.currentDate.getFullYear();
                     const m = this.currentDate.getMonth() + 1;
                     console.log('DEBUG getRegisteredDays:', staffId, y, m);
-                    const url = `${pageContext.request.contextPath}/ScheduleServlet?action=getRegisteredDays&staffId=${staffId}&year=${y}&month=${m}`;
+                    const url = contextPath + "/ScheduleServlet?action=getRegisteredDays"
+                            + "&staffId=" + staffId
+                            + "&year=" + y
+                            + "&month=" + m;
                     console.log('DEBUG URL:', url);
                     fetch(url, {
                         method: 'GET',
