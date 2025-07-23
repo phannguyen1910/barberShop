@@ -713,17 +713,16 @@
 
                         const dateString = this.formatDateString(day);
                         const isCurrentMonth = day.getMonth() === month;
-                        const isPastDay = day < minDate; // Kiểm tra cách 3 ngày
+                        const isPastDay = day < minDate;
                         const isSunday = day.getDay() === 0;
                         const isDisallowed = this.disallowedDays.includes(dateString);
                         const registrationCount = this.dayRegistrations[dateString] || 0;
                         const isFull = registrationCount >= 2;
                         const isSelected = this.selectedDays.includes(dateString);
-                        // Lấy trạng thái ngày đã đăng ký
                         const registeredStatus = this.registeredDays[dateString];
 
-                        // Ưu tiên kiểm tra trạng thái đã đăng ký trước
-                        if (registeredStatus === 'accept' || registeredStatus === 'pending' || registeredStatus === 'reject') {
+                        // Ưu tiên kiểm tra trạng thái đã đăng ký từ server
+                        if (registeredStatus) {
                             dayElement.classList.add('disabled');
                             dayElement.tabIndex = -1;
                             if (registeredStatus === 'accept') {
@@ -755,7 +754,7 @@
                             dayElement.classList.add('disabled');
                             dayElement.setAttribute('aria-disabled', 'true');
                             dayElement.title = "Ngày lễ hoặc bị hạn chế";
-                        } else if (isFull && !isSelected) {
+                        } else if (isFull) {
                             dayElement.classList.add('full');
                             dayElement.setAttribute('aria-disabled', 'true');
                             dayElement.title = "Đã có tối đa 2 nhân viên đăng ký";
@@ -763,11 +762,8 @@
                             countIndicator.className = 'day-count';
                             countIndicator.textContent = registrationCount;
                             dayElement.appendChild(countIndicator);
-                        } else if (this.selectedDays.length + Object.keys(this.registeredDays).length >= this.maxSelections && !isSelected) {
-                            dayElement.classList.add('disabled');
-                            dayElement.setAttribute('aria-disabled', 'true');
-                            dayElement.title = "Đã đạt giới hạn 4 ngày nghỉ/tháng";
                         } else {
+                            // Ngày có thể chọn
                             dayElement.tabIndex = 0;
                             dayElement.onclick = () => this.toggleDaySelection(dateString, dayElement);
                             dayElement.onkeydown = (e) => {
@@ -785,9 +781,15 @@
                             }
                         }
 
+                        // Áp dụng pending cho các ngày được chọn vượt quá 4 (trước khi lưu)
                         if (isSelected) {
                             dayElement.classList.add('selected');
                             dayElement.setAttribute('aria-selected', 'true');
+                            const totalSelected = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                            if (totalSelected > this.maxSelections) {
+                                dayElement.classList.add('day-pending');
+                                dayElement.title = "Chờ duyệt (vượt quá 4 ngày nghỉ)";
+                            }
                         }
 
                         calendarGrid.appendChild(dayElement);
@@ -795,20 +797,31 @@
                 }
 
                 toggleDaySelection(dateString, element) {
-                    const totalSelected = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                    const totalSelectedBefore = this.selectedDays.length + Object.keys(this.registeredDays).length;
                     if (this.selectedDays.includes(dateString)) {
                         this.selectedDays.splice(this.selectedDays.indexOf(dateString), 1);
                         element.classList.remove('selected');
                         element.setAttribute('aria-selected', 'false');
+                        const totalSelectedAfter = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                        if (totalSelectedAfter < this.maxSelections && element.classList.contains('day-pending')) {
+                            element.classList.remove('day-pending');
+                            element.title = "Ngày có thể chọn";
+                        }
                         this.showToast('Đã bỏ chọn ngày ' + dateString);
-                    } else if (totalSelected < this.maxSelections) {
+                    } else {
                         this.selectedDays.push(dateString);
                         element.classList.add('selected');
                         element.setAttribute('aria-selected', 'true');
-                        this.showToast('Đã chọn ngày ' + dateString);
-                    } else {
-                        this.showToast('Đã đạt giới hạn ' + this.maxSelections + ' ngày nghỉ/tháng!', 'danger');
+                        const totalSelectedAfter = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                        if (totalSelectedAfter > this.maxSelections) {
+                            element.classList.add('day-pending');
+                            element.title = "Chờ duyệt (vượt quá 4 ngày nghỉ)";
+                            this.showToast('Ngày ' + dateString + ' được chọn nhưng đang chờ duyệt (vượt quá giới hạn)', 'danger');
+                        } else {
+                            this.showToast('Đã chọn ngày ' + dateString);
+                        }
                     }
+                    this.updateCalendar(); // Cập nhật lại lịch để phản ánh thay đổi
                     this.updateStatus();
                 }
 
@@ -852,6 +865,8 @@
                         return;
                     }
                     const staffId = this.staffId;
+                    const totalSelected = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                    const hasPendingDays = totalSelected > this.maxSelections;
                     fetch(`${pageContext.request.contextPath}/ScheduleServlet`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -860,8 +875,12 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    const savedCount = this.selectedDays.length; // Số ngày đã chọn
-                                    this.showToast(`Lịch nghỉ ${savedCount} ngày đã được lưu thành công!`, 'success');
+                                    const savedCount = this.selectedDays.length;
+                                    let message = `Lịch nghỉ ${savedCount} ngày đã được lưu thành công!`;
+                                    if (hasPendingDays) {
+                                        message += ' Một số ngày đang chờ phê duyệt.';
+                                    }
+                                    this.showToast(message, 'success');
                                     this.selectedDays = [];
                                     this.loadRegisteredDays();
                                     this.loadRegistrations();

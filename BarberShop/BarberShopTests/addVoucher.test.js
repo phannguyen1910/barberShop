@@ -7,7 +7,7 @@ const expect = require('chai').expect;
 const { Builder, By, until } = require('selenium-webdriver');
 
 // Change this to your actual server URL or use localhost if running locally
-const serverUrl = 'http://localhost:8080/BarberShop';
+const serverUrl = 'http://localhost:8080/Cut_StyleBarber/VoucherServlet';
 
 describe('Voucher Management - Add Voucher', function() {
     it('should add a new voucher successfully', async function() {
@@ -26,7 +26,7 @@ describe('Voucher Management - Add Voucher', function() {
         expect(res.body).to.have.property('success', true);
         expect(res.body).to.have.property('message');
     });
-
+    
     it('should fail to add voucher with missing required fields', async function() {
         const incompleteVoucher = {
             action: 'add',
