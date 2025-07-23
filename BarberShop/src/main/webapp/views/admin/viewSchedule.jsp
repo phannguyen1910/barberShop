@@ -272,6 +272,13 @@
                 font-size: 1rem;
             }
 
+            .status-accept { background: #4CAF50; color: #fff; border-radius: 8px; padding: 4px 10px; }
+            .status-pending { background: #FF9800; color: #fff; border-radius: 8px; padding: 4px 10px; }
+            .status-reject { background: #F44336; color: #fff; border-radius: 8px; padding: 4px 10px; }
+            .action-btn { margin: 0 2px; padding: 2px 8px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.95em; }
+            .action-accept { background: #4CAF50; color: #fff; }
+            .action-reject { background: #F44336; color: #fff; }
+
             @media (max-width: 768px) {
                 .mobile-menu-btn {
                     display: block;
@@ -479,7 +486,26 @@
                                             <td><c:out value="${schedule.firstName != null ? schedule.firstName : 'N/A'} ${schedule.lastName != null ? schedule.lastName : 'N/A'}" /></td>
                                             <td><c:out value="${schedule.branch != null ? schedule.branch : 'N/A'}" /></td>
                                             <td><c:out value="${schedule.workDate != null ? schedule.workDate : 'N/A'}" /></td>
-                                            <td><c:out value="${schedule.status != null ? schedule.status : 'N/A'}" /></td>
+                                            <td>
+                                                <span class="
+                                                    <c:choose>
+                                                        <c:when test="${schedule.status == 'accept'}">status-accept</c:when>
+                                                        <c:when test="${schedule.status == 'pending'}">status-pending</c:when>
+                                                        <c:when test="${schedule.status == 'reject'}">status-reject</c:when>
+                                                        <c:otherwise></c:otherwise>
+                                                    </c:choose>">
+                                                    <c:choose>
+                                                        <c:when test="${schedule.status == 'accept'}">Đã duyệt</c:when>
+                                                        <c:when test="${schedule.status == 'pending'}">Chờ duyệt</c:when>
+                                                        <c:when test="${schedule.status == 'reject'}">Từ chối</c:when>
+                                                        <c:otherwise>${schedule.status}</c:otherwise>
+                                                    </c:choose>
+                                                </span>
+                                                <c:if test="${schedule.status == 'pending'}">
+                                                    <button class="action-btn action-accept" onclick="updateStatus(${schedule.id}, 'accept')">Duyệt</button>
+                                                    <button class="action-btn action-reject" onclick="updateStatus(${schedule.id}, 'reject')">Từ chối</button>
+                                                </c:if>
+                                            </td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>
@@ -758,6 +784,23 @@
             // Export functions for debugging
             window.resetSearch = resetSearch;
             window.filterSchedules = filterSchedules;
+
+            function updateStatus(id, status) {
+                if (!confirm('Bạn có chắc chắn muốn cập nhật trạng thái này?')) return;
+                fetch('${pageContext.request.contextPath}/ViewScheduleServlet?action=updateStatus&id=' + id + '&status=' + status, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        // Reload lại trang hoặc chỉ reload bảng
+                        location.reload();
+                    }
+                })
+                .catch(err => alert('Lỗi kết nối: ' + err));
+            }
         </script>
     </body>
 </html>

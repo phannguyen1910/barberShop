@@ -1,3 +1,4 @@
+
 package babershopDAO;
 
 import static babershopDatabase.databaseInfo.DBURL;
@@ -338,3 +339,4 @@ private static String normalizeDate(String input) {
     return input;
 }
 }
+

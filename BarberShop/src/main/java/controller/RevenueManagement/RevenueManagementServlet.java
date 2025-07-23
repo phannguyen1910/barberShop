@@ -1,3 +1,4 @@
+
 package controller.RevenueManagement;
 
 import java.io.IOException;
@@ -281,4 +282,5 @@ public class RevenueManagementServlet extends HttpServlet {
                 return "Thời gian";
         }
     }
+
 }

@@ -429,6 +429,19 @@
                 font-size: 1rem;
             }
 
+            .day-accept {
+                background: #4CAF50 !important;
+                color: #fff !important;
+            }
+            .day-pending {
+                background: #FF9800 !important;
+                color: #fff !important;
+            }
+            .day-reject {
+                background: #F44336 !important;
+                color: #fff !important;
+            }
+
             @media (max-width: 768px) {
                 .mobile-menu-btn {
                     display: block;
@@ -465,6 +478,10 @@
                 }
             }
         </style>
+        <script>
+            const contextPath = '${pageContext.request.contextPath}';
+        </script>
+
     </head>
     <body>
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
@@ -511,7 +528,7 @@
             <main class="main-content" aria-label="Nội dung chính">
                 <div class="header">
                     <div>
-                        <h1><i class="fas fa-calendar-alt"></i> Đăng ký Lịch Làm Việc</h1>
+                        <h1><i class="fas fa-calendar-alt"></i> Đăng ký Lịch Nghỉ</h1>
                         <p>Chọn tối đa 4 ngày nghỉ trong tháng</p>
                     </div>
                 </div>
@@ -572,7 +589,8 @@
                     this.disallowedDays = [];
                     this.registeredDays = {};
                     this.monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-                    console.log("Staff ID from session: " + ${sessionScope.staff.accountId});
+                    this.staffId = '${sessionScope.staff.id}';
+                    console.log('DEBUG staffId:', this.staffId);
                     this.init();
                     this.loadRegistrations();
                     this.loadDisallowedDays();
@@ -592,7 +610,7 @@
                 }
 
                 formatDateString(date) {
-                    return date.toISOString().split('T')[0];
+                    return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
                 }
 
                 showToast(message, type = 'success') {
@@ -626,15 +644,22 @@
                 }
 
                 loadRegisteredDays() {
-                    const staffId = ${sessionScope.staff.accountId};
-                    const year = this.currentDate.getFullYear();
-                    const month = this.currentDate.getMonth() + 1;
-                    fetch('${pageContext.request.contextPath}/ViewScheduleServlet?action=getRegisteredDays&staffId=' + staffId + '&year=' + year + '&month=' + month, {
+                    const staffId = this.staffId;
+                    const y = this.currentDate.getFullYear();
+                    const m = this.currentDate.getMonth() + 1;
+                    console.log('DEBUG getRegisteredDays:', staffId, y, m);
+                    const url = contextPath + "/ScheduleServlet?action=getRegisteredDays"
+                            + "&staffId=" + staffId
+                            + "&year=" + y
+                            + "&month=" + m;
+                    console.log('DEBUG URL:', url);
+                    fetch(url, {
                         method: 'GET',
                         headers: {'Content-Type': 'application/json'}
                     })
                             .then(response => response.json())
                             .then(data => {
+                                // Giả sử data.data trả về dạng { 'yyyy-MM-dd': 'accept' | 'pending' | 'reject' }
                                 this.registeredDays = data.data || {};
                                 this.updateCalendar();
                             })
@@ -687,13 +712,31 @@
 
                         const dateString = this.formatDateString(day);
                         const isCurrentMonth = day.getMonth() === month;
-                        const isPastDay = day < minDate; // Kiểm tra cách 3 ngày
+                        const isPastDay = day < minDate;
                         const isSunday = day.getDay() === 0;
                         const isDisallowed = this.disallowedDays.includes(dateString);
                         const registrationCount = this.dayRegistrations[dateString] || 0;
                         const isFull = registrationCount >= 2;
                         const isSelected = this.selectedDays.includes(dateString);
-                        const isRegistered = this.registeredDays[dateString] || 0;
+                        const registeredStatus = this.registeredDays[dateString];
+
+                        // Ưu tiên kiểm tra trạng thái đã đăng ký từ server
+                        if (registeredStatus) {
+                            dayElement.classList.add('disabled');
+                            dayElement.tabIndex = -1;
+                            if (registeredStatus === 'accept') {
+                                dayElement.classList.add('day-accept');
+                                dayElement.title = 'Đã được duyệt (accept)';
+                            } else if (registeredStatus === 'pending') {
+                                dayElement.classList.add('day-pending');
+                                dayElement.title = 'Chờ duyệt (pending)';
+                            } else if (registeredStatus === 'reject') {
+                                dayElement.classList.add('day-reject');
+                                dayElement.title = 'Bị từ chối (reject)';
+                            }
+                            calendarGrid.appendChild(dayElement);
+                            continue;
+                        }
 
                         if (!isCurrentMonth) {
                             dayElement.classList.add('other-month');
@@ -710,7 +753,7 @@
                             dayElement.classList.add('disabled');
                             dayElement.setAttribute('aria-disabled', 'true');
                             dayElement.title = "Ngày lễ hoặc bị hạn chế";
-                        } else if (isFull && !isSelected) {
+                        } else if (isFull) {
                             dayElement.classList.add('full');
                             dayElement.setAttribute('aria-disabled', 'true');
                             dayElement.title = "Đã có tối đa 2 nhân viên đăng ký";
@@ -718,11 +761,8 @@
                             countIndicator.className = 'day-count';
                             countIndicator.textContent = registrationCount;
                             dayElement.appendChild(countIndicator);
-                        } else if (this.selectedDays.length + Object.keys(this.registeredDays).length >= this.maxSelections && !isSelected) {
-                            dayElement.classList.add('disabled');
-                            dayElement.setAttribute('aria-disabled', 'true');
-                            dayElement.title = "Đã đạt giới hạn 4 ngày nghỉ/tháng";
                         } else {
+                            // Ngày có thể chọn
                             dayElement.tabIndex = 0;
                             dayElement.onclick = () => this.toggleDaySelection(dateString, dayElement);
                             dayElement.onkeydown = (e) => {
@@ -740,9 +780,15 @@
                             }
                         }
 
+                        // Áp dụng pending cho các ngày được chọn vượt quá 4 (trước khi lưu)
                         if (isSelected) {
                             dayElement.classList.add('selected');
                             dayElement.setAttribute('aria-selected', 'true');
+                            const totalSelected = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                            if (totalSelected > this.maxSelections) {
+                                dayElement.classList.add('day-pending');
+                                dayElement.title = "Chờ duyệt (vượt quá 4 ngày nghỉ)";
+                            }
                         }
 
                         calendarGrid.appendChild(dayElement);
@@ -750,20 +796,31 @@
                 }
 
                 toggleDaySelection(dateString, element) {
-                    const totalSelected = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                    const totalSelectedBefore = this.selectedDays.length + Object.keys(this.registeredDays).length;
                     if (this.selectedDays.includes(dateString)) {
                         this.selectedDays.splice(this.selectedDays.indexOf(dateString), 1);
                         element.classList.remove('selected');
                         element.setAttribute('aria-selected', 'false');
+                        const totalSelectedAfter = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                        if (totalSelectedAfter < this.maxSelections && element.classList.contains('day-pending')) {
+                            element.classList.remove('day-pending');
+                            element.title = "Ngày có thể chọn";
+                        }
                         this.showToast('Đã bỏ chọn ngày ' + dateString);
-                    } else if (totalSelected < this.maxSelections) {
+                    } else {
                         this.selectedDays.push(dateString);
                         element.classList.add('selected');
                         element.setAttribute('aria-selected', 'true');
-                        this.showToast('Đã chọn ngày ' + dateString);
-                    } else {
-                        this.showToast('Đã đạt giới hạn ' + this.maxSelections + ' ngày nghỉ/tháng!', 'danger');
+                        const totalSelectedAfter = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                        if (totalSelectedAfter > this.maxSelections) {
+                            element.classList.add('day-pending');
+                            element.title = "Chờ duyệt (vượt quá 4 ngày nghỉ)";
+                            this.showToast('Ngày ' + dateString + ' được chọn nhưng đang chờ duyệt (vượt quá giới hạn)', 'danger');
+                        } else {
+                            this.showToast('Đã chọn ngày ' + dateString);
+                        }
                     }
+                    this.updateCalendar(); // Cập nhật lại lịch để phản ánh thay đổi
                     this.updateStatus();
                 }
 
@@ -784,11 +841,13 @@
 
                 previousMonth() {
                     this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.loadRegisteredDays();
                     this.updateCalendar();
                 }
 
                 nextMonth() {
                     this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.loadRegisteredDays();
                     this.updateCalendar();
                 }
 
@@ -804,8 +863,10 @@
                         this.showToast('Vui lòng chọn ít nhất 1 ngày nghỉ!', 'danger');
                         return;
                     }
-                    const staffId = ${sessionScope.staff.id};
-                    fetch('${pageContext.request.contextPath}/ScheduleServlet', {
+                    const staffId = this.staffId;
+                    const totalSelected = this.selectedDays.length + Object.keys(this.registeredDays).length;
+                    const hasPendingDays = totalSelected > this.maxSelections;
+                    fetch(`${pageContext.request.contextPath}/ScheduleServlet`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({staffId: staffId, daysOff: this.selectedDays})
@@ -813,8 +874,12 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    const savedCount = this.selectedDays.length; // Số ngày đã chọn
-                                    this.showToast(`Lịch nghỉ ${savedCount} ngày đã được lưu thành công!`, 'success');
+                                    const savedCount = this.selectedDays.length;
+                                    let message = `Lịch nghỉ ${savedCount} ngày đã được lưu thành công!`;
+                                    if (hasPendingDays) {
+                                        message += ' Một số ngày đang chờ phê duyệt.';
+                                    }
+                                    this.showToast(message, 'success');
                                     this.selectedDays = [];
                                     this.loadRegisteredDays();
                                     this.loadRegistrations();
