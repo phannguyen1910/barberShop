@@ -138,7 +138,7 @@
 
         <!-- Booking CTA Section -->
         <div class="booking-cta py-5 text-center">
-            <a href="${pageContext.request.contextPath}/views/common/booking.jsp" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
+            <a href="${pageContext.request.contextPath}/ChooseBranchServlet" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
         </div>
 
         <!-- Footer -->

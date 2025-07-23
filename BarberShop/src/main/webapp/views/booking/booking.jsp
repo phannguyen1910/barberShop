@@ -180,12 +180,12 @@
                     filterStaffByBranch(null); // Hide all staff initially
                 }
 
-                // Set default date but don't show available times until staff is selected
+                // Set default date và luôn hiển thị khung giờ ngay khi vào trang
                 const today = new Date().toISOString().split("T")[0];
                 const bookingDateElement = document.getElementById("bookingDate");
                 bookingDateElement.value = today;
                 selectedDate = today;
-                // Don't call showAvailableTimes here - wait for staff selection
+                showAvailableTimes(new Date(today), 'init'); // Luôn hiển thị khung giờ
 
                 // Initialize staff selection visibility based on whether a branch is pre-selected
                 if (selectedBranchId && selectedBranchId.trim() !== "") {
@@ -217,7 +217,7 @@
 
             let selectedTime = null;
             let selectedDate = null;
-            // selectedBranchId đã được khai báo và khởi tạo ở trên
+            let totalServiceDuration = Number("${requestScope.totalServiceDuration}" || 0); // phút
 
             // Hàm lọc nhân viên theo Branch ID
             function filterStaffByBranch(branchId) {
@@ -294,21 +294,19 @@
                     document.getElementById('hiddenStaffId').value = staffId;
                     const staffName = cardElement.querySelector('.staff-name').textContent;
                     toggleStaffText.textContent = `Đã chọn: ${staffName}`;
-                    
-                    // Cập nhật time slots khi chọn nhân viên mới
                     if (bookingDate.value) {
-                        // Clear time selection khi đổi nhân viên
-                        selectedTime = null;
-                        document.querySelectorAll(".time-slot").forEach(b => b.classList.remove("selected"));
-                        
-                        // Đảm bảo cập nhật input hidden trước khi gọi showAvailableTimes
                         setTimeout(() => {
-                            showAvailableTimes(new Date(bookingDate.value), 'select staff');
-                            console.log(`Staff changed to ID: ${staffId}, refreshing time slots...`);
+                            showAvailableTimes(new Date(bookingDate.value), 'select staff', selectedTime);
+                        }, 0);
+                    }
+                } else {
+                    if (bookingDate.value) {
+                        selectedTime = null;
+                        setTimeout(() => {
+                            showAvailableTimes(new Date(bookingDate.value), 'unselect staff');
                         }, 0);
                     }
                 }
-
                 checkFormComplete();
             }
 
@@ -322,7 +320,7 @@
 
             // Hiển thị khung giờ khả dụng
            // Sửa lại hàm showAvailableTimes trong JSP
-async function showAvailableTimes(selectedDateObj, reason = '') {
+async function showAvailableTimes(selectedDateObj, reason = '', keepSelectedTime = null) {
     // LẤY GIÁ TRỊ TỪ ĐÚNG CÁC ELEMENT
     const staffId = document.getElementById('hiddenStaffId').value;
     const appointmentDate = document.getElementById('bookingDate').value; // Sử dụng element thay vì biến
@@ -386,7 +384,7 @@ async function showAvailableTimes(selectedDateObj, reason = '') {
     // Phần còn lại của hàm showAvailableTimes...
     const container = document.getElementById("timeSlots");
     container.innerHTML = '';
-    selectedTime = null;
+    // selectedTime = null; // Bỏ dòng này để giữ selectedTime
 
     const now = new Date();
     const selectedDateMidnight = new Date(selectedDateObj);
@@ -459,17 +457,43 @@ async function showAvailableTimes(selectedDateObj, reason = '') {
                 }
             } else {
                 btn.addEventListener("click", () => {
+                    if (btn.classList.contains("selected")) {
+                        btn.classList.remove("selected");
+                        selectedTime = null;
+                        // Enable lại tất cả staff-card
+                        document.querySelectorAll('.staff-card').forEach(card => {
+                            card.classList.remove('disabled');
+                            card.style.pointerEvents = '';
+                            card.style.opacity = '';
+                        });
+                        checkFormComplete();
+                        return;
+                    }
                     document.querySelectorAll(".time-slot").forEach(b => b.classList.remove("selected"));
                     btn.classList.add("selected");
                     selectedTime = label;
+                    checkStaffAvailabilityForSelectedTime(label);
                     checkFormComplete();
                 });
             }
-
+            // Nếu có keepSelectedTime và label === keepSelectedTime, tự động chọn lại
+            if (keepSelectedTime && label === keepSelectedTime && !isDisabled) {
+                btn.classList.add("selected");
+                selectedTime = label;
+                checkStaffAvailabilityForSelectedTime(label);
+            }
             container.appendChild(btn);
         }
     }
     checkFormComplete();
+    if (!selectedTime) {
+        // Nếu chưa chọn khung giờ, enable lại tất cả staff-card
+        document.querySelectorAll('.staff-card').forEach(card => {
+            card.classList.remove('disabled');
+            card.style.pointerEvents = '';
+            card.style.opacity = '';
+        });
+    }
 }
 
             // Xử lý ngày nghỉ (holiday)
@@ -555,20 +579,18 @@ async function showAvailableTimes(selectedDateObj, reason = '') {
             // Toggle form khung giờ
             toggleTimeGrid.addEventListener("click", () => {
                 const container = document.getElementById("timeSlots"); // Re-get inside function for scope consistency
-                const staffId = document.getElementById('hiddenStaffId').value;
-                
+                // Luôn cho phép mở khung giờ nếu đã chọn ngày
                 if (container.classList.contains("expanded")) {
                     container.classList.remove("expanded");
                     container.style.display = "none";
                     toggleTimeText.textContent = "Xem khung giờ";
-                } else if (bookingDate.value && staffId && !isNaN(staffId) && Number(staffId) > 0) { // Ensure both date and staff are selected
+                } else if (bookingDate.value) {
                     container.classList.add("expanded");
                     container.style.display = "grid";
                     toggleTimeText.textContent = "Thu gọn khung giờ";
-                    // If opening, re-generate just in case to show current availability
+                    // Nếu mở, luôn re-generate khung giờ dựa vào ngày
                     showAvailableTimes(new Date(bookingDate.value), 'toggle time grid');
-                
-                } else if (!bookingDate.value) {
+                } else {
                     alert("Vui lòng chọn ngày trước để xem khung giờ khả dụng");
                 }
             });
@@ -666,6 +688,53 @@ async function showAvailableTimes(selectedDateObj, reason = '') {
 
                 form.submit();
             });
+
+            // Hàm kiểm tra staff bận khi chọn khung giờ
+            async function checkStaffAvailabilityForSelectedTime(selectedLabel) {
+                if (!selectedLabel || !totalServiceDuration) return;
+
+                const [hour, minute] = selectedLabel.split(':').map(Number);
+                const startDate = new Date(bookingDate.value);
+                startDate.setHours(hour, minute, 0, 0);
+
+                const staffCards = document.querySelectorAll('.staff-card');
+                for (const card of staffCards) {
+                    const staffId = card.getAttribute('data-staff-id');
+                    let isBusy = false;
+                    try {
+                        const contextPath = '${pageContext.request.contextPath}';
+                        const params = new URLSearchParams();
+                        params.append('staffId', staffId);
+                        params.append('appointmentDate', bookingDate.value);
+                        params.append('startTime', selectedLabel);
+                        params.append('duration', totalServiceDuration);
+                        const url = contextPath + '/StaffAvailabilityServlet?' + params.toString();
+                        const res = await fetch(url);
+                        if (res.ok) {
+                            const data = await res.json();
+                            isBusy = data.busy;
+                        }
+                    } catch (e) {
+                        isBusy = false;
+                    }
+                    if (isBusy) {
+                        card.classList.add('disabled');
+                        card.style.pointerEvents = 'none';
+                        card.style.opacity = 0.5;
+                    } else {
+                        card.classList.remove('disabled');
+                        card.style.pointerEvents = '';
+                        card.style.opacity = '';
+                    }
+                }
+            }
         </script>
+        <style>
+            .staff-card.disabled {
+                pointer-events: none;
+                opacity: 0.5;
+                filter: grayscale(0.7);
+            }
+        </style>
     </body>
 </html>

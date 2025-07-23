@@ -68,7 +68,7 @@
             <div class="container py-5 text-center">
                 <h2>Sẵn sàng để trải nghiệm dịch vụ của chúng tôi?</h2>
                 <p class="lead mb-4">Đặt lịch ngay hôm nay để nhận ưu đãi đặc biệt cho lần đầu sử dụng dịch vụ</p>
-                <a href="${pageContext.request.contextPath}/views/booking/booking.jsp" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
+                <a href="${pageContext.request.contextPath}/ChooseBranchServlet" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
             </div>
         </section>
 

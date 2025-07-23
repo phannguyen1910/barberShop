@@ -32,7 +32,7 @@
                     <a class="nav-link" href="${pageContext.request.contextPath}/ChooseServiceServlet">Dịch vụ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/BookingServlet">Đặt lịch</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/ChooseBranchServlet">Đặt lịch</a>
                 </li>
 
                 <!-- Hiển thị Dashboard cho Admin và Staff -->

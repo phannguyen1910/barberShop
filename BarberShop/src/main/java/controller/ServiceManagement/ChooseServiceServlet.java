@@ -84,15 +84,18 @@ public class ChooseServiceServlet extends HttpServlet {
    
             }
             Account account = (Account) session.getAttribute("account");
-            String email = account.getEmail();
-            session.setAttribute("customerEmail", email);
+//            if (account!= null){
+                String email = account.getEmail();
+                session.setAttribute("customerEmail", email);
+//            }
+            
 
 
             response.sendRedirect(request.getContextPath() + "/BookingServlet");
         } else {
             // Nếu không có dịch vụ nào được chọn, bạn có thể xóa các thuộc tính cũ trong session (nếu có)
             session.removeAttribute("selectedServiceNames");
-            session.removeAttribute("selectedTotalPrice");
+          
             session.removeAttribute("totalServiceDuration");
             response.sendRedirect(request.getContextPath() + "/BookingServlet?error="
                     + URLEncoder.encode("Vui lòng chọn ít nhất một dịch vụ.", "UTF-8"));

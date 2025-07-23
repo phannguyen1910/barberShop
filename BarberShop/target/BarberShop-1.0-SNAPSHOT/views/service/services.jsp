@@ -136,6 +136,8 @@
                 background-position: center;
                 background-attachment: fixed;
                 background-repeat: no-repeat;
+                  background-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80");
+
             }
 
             :root {
@@ -1009,6 +1011,10 @@
                     </div>
                 </div>
 
+                <div class="service-filter" style="margin-bottom: 16px;">
+                    <input type="number" id="maxPriceInput" placeholder="Nhập giá tối đa (VNĐ)" min="0" style="width: 200px; margin-right: 8px;">
+                    <button type="button" onclick="filterServicesByPrice()">Lọc dịch vụ</button>
+                </div>
 
 
                 <%-- Section: Cắt Tóc Chuyên Nghiệp (categoryId = 1) --%>
@@ -1022,7 +1028,7 @@
                         <c:forEach var="service" items="${services}"> <%-- Loop through all services --%>
                             <c:if test="${service.categoryId == 1}"> <%-- Filter by categoryId --%>
                                 <c:set var="hasServicesInThisCategory" value="true" />
-                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}">
+                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}" data-price="${service.price != null ? service.price : 0}">
                                     <div class="service-info">
                                         <h3 class="service-title"><c:out value="${service.name}" /></h3>
                                         <p class="service-description"><c:out value="${service.description}" /></p>
@@ -1085,7 +1091,7 @@
                         <c:forEach var="service" items="${services}">
                             <c:if test="${service.categoryId == 2}">
                                 <c:set var="hasServicesInThisCategory" value="true" />
-                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}">
+                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}" data-price="${service.price != null ? service.price : 0}">
                                     <div class="service-info"> <%-- Changed from service-header-section as it's not a common Bootstrap class --%>
                                         <h3 class="service-title"><c:out value="${service.name}" /></h3>
                                         <p class="service-description"><c:out value="${service.description}" /></p>
@@ -1145,7 +1151,7 @@
                         <c:forEach var="service" items="${services}">
                             <c:if test="${service.categoryId == 3}">
                                 <c:set var="hasServicesInThisCategory" value="true" />
-                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}">
+                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}" data-price="${service.price != null ? service.price : 0}">
                                     <div class="service-info">
                                         <h3 class="service-title"><c:out value="${service.name}" /></h3>
                                         <p class="service-description"><c:out value="${service.description}" /></p>
@@ -1205,7 +1211,7 @@
                         <c:forEach var="service" items="${services}">
                             <c:if test="${service.categoryId == 4}">
                                 <c:set var="hasServicesInThisCategory" value="true" />
-                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}">
+                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}" data-price="${service.price != null ? service.price : 0}">
                                     <div class="service-info">
                                         <h3 class="service-title"><c:out value="${service.name}" /></h3>
                                         <p class="service-description"><c:out value="${service.description}" /></p>
@@ -1265,7 +1271,7 @@
                         <c:forEach var="service" items="${services}">
                             <c:if test="${service.categoryId == 5}">
                                 <c:set var="hasServicesInThisCategory" value="true" />
-                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}">
+                                <div class="service-card" data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price != null ? service.price : 0}" data-service-type="${service.categoryId}" data-price="${service.price != null ? service.price : 0}">
                                     <div class="service-info">
                                         <h3 class="service-title"><c:out value="${service.name}" /></h3>
                                         <p class="service-description"><c:out value="${service.description}" /></p>
@@ -1515,6 +1521,19 @@
                     const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
                     window.scrollTo({top: y, behavior: 'smooth'});
                 }
+            }
+
+            function filterServicesByPrice() {
+                var maxPrice = parseInt(document.getElementById('maxPriceInput').value, 10);
+                var rows = document.querySelectorAll('#serviceTable .service-row');
+                rows.forEach(function(row) {
+                    var price = parseInt(row.getAttribute('data-price'), 10);
+                    if (isNaN(maxPrice) || price <= maxPrice) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             }
 
             // Khởi tạo event listeners

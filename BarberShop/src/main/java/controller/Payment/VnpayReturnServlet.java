@@ -87,7 +87,7 @@ public class VnpayReturnServlet extends HttpServlet {
                     req.setAttribute("staffFullName", staffFullName);
                     req.setAttribute("appointmentTime", appointmentTime);
                     req.setAttribute("totalServiceDuration", totalServiceDuration);
-                    req.setAttribute("staffFullName", staffFullName);
+                    req.setAttribute("selectedTotalPrice", amount);
                     req.setAttribute("selectedBranchName", branchName);
                     req.setAttribute("customerEmail", email);
 

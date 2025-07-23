@@ -579,6 +579,12 @@
                     width: 100% !important;
                 }
             }
+
+            .staff-card.disabled {
+                pointer-events: none;
+                opacity: 0.5;
+                filter: grayscale(0.7);
+            }
         </style>
     </head>
     <body class="bg-dark">
@@ -806,8 +812,8 @@
                                                                 <i class="fas fa-calendar-day text-primary me-1"></i>
                                                                 ${appointment.appointmentTime.dayOfMonth}/${appointment.appointmentTime.monthValue}/${appointment.appointmentTime.year}
                                                             </div>
-                                                            <div class="text-muted small">
-                                                                <i class="fas fa-clock text-secondary me-1"></i>
+                                                            <div class="" style="color: #ffffff	">
+                                                                <i class="fas fa-clock text-secondary me-1" ></i>
                                                                 <c:set var="hour" value="${appointment.appointmentTime.hour < 10 ? '0' : ''}${appointment.appointmentTime.hour}"/>
                                                                 <c:set var="minute" value="${appointment.appointmentTime.minute < 10 ? '0' : ''}${appointment.appointmentTime.minute}"/>
                                                                 ${hour}:${minute}
@@ -819,19 +825,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <span class="text-success fw-bold">
-                                                                <c:choose>
-                                                                    <c:when test="${appointment.totalAmount >= 1000000}">
-                                                                        ${String.format("%,.0f", appointment.totalAmount / 1000000)}M ₫
-                                                                    </c:when>
-                                                                    <c:when test="${appointment.totalAmount >= 1000}">
-                                                                        ${String.format("%,.0f", appointment.totalAmount / 1000)}K ₫
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        ${String.format("%,.0f", appointment.totalAmount)} ₫
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </span>
+                                                            ${appointment.totalAmount}đ
                                                         </td>
                                                         <td>
                                                             <span class="badge status-badge
@@ -970,17 +964,7 @@
                                                 <span style="color: #fff; font-weight: 500;">${service.name}</span>
                                                 <c:if test="${service.price != null && service.price > 0}">
                                                     <span style="color: #fff; font-weight: 600; margin-left: auto;">
-                                                        - <c:choose>
-                                                            <c:when test="${service.price >= 1000000}">
-                                                                ${String.format("%,.0f", service.price / 1000000)}M ₫
-                                                            </c:when>
-                                                            <c:when test="${service.price >= 1000}">
-                                                                ${String.format("%,.0f", service.price / 1000)}K ₫
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                ${String.format("%,.0f", service.price)} ₫
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                        ${String.format("%,.0f", service.price )} ₫
                                                     </span>
                                                 </c:if>
                                             </label>
@@ -1003,7 +987,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" style="margin-top: 35px">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header text-white">
@@ -1038,11 +1022,11 @@
                                 <label class="form-label fw-bold">
                                     <i class="fas fa-cut me-1 text-primary"></i>Dịch vụ
                                 </label>
-                                <div id="servicesList" class="border rounded p-3 bg-light">
+                                <div id="servicesList" class="">
                                     <c:forEach var="service" items="${listService}">
-                                        <div class="service-checkbox form-check">
+                                        <div class="service-checkbox form-check" style="background: #232323; border-radius: 8px; margin-bottom: 8px; padding: 10px 12px; display: flex; align-items: center;">
                                             <input type="checkbox" class="form-check-input" id="service${service.id}" name="serviceIds" value="${service.id}">
-                                            <label class="form-check-label" for="service${service.id}">
+                                            <label class="form-check-label" for="service${service.id}" style="color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 0; width: 100%;">
                                                 <c:choose>
                                                     <c:when test="${service.name.contains('Cắt') || service.name.contains('cắt')}">
                                                         <i class="fas fa-cut me-1"></i>
@@ -1066,20 +1050,10 @@
                                                         <i class="fas fa-scissors me-1"></i>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                ${service.name}
+                                                <span style="color: #fff; font-weight: 500;">${service.name}</span>
                                                 <c:if test="${service.price != null && service.price > 0}">
-                                                    <span class="text-muted small ms-auto">
-                                                        - <c:choose>
-                                                            <c:when test="${service.price >= 1000000}">
-                                                                ${String.format("%,.0f", service.price / 1000000)}M ₫
-                                                            </c:when>
-                                                            <c:when test="${service.price >= 1000}">
-                                                                ${String.format("%,.0f", service.price / 1000)}K ₫
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                ${String.format("%,.0f", service.price)} ₫
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                    <span style="color: #fff; font-weight: 600; margin-left: auto;">
+                                                        ${String.format("%,.0f", service.price )} ₫
                                                     </span>
                                                 </c:if>
                                             </label>
@@ -1131,9 +1105,9 @@
                             // Store ALL staff data, including branchId, for client-side filtering
                             const allStaff = [        <c:forEach var="staff" items="${listStaff}" varStatus="loop"> {
                             id: ${staff.id},
-                            firstName: '<c:out value="${staff.firstName != null ? staff.firstName : 'null'}"/>',
-                            lastName: '<c:out value="${staff.lastName != null ? staff.lastName : 'null'}"/>',
-                            branchId: ${staff.branchId}
+                                    firstName: '<c:out value="${staff.firstName != null ? staff.firstName : 'null'}"/>',
+                                    lastName: '<c:out value="${staff.lastName != null ? staff.lastName : 'null'}"/>',
+                                    branchId: ${staff.branchId}
                             }<c:if test="${!loop.last}">,</c:if>
             </c:forEach>];
                             // Store all appointments for client-side filtering
@@ -1252,6 +1226,7 @@
 
                             // --- FUNCTIONS FOR APPOINTMENT TIME CONSTRAINTS ---
                             let flatpickrInstance = null;
+                            let totalServiceDuration = Number("${requestScope.totalServiceDuration}" || 0); // phút
                             // Hàm fetch các slot bị chiếm cho staff và ngày
                             async function fetchDisabledSlots(staffId, dateStr) {
                             if (!staffId || !dateStr) return [];
@@ -1332,10 +1307,12 @@
                             button.classList.add('disabled');
                             button.disabled = true;
                             } else {
-                            button.addEventListener('click', function () {
-                            document.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
-                            this.classList.add('selected');
-                            addAppointmentTimeHiddenInput.value = this.getAttribute('data-time');
+                            button.addEventListener("click", () => {
+                                document.querySelectorAll(".time-slot").forEach(b => b.classList.remove("selected"));
+                                button.classList.add("selected");
+                                selectedTime = label;
+                                checkStaffAvailabilityForSelectedTime(label); // <-- Gọi hàm này
+                                checkFormComplete();
                             });
                             }
                             timeSlotsContainer.appendChild(button);
@@ -1345,6 +1322,45 @@
                             if (slotsGenerated === 0) {
                             timeSlotsContainer.innerHTML = '<span class="text-muted">Không có giờ khả dụng cho ngày này.</span>';
                             }
+                            }
+
+                            async function checkStaffAvailabilityForSelectedTime(selectedLabel) {
+                                if (!selectedLabel || !totalServiceDuration) return;
+
+                                const [hour, minute] = selectedLabel.split(':').map(Number);
+                                const startDate = new Date(bookingDate.value);
+                                startDate.setHours(hour, minute, 0, 0);
+
+                                const staffCards = document.querySelectorAll('.staff-card');
+                                for (const card of staffCards) {
+                                    const staffId = card.getAttribute('data-staff-id');
+                                    let isBusy = false;
+                                    try {
+                                        const contextPath = '${pageContext.request.contextPath}';
+                                        const params = new URLSearchParams();
+                                        params.append('staffId', staffId);
+                                        params.append('appointmentDate', bookingDate.value);
+                                        params.append('startTime', selectedLabel);
+                                        params.append('duration', totalServiceDuration);
+                                        const url = contextPath + '/StaffAvailabilityServlet?' + params.toString();
+                                        const res = await fetch(url);
+                                        if (res.ok) {
+                                            const data = await res.json();
+                                            isBusy = data.busy;
+                                        }
+                                    } catch (e) {
+                                        isBusy = false;
+                                    }
+                                    if (isBusy) {
+                                        card.classList.add('disabled');
+                                        card.style.pointerEvents = 'none';
+                                        card.style.opacity = 0.5;
+                                    } else {
+                                        card.classList.remove('disabled');
+                                        card.style.pointerEvents = '';
+                                        card.style.opacity = '';
+                                    }
+                                }
                             }
 
                             function initFlatpickrAndGenerateTimeSlots() {
@@ -1663,6 +1679,18 @@
                                 document.getElementById('timeSlotsContainer').innerHTML = '<span class="text-muted">Vui lòng chọn nhân viên để xem giờ khả dụng.</span>';
                                 }
                                 });
+                                function filterServicesByPrice() {
+                                var maxPrice = parseInt(document.getElementById('maxPriceInput').value, 10);
+                                var items = document.querySelectorAll('#allServiceList .service-item');
+                                items.forEach(function(item) {
+                                var price = parseInt(item.getAttribute('data-price'), 10);
+                                if (isNaN(maxPrice) || price <= maxPrice) {
+                                item.style.display = '';
+                                } else {
+                                item.style.display = 'none';
+                                }
+                                });
+                                }
         </script>
     </body>
 </html>

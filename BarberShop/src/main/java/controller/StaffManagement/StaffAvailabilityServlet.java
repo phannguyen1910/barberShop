@@ -68,6 +68,42 @@ public class StaffAvailabilityServlet extends HttpServlet {
             staffId = Integer.parseInt(staffIdParam);
             appointmentDate = LocalDate.parse(appointmentDateParam);
 
+            String startTimeParam = request.getParameter("startTime");
+            String durationParam = request.getParameter("duration");
+
+            if (startTimeParam != null && durationParam != null) {
+                try {
+                    LocalTime requestedStart = LocalTime.parse(startTimeParam);
+                    int durationMinutes = Integer.parseInt(durationParam);
+                    LocalTime requestedEnd = requestedStart.plusMinutes(durationMinutes);
+
+                    AppointmentDAO appointmentDAO = new AppointmentDAO();
+                    List<Appointment> staffAppointments = appointmentDAO.getAppointmentsByStaffAndDate(staffId, appointmentDate);
+
+                    boolean isBusy = false;
+                    for (Appointment appt : staffAppointments) {
+                        LocalDateTime apptStartDT = appt.getAppointmentTime();
+                        LocalDateTime apptEndDT = apptStartDT.plusMinutes(appt.getTotalServiceDurationMinutes());
+                        LocalTime apptStart = apptStartDT.toLocalTime();
+                        LocalTime apptEnd = apptEndDT.toLocalTime();
+
+                        // Kiểm tra trùng khoảng thời gian
+                        if (!(requestedEnd.compareTo(apptStart) <= 0 || requestedStart.compareTo(apptEnd) >= 0)) {
+                            isBusy = true;
+                            break;
+                        }
+                    }
+                    String jsonOutput = "{\"busy\": " + isBusy + "}";
+                    out.print(jsonOutput);
+                    return;
+                } catch (Exception e) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    String errorJson = gson.toJson(new ErrorResponse("Lỗi khi kiểm tra lịch bận.", e.getMessage()));
+                    out.print(errorJson);
+                    return;
+                }
+            }
+
             AppointmentDAO appointmentDAO = new AppointmentDAO();
             List<Appointment> staffAppointments = appointmentDAO.getAppointmentsByStaffAndDate(staffId, appointmentDate);
 

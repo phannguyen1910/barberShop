@@ -160,7 +160,7 @@
                         console.error("Email sending failed:", error);
                         const alertHtml = `
                             <div class="alert alert-danger">
-                                <i class="bi bi-exclamation-triangle"></i> Lỗi gửi email xác nhận. Vui lòng liên hệ qua hotline 0774511941.
+                                <i class="bi bi-exclamation-triangle"></i> Lỗi gửi email xác nhận.
                             </div>
                         `;
                         document.body.insertAdjacentHTML('beforeend', alertHtml);
