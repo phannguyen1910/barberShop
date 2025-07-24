@@ -1,10 +1,10 @@
-
 package babershopDAO;
 
 import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;
 import static babershopDatabase.databaseInfo.USERDB;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,7 +14,10 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Branch;
 import model.Invoice;
 
@@ -54,6 +57,97 @@ public class InvoiceDAO {
         return null;
     }
 
+
+    public List<Map<String, Object>> getRevenueLast12Months() {
+        List<Map<String, Object>> revenues = new ArrayList<>();
+        String sql = "SELECT FORMAT(i.receivedDate, 'MM/yyyy') AS label, " +
+                     "COALESCE(SUM(CASE " +
+                     "    WHEN i.status IN ('Paid', 'Paid Deposit') THEN i.totalAmount " +
+                     "    ELSE 0 " +
+                     "END), 0) AS revenue " +
+                     "FROM Invoice i " +
+                     "WHERE i.receivedDate IS NOT NULL " +
+                     "    AND i.receivedDate >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) " +
+                     "    AND i.receivedDate <= CAST(GETDATE() AS DATE) " +
+                     "GROUP BY FORMAT(i.receivedDate, 'MM/yyyy') " +
+                     "ORDER BY MIN(i.receivedDate);";
+
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Không có dữ liệu doanh thu trong 12 tháng gần nhất.");
+            }
+            while (rs.next()) {
+                Map<String, Object> revenueData = new HashMap<>();
+                String label = rs.getString("label");
+                BigDecimal revenue = rs.getBigDecimal("revenue");
+                revenueData.put("label", label);
+                revenueData.put("revenue", revenue != null ? revenue.doubleValue() : 0.0);
+                revenues.add(revenueData);
+                System.out.println("Tháng: " + label + " | Doanh thu: " + revenue);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi truy vấn dữ liệu doanh thu: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return revenues;
+    }
+
+    public List<Map<String, Object>> getRevenueCurrentYear() {
+    List<Map<String, Object>> revenues = new ArrayList<>();
+    String sql = "WITH Months AS (" +
+                 "    SELECT CAST(DATEADD(MONTH, n-1, '2025-01-01') AS DATE) AS month_date " +
+                 "    FROM (SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n FROM master..spt_values) AS numbers " +
+                 "    WHERE n <= 12" +
+                 ") " +
+                 "SELECT FORMAT(m.month_date, 'MM/yyyy') AS label, " +
+                 "       COALESCE(SUM(CASE " +
+                 "           WHEN i.status = 'Paid' THEN i.totalAmount " +
+                 "           WHEN i.status = 'Paid Deposit' THEN 50000 " +
+                 "           ELSE 0 " +
+                 "       END), 0) AS revenue " +
+                 "FROM Months m " +
+                 "LEFT JOIN Invoice i ON YEAR(i.receivedDate) = YEAR(m.month_date) " +
+                 "    AND MONTH(i.receivedDate) = MONTH(m.month_date) " +
+                 "    AND i.receivedDate IS NOT NULL " +
+                 "    AND i.receivedDate <= CAST(GETDATE() AS DATETIME) " +
+                 "GROUP BY FORMAT(m.month_date, 'MM/yyyy') " +
+                 "ORDER BY MIN(m.month_date);";
+
+    try (Connection conn = InvoiceDAO.getConnect();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Không có dữ liệu doanh thu trong năm hiện tại.");
+        }
+        while (rs.next()) {
+            Map<String, Object> revenueData = new HashMap<>();
+            String label = rs.getString("label");
+            BigDecimal revenue = rs.getBigDecimal("revenue");
+            revenueData.put("label", label);
+            revenueData.put("revenue", revenue != null ? revenue.doubleValue() : 0.0);
+            revenues.add(revenueData);
+            System.out.println("Tháng: " + label + " | Doanh thu: " + revenue);
+        }
+        // Thêm debug để kiểm tra dữ liệu thô
+        String debugSql = "SELECT i.receivedDate, i.status, i.totalAmount FROM Invoice i WHERE YEAR(i.receivedDate) = 2025 AND MONTH(i.receivedDate) = 7";
+        try (PreparedStatement debugPs = conn.prepareStatement(debugSql);
+             ResultSet debugRs = debugPs.executeQuery()) {
+            System.out.println("Dữ liệu thô tháng 7:");
+            while (debugRs.next()) {
+                Timestamp receivedDate = debugRs.getTimestamp("receivedDate");
+                String status = debugRs.getString("status");
+                BigDecimal totalAmount = debugRs.getBigDecimal("totalAmount");
+                System.out.println("receivedDate: " + receivedDate + ", status: " + status + ", totalAmount: " + totalAmount);
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi SQL khi truy vấn dữ liệu doanh thu năm hiện tại: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return revenues;
+}
     public static List<Invoice> getAllInvoice() {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT totalAmount, status, receivedDate, appointmentId FROM Invoice";
@@ -225,7 +319,7 @@ public class InvoiceDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                     float totalAmount = rs.getFloat("totalAmount");
+                    float totalAmount = rs.getFloat("totalAmount");
                     String status = rs.getString("status");
                     Timestamp timestamp = rs.getTimestamp("receivedDate");
                     LocalDateTime receivedDate = timestamp != null ? timestamp.toLocalDateTime() : null;
@@ -255,20 +349,56 @@ public class InvoiceDAO {
             }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                     float totalAmount = rs.getFloat("totalAmount");
+                    float totalAmount = rs.getFloat("totalAmount");
                     String status = rs.getString("status");
                     Timestamp timestamp = rs.getTimestamp("receivedDate");
                     LocalDateTime receivedDate = timestamp != null ? timestamp.toLocalDateTime() : null;
                     int appointmentId = rs.getInt("appointmentId");
                     invoices.add(new Invoice(totalAmount, status, receivedDate, appointmentId));
                 }
-                System.out.println("Fetched all invoices count: " + invoices.size());
             }
         } catch (Exception e) {
             System.out.println("Error fetching all invoices: " + e.getMessage());
         }
         return invoices;
     }
+
+   public float totalInvoice() {
+    float totalAmount = 0;
+    int numberOfPaidDeposit = 0;
+
+   String sql = "SELECT totalAmount FROM Invoice WHERE status = 'Paid' AND CAST([receivedDate] AS DATE) = CAST(GETDATE() AS DATE)";
+String sql2 = "SELECT COUNT(*) AS total FROM Invoice WHERE status = 'Paid Deposit' AND CAST([receivedDate] AS DATE) = CAST(GETDATE() AS DATE)";
+
+
+    try (Connection con = getConnect()) {
+
+        // 1. Lấy tổng tiền từ hóa đơn Paid
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                totalAmount += rs.getFloat("totalAmount");
+            }
+        }
+
+        // 2. Lấy số hóa đơn Paid Deposit
+        try (PreparedStatement ps2 = con.prepareStatement(sql2);
+             ResultSet rs2 = ps2.executeQuery()) {
+
+            if (rs2.next()) {
+                numberOfPaidDeposit = rs2.getInt("total");
+                totalAmount += 50000 * numberOfPaidDeposit;
+            }
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error calculating total invoice: " + e.getMessage());
+    }
+
+    return totalAmount;
+}
+
 
     public static List<Branch> getAllBranches() {
         List<Branch> branches = new ArrayList<>();
@@ -305,38 +435,38 @@ public class InvoiceDAO {
                 return 1;
         }
     }
+
     public float getTotalAmountByAppointmentId(int appointmentId) throws SQLException {
-    String sql = "SELECT totalAmount FROM Invoice WHERE appointmentId = ?";
-    try (Connection con = getConnect();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, appointmentId);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getFloat("totalAmount");
+        String sql = "SELECT totalAmount FROM Invoice WHERE appointmentId = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getFloat("totalAmount");
+                }
             }
         }
+        return 0f; // hoặc throw lỗi nếu muốn bắt buộc có invoice
     }
-    return 0f; // hoặc throw lỗi nếu muốn bắt buộc có invoice
-}
-public boolean updateInvoiceStatus(int appointmentId, String status) {
-    String sql = "UPDATE Invoice SET status = ? WHERE appointmentId = ?";
-    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setString(1, status);
-        ps.setInt(2, appointmentId);
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return false;
-}
 
-private static String normalizeDate(String input) {
-    // Nếu input là dd/MM/yyyy thì chuyển về yyyy-MM-dd
-    if (input != null && input.matches("\\d{2}/\\d{2}/\\d{4}")) {
-        String[] parts = input.split("/");
-        return parts[2] + "-" + parts[1] + "-" + parts[0];
+    public boolean updateInvoiceStatus(int appointmentId, String status) {
+        String sql = "UPDATE Invoice SET status = ? WHERE appointmentId = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return input;
-}
-}
 
+    private static String normalizeDate(String input) {
+        // Nếu input là dd/MM/yyyy thì chuyển về yyyy-MM-dd
+        if (input != null && input.matches("\\d{2}/\\d{2}/\\d{4}")) {
+            String[] parts = input.split("/");
+            return parts[2] + "-" + parts[1] + "-" + parts[0];
+        }
+        return input;
+    }
+}

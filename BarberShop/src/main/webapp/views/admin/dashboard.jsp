@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -421,7 +422,7 @@
         <!-- Top Navigation Bar -->
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
                     <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -446,7 +447,6 @@
             <i class="fas fa-bars"></i>
         </button>
 
-      
         <div class="dashboard-layout">
             <nav class="sidebar" id="sidebar">
                 <div class="sidebar-header">
@@ -458,7 +458,7 @@
                 </div>
                 <div class="nav-menu">
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link active">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>
@@ -541,7 +541,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <div class="stat-number">1,234</div>
+                        <div class="stat-number">${numberOfCustomer}</div>
                         <div class="stat-label">Tổng số khách hàng</div>
                         <div class="stat-change">
                             <i class="fas fa-arrow-up"></i> +12% so với tháng trước
@@ -552,7 +552,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-cut"></i>
                         </div>
-                        <div class="stat-number">28</div>
+                        <div class="stat-number">${numberOfService}</div>
                         <div class="stat-label">Tổng số dịch vụ</div>
                         <div class="stat-change">
                             <i class="fas fa-arrow-up"></i> +3 dịch vụ mới
@@ -563,7 +563,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-calendar-check"></i>
                         </div>
-                        <div class="stat-number">156</div>
+                        <div class="stat-number">${numberOfAppointment}</div>
                         <div class="stat-label">Lịch hẹn hôm nay</div>
                         <div class="stat-change">
                             <i class="fas fa-arrow-up"></i> +8% so với hôm qua
@@ -574,7 +574,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
-                        <div class="stat-number">₫2.5M</div>
+                        <div class="stat-number">${totalRevenue}</div>
                         <div class="stat-label">Doanh thu hôm nay</div>
                         <div class="stat-change">
                             <i class="fas fa-arrow-up"></i> +15% so với hôm qua
@@ -586,8 +586,8 @@
                 <div class="chart-section">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3 class="chart-title">Doanh thu theo tháng</h3>
-                            <span class="chart-period">12 tháng gần nhất</span>
+                            <h3 class="chart-title">Doanh thu các tháng trong năm 2025</h3>
+                            <span class="chart-period">Từ tháng 1 đến tháng hiện tại</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="revenueChart"></canvas>
@@ -678,55 +678,93 @@
                         now.toLocaleTimeString('vi-VN', timeOptions);
             }
 
-            // Initialize chart
+            // Initialize Chart.js revenue chart with data from JSP
             function initRevenueChart() {
+                // Parse revenue data from JSP
+                const revenueData = ${revenueCurrentYearJson};
+                const labels = revenueData.map(item => item.label);
+                const revenues = revenueData.map(item => item.revenue);
+
                 const ctx = document.getElementById('revenueChart').getContext('2d');
                 new Chart(ctx, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        labels: labels,
                         datasets: [{
-                                label: 'Doanh thu (triệu VNĐ)',
-                                data: [65, 75, 80, 85, 90, 95, 88, 92, 97, 85, 90, 105],
-                                borderColor: '#DAA520',
-                                backgroundColor: 'rgba(218, 165, 32, 0.1)',
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointBackgroundColor: '#DAA520',
-                                pointBorderColor: '#1d1d1b',
-                                pointBorderWidth: 2,
-                                pointRadius: 6
-                            }]
+                            label: 'Doanh thu (VND)',
+                            data: revenues,
+                            backgroundColor: 'rgba(218, 165, 32, 0.8)',
+                            borderColor: '#DAA520',
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                        }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
+                                display: true,
+                                position: 'top',
                                 labels: {
-                                    color: '#ccc'
+                                    color: '#DAA520',
+                                    font: {
+                                        family: 'Segoe UI',
+                                        size: 12
+                                    }
                                 }
+                            },
+                            title: {
+                                display: false
                             }
                         },
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(218, 165, 32, 0.1)'
+                                title: {
+                                    display: true,
+                                    text: 'Doanh thu (VND)',
+                                    color: '#DAA520',
+                                    font: {
+                                        family: 'Segoe UI',
+                                        size: 12
+                                    }
                                 },
                                 ticks: {
-                                    color: '#ccc'
+                                    color: '#ccc',
+                                    callback: function(value) {
+                                        return new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND'
+                                        }).format(value);
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(218, 165, 32, 0.1)'
                                 }
                             },
                             x: {
-                                grid: {
-                                    color: 'rgba(218, 165, 32, 0.1)'
+                                title: {
+                                    display: true,
+                                    text: 'Tháng',
+                                    color: '#DAA520',
+                                    font: {
+                                        family: 'Segoe UI',
+                                        size: 12
+                                    }
                                 },
                                 ticks: {
                                     color: '#ccc'
+                                },
+                                grid: {
+                                    color: 'rgba(218, 165, 32, 0.1)'
                                 }
+                            }
+                        },
+                        elements: {
+                            bar: {
+                                backgroundColor: 'rgba(218, 165, 32, 0.8)'
                             }
                         }
                     }

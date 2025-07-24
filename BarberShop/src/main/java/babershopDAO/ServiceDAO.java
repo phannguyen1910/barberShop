@@ -56,6 +56,21 @@ public class ServiceDAO {
     return services;
 }
 
+      public int countNumberService() {
+    String sql = "SELECT COUNT(*) AS totalService FROM [baberShop].[dbo].[Service]";
+    int count = 0;
+    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt("totalService"); // hoặc rs.getInt(1)
+        }
+    } catch (Exception e) {
+        System.out.println("🔥 ERROR in countNumberService(): " + e);
+    }
+    return count; // THIẾU return
+}
+
+    
     public Service getService(int id) {
         String sql = "Select name ,price ,duration ,description from Service where id= ?";
         try (Connection con = getConnect()) {

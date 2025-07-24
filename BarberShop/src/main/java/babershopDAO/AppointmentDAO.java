@@ -72,7 +72,20 @@ public class AppointmentDAO {
         return false;
     }
 
-    
+    public int countNumberOfAppointment() {
+    String sql = "SELECT COUNT(*) AS totalAppointment FROM [baberShop].[dbo].[Appointment]";
+    int count = 0;
+    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt("totalAppointment"); // hoặc rs.getInt(1)
+        }
+    } catch (Exception e) {
+        System.out.println("🔥 ERROR in countNumberAppointment(): " + e);
+    }
+    return count; // THIẾU return
+}
+
 
   
     public List<Appointment> getAppointmentsByStaffAndDate(int staffId, LocalDate date) {

@@ -1,61 +1,61 @@
-
 package controller.AppointmentManagement;
 
 import babershopDAO.AppointmentDAO;
 import babershopDAO.CustomerDAO;
-import java.io.IOException;
-import java.io.PrintWriter;
+import babershopDAO.InvoiceDAO;
+import babershopDAO.ServiceDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
-import model.Appointment;
+import java.util.Map;
+import com.google.gson.Gson;
 
-@WebServlet(name = "DashBoardServlet", urlPatterns = {"/DashBoardServlet"})
+@WebServlet(name = "DashboardServlet", urlPatterns = {"/DashboardServlet"})
 public class DashBoardServlet extends HttpServlet {
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DashBoardServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DashBoardServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         CustomerDAO customerDAO = new CustomerDAO();
-        String fullName =null;
-        List <Appointment> apointments = appointmentDAO.getAllAppointments();
-        
- 
-    }
+        ServiceDAO serviceDAO = new ServiceDAO();
+        InvoiceDAO invoiceDAO = new InvoiceDAO();
 
+        int numberOfCustomer = customerDAO.countNumberCustomer();
+        int numberOfService = serviceDAO.countNumberService();
+        int numberOfAppointment = appointmentDAO.countNumberOfAppointment();
+        float totalRevenue = invoiceDAO.totalInvoice();
+        List<Map<String, Object>> revenueCurrentYear = invoiceDAO.getRevenueCurrentYear();
+
+        // Serialize revenueCurrentYear to JSON
+        Gson gson = new Gson();
+        String revenueCurrentYearJson = gson.toJson(revenueCurrentYear);
+
+        for (Map<String, Object> revenue : revenueCurrentYear) {
+            System.out.println("Revenue: " + revenue);
+        }
+
+        request.setAttribute("numberOfCustomer", numberOfCustomer);
+        request.setAttribute("numberOfService", numberOfService);
+        request.setAttribute("numberOfAppointment", numberOfAppointment);
+        request.setAttribute("totalRevenue", totalRevenue);
+        request.setAttribute("revenueCurrentYearJson", revenueCurrentYearJson);
+
+        request.getRequestDispatcher("/views/admin/dashboard.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        doGet(request, response);
     }
 
-    
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Dashboard Servlet for Barbershop Admin";
+    }
 }

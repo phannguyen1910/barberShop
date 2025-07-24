@@ -156,7 +156,7 @@ public class LoginServlet extends HttpServlet {
 
                             // Chuyển hướng dựa trên role
                             if ("Admin".equals(existingAccount.getRole())) {
-                                response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
+                                response.sendRedirect(request.getContextPath() + "/DashboardServlet");
                             } else if ("Staff".equals(existingAccount.getRole())) {
                                 response.sendRedirect(request.getContextPath() + "/views/staff/registerForAShift.jsp");
                             } else {
@@ -199,7 +199,7 @@ public class LoginServlet extends HttpServlet {
             Admin admin = AdminDAO.getAdminByAccountId(account.getId());
             session.setAttribute("admin", admin);
             if ("Admin".equals(account.getRole())) {
-                response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/DashboardServlet");
             } else if ("Staff".equals(account.getRole())) {
                 response.sendRedirect(request.getContextPath() + "/views/staff/registerForAShift.jsp");
             } else {
