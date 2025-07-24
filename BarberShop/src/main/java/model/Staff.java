@@ -8,6 +8,8 @@ public class Staff extends Account{
     private String lastName;
     private String img;
     private int branchId;
+    private int monthlyCompletedBookings;
+    
     // Constructor
     public Staff(int id, int accountId, String firstName, String lastName, String img, String email, String phoneNumber, String password, String role, int status, int branchId) {
         super(email, phoneNumber, password, role, status);
@@ -167,5 +169,14 @@ public class Staff extends Account{
     public void setImg(String img) {
         this.img = img;
     }
-    
+
+    public int getMonthlyCompletedBookings() {
+        return monthlyCompletedBookings;
+    }
+
+    public void setMonthlyCompletedBookings(int monthlyCompletedBookings) {
+        this.monthlyCompletedBookings = monthlyCompletedBookings;
+    }
+        
+
 }

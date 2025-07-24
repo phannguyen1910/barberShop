@@ -366,7 +366,7 @@
             .staff-table th,
             .staff-table td {
                 padding: 15px 12px;
-                text-align: left;
+                text-align: center;
                 border-bottom: 1px solid rgba(218, 165, 32, 0.1);
                 vertical-align: middle;
             }
@@ -632,7 +632,7 @@
             <!-- Top Navigation Bar -->
             <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
                 <div class="container-fluid px-4">
-                    <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
+                    <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
                         <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -690,7 +690,7 @@
 
                     <div class="nav-menu">
                         <div class="nav-item">
-                            <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -892,6 +892,7 @@
                                     <th>Email</th>
                                     <th>Số điện thoại</th>
                                     <th>Vai trò</th>
+                                    <th>Số đơn hoàn thành (tháng này)</th>
                                     <th>Trạng thái</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -908,8 +909,8 @@
                                         <td class="staff-name">${staff.firstName} ${staff.lastName}</td>
                                         <td class="staff-email">${staff.email}</td>
                                         <td class="staff-phone">${staff.phoneNumber}</td>
-                                        <td class="staff-branch">${staff.branchId}</td>
                                         <td class="staff-role">${staff.role}</td>
+                                        <td>${staff.monthlyCompletedBookings}</td>
                                         <td>
                                             <c:choose>
                                                 <c:when test="${staff.status == 1}">
