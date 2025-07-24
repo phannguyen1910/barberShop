@@ -272,12 +272,40 @@
                 font-size: 1rem;
             }
 
-            .status-accept { background: #4CAF50; color: #fff; border-radius: 8px; padding: 4px 10px; }
-            .status-pending { background: #FF9800; color: #fff; border-radius: 8px; padding: 4px 10px; }
-            .status-reject { background: #F44336; color: #fff; border-radius: 8px; padding: 4px 10px; }
-            .action-btn { margin: 0 2px; padding: 2px 8px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.95em; }
-            .action-accept { background: #4CAF50; color: #fff; }
-            .action-reject { background: #F44336; color: #fff; }
+            .status-accept {
+                background: #4CAF50;
+                color: #fff;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            .status-pending {
+                background: #FF9800;
+                color: #fff;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            .status-reject {
+                background: #F44336;
+                color: #fff;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            .action-btn {
+                margin: 0 2px;
+                padding: 2px 8px;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+                font-size: 0.95em;
+            }
+            .action-accept {
+                background: #4CAF50;
+                color: #fff;
+            }
+            .action-reject {
+                background: #F44336;
+                color: #fff;
+            }
 
             @media (max-width: 768px) {
                 .mobile-menu-btn {
@@ -320,6 +348,57 @@
                     margin-left: 0;
                     margin-top: 5px;
                 }
+            }
+            .status-dropdown {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid #DAA520;
+                border-radius: 6px;
+                color: #DAA520;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 120px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='%23DAA520'%3e%3cpath d='M2 4l4 4 4-4H2z'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 10px 10px;
+                transition: all 0.3s ease;
+            }
+
+            .status-dropdown:hover {
+                background: rgba(218, 165, 32, 0.1);
+                border-color: #B8860B;
+            }
+
+            .status-dropdown:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.3);
+            }
+
+            .status-dropdown option {
+                background: rgba(29, 29, 27, 0.95);
+                color: #DAA520;
+                padding: 5px;
+            }
+
+            /* CSS cho các trạng thái hiển thị */
+            .status-dropdown.status-accept {
+                background: rgba(76, 175, 80, 0.2);
+                border-color: #4CAF50;
+                color: #4CAF50;
+            }
+
+            .status-dropdown.status-pending {
+                background: rgba(255, 152, 0, 0.2);
+                border-color: #FF9800;
+                color: #FF9800;
+            }
+
+            .status-dropdown.status-reject {
+                background: rgba(244, 67, 54, 0.2);
+                border-color: #F44336;
+                color: #F44336;
             }
         </style>
     </head>
@@ -487,25 +566,15 @@
                                             <td><c:out value="${schedule.branch != null ? schedule.branch : 'N/A'}" /></td>
                                             <td><c:out value="${schedule.workDate != null ? schedule.workDate : 'N/A'}" /></td>
                                             <td>
-                                                <span class="
-                                                    <c:choose>
-                                                        <c:when test="${schedule.status == 'accept'}">status-accept</c:when>
-                                                        <c:when test="${schedule.status == 'pending'}">status-pending</c:when>
-                                                        <c:when test="${schedule.status == 'reject'}">status-reject</c:when>
-                                                        <c:otherwise></c:otherwise>
-                                                    </c:choose>">
-                                                    <c:choose>
-                                                        <c:when test="${schedule.status == 'accept'}">Đã duyệt</c:when>
-                                                        <c:when test="${schedule.status == 'pending'}">Chờ duyệt</c:when>
-                                                        <c:when test="${schedule.status == 'reject'}">Từ chối</c:when>
-                                                        <c:otherwise>${schedule.status}</c:otherwise>
-                                                    </c:choose>
-                                                </span>
-                                                <c:if test="${schedule.status == 'pending'}">
-                                                    <button class="action-btn action-accept" onclick="updateStatus(${schedule.id}, 'accept')">Duyệt</button>
-                                                    <button class="action-btn action-reject" onclick="updateStatus(${schedule.id}, 'reject')">Từ chối</button>
-                                                </c:if>
+                                                <select class="status-dropdown status-${schedule.status}" 
+                                                        onchange="handleStatusChange(this, ${schedule.id})" 
+                                                        data-original-status="${schedule.status}">
+                                                    <option value="accept" ${schedule.status == 'accept' ? 'selected' : ''}>Đã duyệt</option>
+                                                    <option value="pending" ${schedule.status == 'pending' ? 'selected' : ''}>Chờ duyệt</option>
+                                                    <option value="reject" ${schedule.status == 'reject' ? 'selected' : ''}>Từ chối</option>
+                                                </select>
                                             </td>
+
                                         </tr>
                                     </c:forEach>
                                 </c:when>
@@ -573,7 +642,8 @@
             // Hàm hiển thị kết quả
             function displayResults(schedules) {
                 const tbody = document.getElementById('scheduleTableBody');
-                if (!tbody) return;
+                if (!tbody)
+                    return;
 
                 // Xóa tất cả row hiện tại
                 tbody.innerHTML = '';
@@ -616,7 +686,7 @@
                 const searchMonth = monthInput.value.trim();
                 const searchBranch = branchSelect.value.trim().toLowerCase();
 
-                console.log('Filtering with:', { name: searchName, date: searchDate, month: searchMonth, branch: searchBranch });
+                console.log('Filtering with:', {name: searchName, date: searchDate, month: searchMonth, branch: searchBranch});
 
                 // Nếu không có điều kiện tìm kiếm, hiển thị tất cả
                 if (!searchName && !searchDate && !searchMonth && !searchBranch) {
@@ -668,10 +738,14 @@
                 const monthInput = document.getElementById('searchMonth');
                 const branchSelect = document.getElementById('searchBranch');
 
-                if (nameInput) nameInput.value = '';
-                if (dateInput) dateInput.value = '';
-                if (monthInput) monthInput.value = '';
-                if (branchSelect) branchSelect.value = '';
+                if (nameInput)
+                    nameInput.value = '';
+                if (dateInput)
+                    dateInput.value = '';
+                if (monthInput)
+                    monthInput.value = '';
+                if (branchSelect)
+                    branchSelect.value = '';
 
                 displayResults(allSchedules);
                 console.log('Search reset');
@@ -785,21 +859,57 @@
             window.resetSearch = resetSearch;
             window.filterSchedules = filterSchedules;
 
-            function updateStatus(id, status) {
-                if (!confirm('Bạn có chắc chắn muốn cập nhật trạng thái này?')) return;
+            function handleStatusChange(dropdown, scheduleId) {
+                const newStatus = dropdown.value;
+                const originalStatus = dropdown.getAttribute('data-original-status');
+
+                // Cập nhật màu sắc ngay lập tức
+                updateDropdownColor(dropdown, newStatus);
+
+                // Gọi hàm cập nhật trạng thái
+                updateStatus(scheduleId, newStatus, dropdown, originalStatus);
+            }
+
+            function updateDropdownColor(dropdown, status) {
+                // Xóa tất cả class trạng thái cũ
+                dropdown.classList.remove('status-accept', 'status-pending', 'status-reject');
+                // Thêm class mới theo trạng thái
+                dropdown.classList.add('status-' + status);
+            }
+
+<!-- 4. Cập nhật hàm updateStatus -->
+            function updateStatus(id, status, dropdown, originalStatus) {
+                if (!confirm('Bạn có chắc chắn muốn cập nhật trạng thái này?')) {
+                    // Reset về trạng thái ban đầu nếu user cancel
+                    dropdown.value = originalStatus;
+                    updateDropdownColor(dropdown, originalStatus);
+                    return;
+                }
+
                 fetch('${pageContext.request.contextPath}/ViewScheduleServlet?action=updateStatus&id=' + id + '&status=' + status, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: {'Content-Type': 'application/json'}
                 })
-                .then(res => res.json())
-                .then(data => {
-                    alert(data.message);
-                    if (data.success) {
-                        // Reload lại trang hoặc chỉ reload bảng
-                        location.reload();
-                    }
-                })
-                .catch(err => alert('Lỗi kết nối: ' + err));
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.success) {
+                                // Cập nhật data-original-status với trạng thái mới
+                                dropdown.setAttribute('data-original-status', status);
+                                // Đảm bảo màu sắc đúng
+                                updateDropdownColor(dropdown, status);
+                            } else {
+                                // Reset về trạng thái ban đầu nếu update thất bại
+                                dropdown.value = originalStatus;
+                                updateDropdownColor(dropdown, originalStatus);
+                            }
+                        })
+                        .catch(err => {
+                            alert('Lỗi kết nối: ' + err);
+                            // Reset về trạng thái ban đầu nếu có lỗi
+                            dropdown.value = originalStatus;
+                            updateDropdownColor(dropdown, originalStatus);
+                        });
             }
         </script>
     </body>
