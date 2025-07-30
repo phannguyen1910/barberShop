@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <title>Quản lý Nhân viên - Barbershop Admin</title>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="CSS/html.css">
@@ -10,8 +11,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
         <style>
-            
-             /* Top Navigation Bar */
+
+            /* Top Navigation Bar */
             .custom-navbar {
                 background: rgba(29, 29, 27, 0.95) !important;
                 backdrop-filter: blur(10px);
@@ -72,7 +73,7 @@
                 min-height: 100vh;
                 padding-top: 70px;
             }
-            
+
             * {
                 margin: 0;
                 padding: 0;
@@ -305,6 +306,28 @@
             .search-input::placeholder {
                 color: #999;
             }
+            .search-select {
+                background-color: rgba(29, 29, 27, 0.9);
+                color: #FFFFFF;
+                border: 1px solid rgba(218, 165, 32, 0.3);
+                border-radius: 8px;
+                padding: 12px 15px;
+                font-size: 0.9rem;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+
+            .search-select option {
+                background-color: #1d1d1b;
+                color: #FFFFFF;
+            }
+
+            .search-select option:checked {
+                background-color: #FFD700;
+                color: #000000;
+            }
+
 
             /* Staff Table */
             .table-container {
@@ -343,7 +366,7 @@
             .staff-table th,
             .staff-table td {
                 padding: 15px 12px;
-                text-align: left;
+                text-align: center;
                 border-bottom: 1px solid rgba(218, 165, 32, 0.1);
                 vertical-align: middle;
             }
@@ -588,72 +611,103 @@
                     height: 40px;
                     font-size: 1rem;
                 }
-            }
-        </style>
-    </head>
-    <body>
-        <%@ page contentType="text/html; charset=UTF-8" %>
-        
-           <!-- Top Navigation Bar -->
-        <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="index.jsp">
-                    <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <div class="d-flex gap-2 align-items-center">
-                        <div class="text-warning d-none d-lg-block me-3">
-                            <i class="fas fa-user-shield me-1"></i>
-                             <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
+                /* Làm sáng màu chữ trong dropdown */
+                .search-select,
+                .search-select option {
+                    color: #FFFFFF; /* Màu trắng sáng cho văn bản */
+                    background-color: #333333; /* Nền tối cho dropdown */
+                }
+
+                .search-select option:checked {
+                    background-color: #FFD700; /* Màu vàng nhạt cho mục được chọn */
+                    color: #000000; /* Màu đen để tương phản */
+                }
+            </style>
+        </head>
+        <body>
+            <%@ page contentType="text/html; charset=UTF-8" %>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+            <!-- Top Navigation Bar -->
+            <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
+                        <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="text-warning d-none d-lg-block me-3">
+                                <i class="fas fa-user-shield me-1"></i>
+                                <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
+                            </div>
+                            <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
+                                <i class="fas fa-sign-out-alt me-1"></i>
+                                Đăng xuất
+                            </a>
                         </div>
-                        <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
-                            <i class="fas fa-sign-out-alt me-1"></i>
-                            Đăng xuất
-                        </a>
                     </div>
                 </div>
-            </div>
-        </nav>
-        
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
+            </nav>
 
-        <div class="dashboard-layout">
-            <!-- Sidebar -->
-            <nav class="sidebar" id="sidebar">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <%
+                String message = (String) session.getAttribute("message");
+                if (message != null) {
+            %>
+            <div style="color: green;
+                 font-weight: bold;
+                 padding: 10px;
+                 text-align: center;" id="message">
+                <%= message%>
+            </div>
+            <script>
+                // Xóa thông báo sau 3 giây (chỉ logic client-side)
+                setTimeout(function () {
+                    document.getElementById("message").style.display = "none";
+                }, 3000);
+            </script>
+            <%
+                session.removeAttribute("message"); // Xóa session sau khi render
+            %>
+            <% }%>
+
+            <div class="dashboard-layout">
+               <nav class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <div class="logo">
                         <i class="fas fa-cut"></i>
                     </div>
-                    <div class="logo-text">BarberShop Pro</div>
+                    <div class="logo-text">Cut & Style</div>
                     <div class="logo-subtitle">Admin Dashboard</div>
                 </div>
 
                 <div class="nav-menu">
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/customerManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/admin/view-customers" class="nav-link">
                             <i class="fas fa-users"></i>
                             <span>Quản lý Khách hàng</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/staffManagement.jsp" class="nav-link active">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link active">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -677,212 +731,354 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Quản lý Nhượng quyền</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
                         </a>
                     </div>
-                </div>
-
-            </nav>
-
-            <!-- Main Content -->
-            <main class="main-content">
-                <!-- Header -->
-                <div class="header">
-                    <div>
-                        <h1><i class="fas fa-user-tie"></i> Quản lý Nhân viên</h1>
-                        <p>Quản lý thông tin và quyền hạn của nhân viên trong hệ thống</p>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Lịch nghỉ nhân viên</span>
+                        </a>
                     </div>
-                    <div class="header-actions">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Thêm nhân viên
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Quản lí ngày nghỉ</span>
                         </a>
                     </div>
                 </div>
+            </nav>
 
-                <!-- Search and Filter Section -->
-                <div class="search-section">
-                    <div class="search-row">
-                        <div class="search-group">
-                            <label for="searchName">Tìm kiếm theo tên</label>
-                            <input type="text" id="searchName" class="search-input" 
-                                   placeholder="Nhập tên nhân viên..." onkeyup="filterStaff()">
-                        </div>
-                        <div class="search-group">
-                            <label for="searchEmail">Tìm kiếm theo email</label>
-                            <input type="text" id="searchEmail" class="search-input" 
-                                   placeholder="Nhập email..." onkeyup="filterStaff()">
-                        </div>
-                        <div class="search-group">
-                            <label for="filterRole">Lọc theo vai trò</label>
-                            <select id="filterRole" class="search-select" onchange="filterStaff()">
-                                <option value="">Tất cả vai trò</option>
-                                <option value="staff">Nhân viên</option>
-                                <option value="manager">Quản lý</option>
-                            </select>
-                        </div>
-                        <div class="search-group">
-                            <label for="sortBy">Sắp xếp theo</label>
-                            <select id="sortBy" class="search-select" onchange="sortStaff()">
-                                <option value="id">ID</option>
-                                <option value="name">Tên</option>
-                                <option value="email">Email</option>
-                                <option value="role">Vai trò</option>
-                            </select>
+                <!-- Main Content -->
+                <main class="main-content">
+                    <!-- Modal Thêm Nhân Viên -->
+                    <div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content text-dark">
+                                <form action="${pageContext.request.contextPath}/add-staff" method="post" enctype="multipart/form-data">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addStaffModalLabel">Thêm Nhân Viên Mới</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Họ</label>
+                                                <input type="text" class="form-control" name="firstName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Tên</label>
+                                                <input type="text" class="form-control" name="lastName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control" name="email" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Số điện thoại</label>
+                                                <input type="text" class="form-control" name="phone" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Vai trò</label>
+                                                <select class="form-select" name="role">
+                                                    <option value="staff">Nhân viên</option>
+                                                    <option value="manager">Quản lý</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Ảnh đại diện</label>
+                                                <input type="file" class="form-control" name="img">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Chi nhánh</label>
+                                                <select class="form-select" name="branchId" required>
+                                                    <c:forEach var="branch" items="${branchList}">
+                                                        <option value="${branch.id}">${branch.name}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Lưu</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Staff Table -->
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3 class="table-title">Danh sách nhân viên</h3>
-                        <div class="table-info">
-                            Tổng cộng: <strong id="totalStaff">5</strong> nhân viên
+                    <!-- Header -->
+                    <div class="header">
+                        <div>
+                            <h1><i class="fas fa-user-tie"></i> Quản lý Nhân viên</h1>
+                            <p>Quản lý thông tin và quyền hạn của nhân viên trong hệ thống</p>
+                        </div>
+                        <div class="header-actions">
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                                <i class="fas fa-plus"></i> Thêm nhân viên
+                            </a>
                         </div>
                     </div>
 
-                    <table class="staff-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Ảnh</th>
-                                <th>Họ và tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Vai trò</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="staffTableBody">
-                            <tr>
-                                <td class="staff-id">#001</td>
-                                <td>
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" 
-                                         alt="Avatar" class="staff-avatar">
-                                </td>
-                                <td class="staff-name">Nguyễn Văn Hùng</td>
-                                <td class="staff-email">hungnguyenvan@barbershop.com</td>
-                                <td class="staff-phone">0901234567</td>
-                                <td><span class="role-badge role-manager">Manager</span></td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editStaff(1)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanStaff(1, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="staff-id">#002</td>
-                                <td>
-                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces" 
-                                         alt="Avatar" class="staff-avatar">
-                                </td>
-                                <td class="staff-name">Trần Minh Tuấn</td>
-                                <td class="staff-email">tuantranminh@barbershop.com</td>
-                                <td class="staff-phone">0912345678</td>
-                                <td><span class="role-badge role-staff">Staff</span></td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editStaff(2)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanStaff(2, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="staff-id">#003</td>
-                                <td>
-                                    <div class="staff-avatar-placeholder">LH</div>
-                                </td>
-                                <td class="staff-name">Lê Văn Hải</td>
-                                <td class="staff-email">hailevan@barbershop.com</td>
-                                <td class="staff-phone">0923456789</td>
-                                <td><span class="role-badge role-staff">Staff</span></td>
-                                <td><span class="badge badge-banned">Bị ban</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editStaff(3)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-unban" onclick="toggleBanStaff(3, this)" title="Bỏ ban">
-                                            <i class="fas fa-user-check"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="staff-id">#004</td>
-                                <td>
-                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" 
-                                         alt="Avatar" class="staff-avatar">
-                                </td>
-                                <td class="staff-name">Phạm Đức Thắng</td>
-                                <td class="staff-email">thangphamduc@barbershop.com</td>
-                                <td class="staff-phone">0934567890</td>
-                                <td><span class="role-badge role-manager">Manager</span></td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editStaff(4)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanStaff(4, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="staff-id">#005</td>
-                                <td>
-                                    <img src="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop&crop=faces" 
-                                         alt="Avatar" class="staff-avatar">
-                                </td>
-                                <td class="staff-name">Vũ Minh Quang</td>
-                                <td class="staff-email">quangvuminh@barbershop.com</td>
-                                <td class="staff-phone">0945678901</td>
-                                <td><span class="role-badge role-staff">Staff</span></td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editStaff(5)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanStaff(5, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Search and Filter Section -->
+                    <!-- Search and Filter Section -->
+                    <form id="staffFilterForm" method="get" action="${pageContext.request.contextPath}/admin/view-staff">
+                        <div class="search-section">
+                            <div class="search-row">
+                                <div class="search-group">
+                                    <label for="searchName">Tìm kiếm theo tên</label>
+                                    <input type="text" id="searchName" name="name" class="search-input" 
+                                           placeholder="Nhập tên nhân viên..." value="${name}">
+                                </div>
+                                <div class="search-group">
+                                    <label for="searchEmail">Tìm kiếm theo email</label>
+                                    <input type="text" id="searchEmail" name="email" class="search-input" 
+                                           placeholder="Nhập email..." value="${email}">
+                                </div>
+                                <div class="search-group">
+                                    <label for="filterRole">Lọc theo vai trò</label>
+                                    <select id="filterRole" name="role" class="search-select">
+                                        <option value="">Tất cả vai trò</option>
+                                        <option value="staff" ${role == 'staff' ? 'selected' : ''}>Nhân viên</option>
+                                        <option value="manager" ${role == 'manager' ? 'selected' : ''}>Quản lý</option>
+                                    </select>
+                                </div>
+                                <div class="search-group">
+                                    <label for="sortBy">Sắp xếp theo</label>
+                                    <select id="sortBy" name="sort" class="search-select">
+                                        <option value="id" ${sort == 'id' ? 'selected' : ''}>ID</option>
+                                        <option value="name" ${sort == 'name' ? 'selected' : ''}>Tên</option>
+                                        <option value="email" ${sort == 'email' ? 'selected' : ''}>Email</option>
+                                        <option value="role" ${sort == 'role' ? 'selected' : ''}>Vai trò</option>
+                                    </select>
+                                </div>
+                                <div class="search-group">
+                                    <label for="branchFilter">Lọc theo chi nhánh</label>
+                                    <select id="branchFilter" name="branchId" class="search-select" onchange="this.form.submit()">
+                                        <option value="">Tất cả chi nhánh</option>
+                                        <c:forEach var="b" items="${branchList}">
+                                            <option value="${b.id}" ${branchId == b.id ? 'selected' : ''}>${b.name}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
 
-                    <!-- Pagination -->
-                    <div class="pagination">
-                        <a href="#" class="pagination-btn">&laquo;</a>
-                        <a href="#" class="pagination-btn active">1</a>
-                        <a href="#" class="pagination-btn">2</a>
-                        <a href="#" class="pagination-btn">3</a>
-                        <span class="pagination-info">Hiển thị 1-5 của 5 nhân viên</span>
-                        <a href="#" class="pagination-btn">4</a>
-                        <a href="#" class="pagination-btn">5</a>
-                        <a href="#" class="pagination-btn">&raquo;
+                                <div class="search-group" style="align-self: flex-end;">
+                                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <!-- Staff Table -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 class="table-title">Danh sách nhân viên</h3>
+                            <div class="table-info">
+                                Tổng cộng: <strong id="totalStaff">5</strong> nhân viên
+                            </div>
+                        </div>
+
+                        <table class="staff-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ảnh</th>
+                                    <th>Họ và tên</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Vai trò</th>
+                                    <th>Số đơn hoàn thành (tháng này)</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody">
+                                <c:forEach var="staff" items="${staffList}">
+                                    <tr>
+                                        <td class="staff-id">#${staff.id}</td>
+                                        <td>
+                                            <img src="${pageContext.request.contextPath}/${staff.img}" 
+                                                 onerror="this.src='${pageContext.request.contextPath}/image/staff/default-avatar.png'" 
+                                                 class="staff-avatar" alt="Avatar" />
+                                        </td>
+                                        <td class="staff-name">${staff.firstName} ${staff.lastName}</td>
+                                        <td class="staff-email">${staff.email}</td>
+                                        <td class="staff-phone">${staff.phoneNumber}</td>
+                                        <td class="staff-role">${staff.role}</td>
+                                        <td>${staff.monthlyCompletedBookings}</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${staff.status == 1}">
+                                                    <span class="badge badge-active">Hoạt động</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge badge-banned">Bị ban</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn-action ${staff.status == 1 ? 'btn-ban' : 'btn-unban'}"
+                                                    onclick="toggleBanStaff(${staff.accountId}, this)"
+                                                    title="${staff.status == 1 ? 'Ban tài khoản' : 'Bỏ ban'}">
+                                                <i class="fas ${staff.status == 1 ? 'fa-user-slash' : 'fa-user-check'}"></i>
+                                            </button>
+
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+
+
+                        </table>
+
+                        <!-- Pagination -->
+                        <div class="pagination">
+                            <a href="#" class="pagination-btn">&laquo;</a>
+                            <a href="#" class="pagination-btn active">1</a>
+                            <a href="#" class="pagination-btn">2</a>
+                            <a href="#" class="pagination-btn">3</a>
+                            <span class="pagination-info">Hiển thị 1-5 của 5 nhân viên</span>
+                            <a href="#" class="pagination-btn">4</a>
+                            <a href="#" class="pagination-btn">5</a>
+                            <a href="#" class="pagination-btn">&raquo;
+
+                        </div>
+                </main>
+            </div>
+            <script>
+
+                // Toggle sidebar for mobile
+                function toggleSidebar() {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.toggle('active');
+                }
+
+                function toggleBanStaff(accountId, buttonElement) {
+                    const row = buttonElement.closest("tr");
+                    const badge = row.querySelector(".badge");
+                    const isBanned = buttonElement.title === 'Bỏ ban';
+                    const ban = !isBanned;
+                    const formData = new FormData();
+                    formData.append("id", accountId);
+                    formData.append("ban", ban);
+                    fetch("${pageContext.request.contextPath}/ban-staff", {
+                        method: "POST",
+                        body: formData
+                    })
+                            .then(res => res.json())
+                            .then(result => {
+                                if (result.success) {
+                                    if (result.newStatus === 0) {
+                                        badge.className = "badge badge-banned";
+                                        badge.textContent = "Bị ban";
+                                        buttonElement.className = "btn-action btn-unban";
+                                        buttonElement.title = "Bỏ ban";
+                                        buttonElement.innerHTML = '<i class="fas fa-user-check"></i>';
+                                    } else {
+                                        badge.className = "badge badge-active";
+                                        badge.textContent = "Hoạt động";
+                                        buttonElement.className = "btn-action btn-ban";
+                                        buttonElement.title = "Ban tài khoản";
+                                        buttonElement.innerHTML = '<i class="fas fa-user-slash"></i>';
+                                    }
+                                } else {
+                                    alert("Không thể cập nhật trạng thái.");
+                                }
+                            })
+                            .catch(() => alert("Không thể kết nối đến server."));
+                }
+
+
+
+
+
+
+                // Initialize page
+                document.addEventListener('DOMContentLoaded', function () {
+                    const totalRows = document.querySelectorAll('#staffTableBody tr').length;
+                    document.getElementById('totalStaff').textContent = totalRows;
+                });
+                // Close sidebar when clicking outside on mobile
+                document.addEventListener('click', function (event) {
+                    const sidebar = document.getElementById('sidebar');
+                    const mobileBtn = document.querySelector('.mobile-menu-btn');
+                    if (window.innerWidth <= 768 &&
+                            !sidebar.contains(event.target) &&
+                            !mobileBtn.contains(event.target) &&
+                            sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+                // Edit staff function
+                function editStaff(staffId) {
+                    console.log('Edit staff:', staffId);
+                    alert(`Chỉnh sửa nhân viên #${staffId}`);
+                }
+
+                // Sort staff
+                function sortStaff() {
+                    const sortBy = document.getElementById('sortBy').value;
+                    const tbody = document.getElementById('staffTableBody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    rows.sort((a, b) => {
+                        let aValue, bValue;
+                        switch (sortBy) {
+                            case 'id':
+                                aValue = parseInt(a.querySelector('.staff-id').textContent.replace('#', ''));
+                                bValue = parseInt(b.querySelector('.staff-id').textContent.replace('#', ''));
+                                break;
+                            case 'name':
+                                aValue = a.querySelector('.staff-name').textContent.toLowerCase();
+                                bValue = b.querySelector('.staff-name').textContent.toLowerCase();
+                                break;
+                            case 'email':
+                                aValue = a.querySelector('.staff-email').textContent.toLowerCase();
+                                bValue = b.querySelector('.staff-email').textContent.toLowerCase();
+                                break;
+                            case 'phone':
+                                aValue = a.querySelector('.staff-phone').textContent;
+                                bValue = b.querySelector('.staff-phone').textContent;
+                                break;
+                            default:
+                                return 0;
+                        }
+
+                        if (typeof aValue === 'string') {
+                            return aValue.localeCompare(bValue);
+                        } else {
+                            return aValue - bValue;
+                        }
+                    });
+                    tbody.innerHTML = '';
+                    rows.forEach(row => tbody.appendChild(row));
+                }
+
+                // Export staff
+                function exportStaff() {
+                    console.log('Exporting staff to Excel...');
+                    alert('Chức năng xuất Excel sẽ được triển khai sau!');
+                }
+
+
+
+                // Close sidebar on mobile
+                document.addEventListener('click', function (event) {
+                    const sidebar = document.getElementById('sidebar');
+                    const mobileBtn = document.querySelector('.mobile-menu-btn');
+                    if (window.innerWidth <= 768 &&
+                            !sidebar.contains(event.target) &&
+                            !mobileBtn.contains(event.target) &&
+                            sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+
+
+            </script>
+        </body>
+    </html>

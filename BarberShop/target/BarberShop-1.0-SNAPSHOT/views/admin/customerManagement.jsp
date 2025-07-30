@@ -305,6 +305,28 @@
             .search-input::placeholder {
                 color: #999;
             }
+            .search-select {
+                background-color: rgba(29, 29, 27, 0.9);
+                color: #FFFFFF;
+                border: 1px solid rgba(218, 165, 32, 0.3);
+                border-radius: 8px;
+                padding: 12px 15px;
+                font-size: 0.9rem;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+
+            .search-select option {
+                background-color: #1d1d1b;
+                color: #FFFFFF;
+            }
+
+            .search-select option:checked {
+                background-color: #FFD700;
+                color: #000000;
+            }
+
 
             /* Customer Table */
             .table-container {
@@ -537,262 +559,275 @@
                 .customer-table td {
                     padding: 10px 8px;
                 }
-            }
-        </style>
-    </head>
-    <body>
-        <%@ page contentType="text/html; charset=UTF-8" %>
+                /* Làm sáng màu chữ trong dropdown */
+                .search-select,
+                .search-select option {
+                    color: #FFFFFF; /* Màu trắng sáng cho văn bản */
+                    background-color: #333333; /* Nền tối cho dropdown */
+                }
 
-        <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="index.jsp">
-                    <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <div class="d-flex gap-2 align-items-center">
-                        <div class="text-warning d-none d-lg-block me-3">
-                            <i class="fas fa-user-shield me-1"></i>
-                             <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
+                .search-select option:checked {
+                    background-color: #FFD700; /* Màu vàng nhạt cho mục được chọn */
+                    color: #000000; /* Màu đen để tương phản */
+                }
+            </style>
+        </head>
+        <body>
+            <%@ page contentType="text/html; charset=UTF-8" %>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+            <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
+                        <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="text-warning d-none d-lg-block me-3">
+                                <i class="fas fa-user-shield me-1"></i>
+                                <span>${sessionScope.adminName != null ? sessionScope.adminName : 'Admin'}</span>
+                            </div>
+                            <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
+                                <i class="fas fa-sign-out-alt me-1"></i>
+                                Đăng xuất
+                            </a>
                         </div>
-                        <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
-                            <i class="fas fa-sign-out-alt me-1"></i>
-                            Đăng xuất
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <div class="dashboard-layout">
-            <!-- Sidebar -->
-            <nav class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <div class="logo">
-                        <i class="fas fa-cut"></i>
-                    </div>
-                    <div class="logo-text">BarberShop Pro</div>
-                    <div class="logo-subtitle">Admin Dashboard</div>
-                </div>
-
-                <div class="nav-menu">
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/customerManagement.jsp" class="nav-link">
-                            <i class="fas fa-users"></i>
-                            <span>Quản lý Khách hàng</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/staffManagement.jsp" class="nav-link active">
-                            <i class="fas fa-user-tie"></i>
-                            <span>Quản lý Nhân viên</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
-                            <i class="fas fa-calendar-check"></i>
-                            <span>Quản lý Lịch hẹn</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/feedbackManagement.jsp" class="nav-link">
-                            <i class="fas fa-comments"></i>
-                            <span>Quản lý Phản hồi</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
-                            <i class="fas fa-store"></i>
-                            <span>Quản lý Dịch Vụ</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/voucherManagement.jsp" class="nav-link">
-                            <i class="fas fa-ticket-alt"></i>
-                            <span>Quản lý Voucher</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Quản lý Nhượng quyền</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Quản lý Doanh thu</span>
-                        </a>
                     </div>
                 </div>
             </nav>
 
-            <!-- Main Content -->
-            <main class="main-content">
-                <!-- Header -->
-                <div class="header">
-                    <div>
-                        <h1><i class="fas fa-users"></i> Quản lý Khách hàng</h1>
-                        <p>Quản lý thông tin và lịch sử dịch vụ của khách hàng</p>
-                    </div>
-                    <div class="header-actions">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Thêm khách hàng
-                        </a>
-                    </div>
-                </div>
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
 
-                <!-- Search and Filter Section -->
-                <div class="search-section">
-                    <div class="search-row">
-                        <div class="search-group">
-                            <label for="searchName">Tìm kiếm theo tên</label>
-                            <input type="text" id="searchName" class="search-input" 
-                                   placeholder="Nhập tên khách hàng..." onkeyup="filterCustomers()">
+            <div class="dashboard-layout">
+                <!-- Sidebar -->
+                <nav class="sidebar" id="sidebar">
+                    <div class="sidebar-header">
+                        <div class="logo">
+                            <i class="fas fa-cut"></i>
                         </div>
-                        <div class="search-group">
-                            <label for="searchEmail">Tìm kiếm theo email</label>
-                            <input type="text" id="searchEmail" class="search-input" 
-                                   placeholder="Nhập email..." onkeyup="filterCustomers()">
-                        </div>
-                        <div class="search-group">
-                            <label for="searchPhone">Tìm kiếm theo SĐT</label>
-                            <input type="text" id="searchPhone" class="search-input" 
-                                   placeholder="Nhập số điện thoại..." onkeyup="filterCustomers()">
-                        </div>
-                        <div class="search-group">
-                            <label for="sortBy">Sắp xếp theo</label>
-                            <select id="sortBy" class="search-select" onchange="sortCustomers()">
-                                <option value="id">ID</option>
-                                <option value="name">Tên</option>
-                                <option value="email">Email</option>
-                                <option value="phone">Số điện thoại</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Customer Table -->
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3 class="table-title">Danh sách khách hàng</h3>
-                        <div class="table-info">
-                            Tổng cộng: <strong id="totalCustomers">5</strong> khách hàng
-                        </div>
+                        <div class="logo-text">BarberShop Pro</div>
+                        <div class="logo-subtitle">Admin Dashboard</div>
                     </div>
 
-                    <table class="customer-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Họ và tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customerTableBody">
-                            <tr>
-                                <td class="customer-id">#001</td>
-                                <td class="customer-name">Nguyễn Văn An</td>
-                                <td class="customer-email">nguyenvanan@email.com</td>
-                                <td class="customer-phone">0901234567</td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editCustomer(1)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanCustomer(1, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
+                    <div class="nav-menu">
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/admin/view-customers" class="nav-link">
+                                <i class="fas fa-users"></i>
+                                <span>Quản lý Khách hàng</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link ">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Quản lý Nhân viên</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Quản lý Lịch hẹn</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/views/admin/feedbackManagement.jsp" class="nav-link">
+                                <i class="fas fa-comments"></i>
+                                <span>Quản lý Phản hồi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
+                                <i class="fas fa-store"></i>
+                                <span>Quản lý Dịch Vụ</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/views/admin/voucherManagement.jsp" class="nav-link">
+                                <i class="fas fa-ticket-alt"></i>
+                                <span>Quản lý Voucher</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Quản lý Doanh thu</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
+                                <i class="fas fa-calendar"></i>
+                                <span>Lịch nghỉ nhân viên</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link">
+                                <i class="fas fa-calendar"></i>
+                                <span>Quản lí ngày nghỉ</span>
+                            </a>
+                        </div>
+                    </div>           
+                </nav>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <!-- Modal Thêm khách hàng -->
+                    <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content text-dark">
+                                <form action="${pageContext.request.contextPath}/add-customer" method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addCustomerModalLabel">Thêm khách hàng mới</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="customer-id">#002</td>
-                                <td class="customer-name">Trần Thị Bình</td>
-                                <td class="customer-email">tranthibinh@email.com</td>
-                                <td class="customer-phone">0912345678</td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editCustomer(2)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanCustomer(2, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Họ</label>
+                                                <input type="text" class="form-control" name="firstName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Tên</label>
+                                                <input type="text" class="form-control" name="lastName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control" name="email" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Số điện thoại</label>
+                                                <input type="text" class="form-control" name="phoneNumber" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Mật khẩu</label>
+                                                <input type="password" class="form-control" name="password" required>
+                                            </div>
+                                        </div>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="customer-id">#003</td>
-                                <td class="customer-name">Lê Hoàng Cường</td>
-                                <td class="customer-email">lehoangcuong@email.com</td>
-                                <td class="customer-phone">0923456789</td>
-                                <td><span class="badge badge-banned">Bị ban</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editCustomer(3)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-unban" onclick="toggleBanCustomer(3, this)" title="Bỏ ban">
-                                            <i class="fas fa-user-check"></i>
-                                        </button>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Lưu khách hàng</button>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="customer-id">#004</td>
-                                <td class="customer-name">Phạm Minh Đức</td>
-                                <td class="customer-email">phamminhduc@email.com</td>
-                                <td class="customer-phone">0934567890</td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editCustomer(4)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanCustomer(4, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="customer-id">#005</td>
-                                <td class="customer-name">Vũ Thị Em</td>
-                                <td class="customer-email">vuthiem@email.com</td>
-                                <td class="customer-phone">0945678901</td>
-                                <td><span class="badge badge-active">Hoạt động</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit" onclick="editCustomer(5)" title="Chỉnh sửa">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-action btn-ban" onclick="toggleBanCustomer(5, this)" title="Ban tài khoản">
-                                            <i class="fas fa-user-slash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="header">
+                        <div>
+                            <h1><i class="fas fa-users"></i> Quản lý Khách hàng</h1>
+                            <p>Quản lý thông tin và lịch sử dịch vụ của khách hàng</p>
+                        </div>
+                        <div class="header-actions">
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                                <i class="fas fa-plus"></i>
+                                Thêm khách hàng
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Section -->
+                    <form class="search-section" method="get" action="${pageContext.request.contextPath}/admin/view-customers">
+                        <div class="search-row" style="display: flex;
+                             flex-wrap: wrap;
+                             gap: 20px;">
+                            <div class="search-group">
+                                <label for="searchName">Tên</label>
+                                <input type="text" name="name" class="search-input" placeholder="Nhập tên...">
+                            </div>
+                            <div class="search-group">
+                                <label for="searchEmail">Email</label>
+                                <input type="text" name="email" class="search-input" placeholder="Nhập email...">
+                            </div>
+                            <div class="search-group">
+                                <label for="searchPhone">SĐT</label>
+                                <input type="text" name="phone" class="search-input" placeholder="Nhập số điện thoại...">
+                            </div>
+                            
+
+                            <div class="search-group" style="align-self: flex-end;">
+                                <button type="submit" class="btn btn-secondary">Tìm kiếm </button>
+                            </div>
+                            <div class="search-group" style="align-self: flex-end;">
+                                <a href="${pageContext.request.contextPath}/admin/view-customers" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Hiển thị tất cả
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </form>
+
+                    <!-- Customer Table -->
+                    <!-- Phần bảng danh sách khách hàng -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 class="table-title">Danh sách khách hàng</h3>
+                            <div class="table-info">
+                                Tổng cộng: <strong id="totalCustomers">${fn:length(userList)}</strong> khách hàng
+                            </div>
+                        </div>
+
+                        <table class="customer-table">
+                            <thead>
+                                <tr>
+                                    <th>Họ và tên</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customerTableBody">
+                                <c:forEach var="user" items="${userList}">
+                                    <tr>
+                                        <td>${user.firstName} ${user.lastName}</td>
+                                        <td>${user.email}</td>
+                                        <td>${user.phoneNumber}</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${user.status == 1}">
+                                                    <span class="badge badge-active">Hoạt động</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge badge-banned">Bị ban</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <form method="post" action="${pageContext.request.contextPath}/ban-customer">
+                                                <input type="hidden" name="id" value="${user.accountId}" />
+                                                <c:choose>
+                                                    <c:when test="${user.status == 1}">
+                                                        <input type="hidden" name="ban" value="true" />
+                                                        <button type="submit" class="btn-action btn-ban">
+                                                            <i class="fas fa-user-slash"></i> Ban
+                                                        </button>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <input type="hidden" name="ban" value="false" />
+                                                        <button type="submit" class="btn-action btn-unban">
+                                                            <i class="fas fa-user-check"></i> Unban
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <!-- Pagination -->
                     <div class="pagination">
@@ -805,164 +840,130 @@
                         <a href="#" class="pagination-btn">5</a>
                         <a href="#" class="pagination-btn">&raquo;</a>
                     </div>
-                </div>
-            </main>
-        </div>
+            </div>
+        </main>
+    </div>
 
-        <script>
-            // Sample customer data for demonstration
-            let customers = [
-                {id: 1, name: 'Nguyễn Văn An', email: 'nguyenvanan@email.com', phone: '0901234567', status: 0},
-                {id: 2, name: 'Trần Thị Bình', email: 'tranthibinh@email.com', phone: '0912345678', status: 0},
-                {id: 3, name: 'Lê Hoàng Cường', email: 'lehoangcuong@email.com', phone: '0923456789', status: 1},
-                {id: 4, name: 'Phạm Minh Đức', email: 'phamminhduc@email.com', phone: '0934567890', status: 0},
-                {id: 5, name: 'Vũ Thị Em', email: 'vuthiem@email.com', phone: '0945678901', status: 0}
-            ];
+    <script>
 
-            // Toggle sidebar for mobile
-            function toggleSidebar() {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.classList.toggle('active');
-            }
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
 
-            // Toggle ban/unban customer
-            function toggleBanCustomer(customerId, buttonElement) {
-                const row = buttonElement.closest('tr');
-                const statusBadge = row.querySelector('.badge');
+        // Toggle ban/unban customer
+        function toggleBanCustomer(customerId, buttonElement) {
+            const row = buttonElement.closest('tr');
+            const statusBadge = row.querySelector('.badge');
 
-                // Find customer in data array
-                const customer = customers.find(c => c.id === customerId);
+            // Find customer in data array
+            const customer = customers.find(c => c.id === customerId);
 
-                if (customer) {
-                    // Toggle status (0 = active, 1 = banned)
-                    customer.status = customer.status === 0 ? 1 : 0;
+            if (customer) {
+                // Toggle status (0 = active, 1 = banned)
+                customer.status = customer.status === 0 ? 1 : 0;
 
-                    if (customer.status === 1) {
-                        // Customer is now banned
-                        statusBadge.className = 'badge badge-banned';
-                        statusBadge.textContent = 'Bị ban';
+                if (customer.status === 1) {
+                    // Customer is now banned
+                    statusBadge.className = 'badge badge-banned';
+                    statusBadge.textContent = 'Bị ban';
 
-                        buttonElement.className = 'btn-action btn-unban';
-                        buttonElement.title = 'Bỏ ban';
-                        buttonElement.innerHTML = '<i class="fas fa-user-check"></i>';
-                    } else {
-                        // Customer is now unbanned
-                        statusBadge.className = 'badge badge-active';
-                        statusBadge.textContent = 'Hoạt động';
+                    buttonElement.className = 'btn-action btn-unban';
+                    buttonElement.title = 'Bỏ ban';
+                    buttonElement.innerHTML = '<i class="fas fa-user-check"></i>';
+                } else {
+                    // Customer is now unbanned
+                    statusBadge.className = 'badge badge-active';
+                    statusBadge.textContent = 'Hoạt động';
 
-                        buttonElement.className = 'btn-action btn-ban';
-                        buttonElement.title = 'Ban tài khoản';
-                        buttonElement.innerHTML = '<i class="fas fa-user-slash"></i>';
-                    }
-
-                    // Here you would typically send an AJAX request to update the database
-
+                    buttonElement.className = 'btn-action btn-ban';
+                    buttonElement.title = 'Ban tài khoản';
+                    buttonElement.innerHTML = '<i class="fas fa-user-slash"></i>';
                 }
+
+                // Here you would typically send an AJAX request to update the database
+
             }
+        }
 
-            // Edit customer function
-            function editCustomer(customerId) {
-                console.log('Edit customer:', customerId);
-                // Implement edit functionality
-                alert(`Chỉnh sửa khách hàng #${customerId}`);
-            }
+        // Edit customer function
+        function editCustomer(customerId) {
+            console.log('Edit customer:', customerId);
+            // Implement edit functionality
+            alert(`Chỉnh sửa khách hàng #${customerId}`);
+        }
 
-            // Filter customers function
-            function filterCustomers() {
-                const nameFilter = document.getElementById('searchName').value.toLowerCase();
-                const emailFilter = document.getElementById('searchEmail').value.toLowerCase();
-                const phoneFilter = document.getElementById('searchPhone').value.toLowerCase();
+        // Filter customers function
 
-                const rows = document.querySelectorAll('#customerTableBody tr');
-                let visibleCount = 0;
 
-                rows.forEach(row => {
-                    const name = row.querySelector('.customer-name').textContent.toLowerCase();
-                    const email = row.querySelector('.customer-email').textContent.toLowerCase();
-                    const phone = row.querySelector('.customer-phone').textContent.toLowerCase();
+        // Sort customers function
+        function sortCustomers() {
+            const sortBy = document.getElementById('sortBy').value;
+            const tbody = document.getElementById('customerTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
 
-                    const nameMatch = name.includes(nameFilter);
-                    const emailMatch = email.includes(emailFilter);
-                    const phoneMatch = phone.includes(phoneFilter);
+            rows.sort((a, b) => {
+                let aValue, bValue;
 
-                    if (nameMatch && emailMatch && phoneMatch) {
-                        row.style.display = '';
-                        visibleCount++;
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+                switch (sortBy) {
+                    case 'id':
+                        aValue = parseInt(a.querySelector('.customer-id').textContent.replace('#', ''));
+                        bValue = parseInt(b.querySelector('.customer-id').textContent.replace('#', ''));
+                        break;
+                    case 'name':
+                        aValue = a.querySelector('.customer-name').textContent.toLowerCase();
+                        bValue = b.querySelector('.customer-name').textContent.toLowerCase();
+                        break;
+                    case 'email':
+                        aValue = a.querySelector('.customer-email').textContent.toLowerCase();
+                        bValue = b.querySelector('.customer-email').textContent.toLowerCase();
+                        break;
+                    case 'phone':
+                        aValue = a.querySelector('.customer-phone').textContent;
+                        bValue = b.querySelector('.customer-phone').textContent;
+                        break;
+                    default:
+                        return 0;
+                }
 
-                document.getElementById('totalCustomers').textContent = visibleCount;
-            }
-
-            // Sort customers function
-            function sortCustomers() {
-                const sortBy = document.getElementById('sortBy').value;
-                const tbody = document.getElementById('customerTableBody');
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-
-                rows.sort((a, b) => {
-                    let aValue, bValue;
-
-                    switch (sortBy) {
-                        case 'id':
-                            aValue = parseInt(a.querySelector('.customer-id').textContent.replace('#', ''));
-                            bValue = parseInt(b.querySelector('.customer-id').textContent.replace('#', ''));
-                            break;
-                        case 'name':
-                            aValue = a.querySelector('.customer-name').textContent.toLowerCase();
-                            bValue = b.querySelector('.customer-name').textContent.toLowerCase();
-                            break;
-                        case 'email':
-                            aValue = a.querySelector('.customer-email').textContent.toLowerCase();
-                            bValue = b.querySelector('.customer-email').textContent.toLowerCase();
-                            break;
-                        case 'phone':
-                            aValue = a.querySelector('.customer-phone').textContent;
-                            bValue = b.querySelector('.customer-phone').textContent;
-                            break;
-                        default:
-                            return 0;
-                    }
-
-                    if (typeof aValue === 'string') {
-                        return aValue.localeCompare(bValue);
-                    } else {
-                        return aValue - bValue;
-                    }
-                });
-
-                // Clear tbody and append sorted rows
-                tbody.innerHTML = '';
-                rows.forEach(row => tbody.appendChild(row));
-            }
-
-            // Export customers function
-            function exportCustomers() {
-                console.log('Exporting customers to Excel...');
-                alert('Chức năng xuất Excel sẽ được triển khai sau!');
-            }
-
-            // Initialize page
-            document.addEventListener('DOMContentLoaded', function () {
-                // Update total customers count
-                const totalRows = document.querySelectorAll('#customerTableBody tr').length;
-                document.getElementById('totalCustomers').textContent = totalRows;
-
-                // Close sidebar when clicking outside on mobile
-                document.addEventListener('click', function (event) {
-                    const sidebar = document.getElementById('sidebar');
-                    const mobileBtn = document.querySelector('.mobile-menu-btn');
-
-                    if (window.innerWidth <= 768 &&
-                            !sidebar.contains(event.target) &&
-                            !mobileBtn.contains(event.target) &&
-                            sidebar.classList.contains('active')) {
-                        sidebar.classList.remove('active');
-                    }
-                });
+                if (typeof aValue === 'string') {
+                    return aValue.localeCompare(bValue);
+                } else {
+                    return aValue - bValue;
+                }
             });
-        </script>
-    </body>
+
+            // Clear tbody and append sorted rows
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Export customers function
+        function exportCustomers() {
+            console.log('Exporting customers to Excel...');
+            alert('Chức năng xuất Excel sẽ được triển khai sau!');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Update total customers count
+            const totalRows = document.querySelectorAll('#customerTableBody tr').length;
+            document.getElementById('totalCustomers').textContent = totalRows;
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function (event) {
+                const sidebar = document.getElementById('sidebar');
+                const mobileBtn = document.querySelector('.mobile-menu-btn');
+
+                if (window.innerWidth <= 768 &&
+                        !sidebar.contains(event.target) &&
+                        !mobileBtn.contains(event.target) &&
+                        sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
 </html>

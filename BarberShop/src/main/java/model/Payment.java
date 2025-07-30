@@ -1,31 +1,54 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Sekiro
- */
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Payment {
     private int id;
-    private int invoiceId;
+    private int appointmentId;
+    private String transactionNo;
+    private String method;
     private float amount;
-    private String paymentMethod;
-    private Date paymentDate;
+    private Timestamp receivedDate;
 
-    // Constructor
-    public Payment(int invoiceId, float amount, String paymentMethod, Date paymentDate) {
-        this.invoiceId = invoiceId;
+    public Payment() {}
+
+    public Payment(int appointmentId, String transactionNo, String method, float amount, Timestamp receivedDate) {
+        this.appointmentId = appointmentId;
+        this.transactionNo = transactionNo;
+        this.method = method;
         this.amount = amount;
-        this.paymentMethod = paymentMethod;
-        this.paymentDate = paymentDate;
+        this.receivedDate = receivedDate;
     }
 
-    // Getters and Setters
+    // Getters & Setters
+    public int getAppointmentId() {
+        return appointmentId;
+    }
+
+    public void setAppointmentId(int appointmentId) {
+        this.appointmentId = appointmentId;
+    }
+
+    public String getTransactionNo() {
+        return transactionNo;
+    }
+
+    public void setTransactionNo(String transactionNo) {
+        this.transactionNo = transactionNo;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public float getAmount() {
+        return amount;
+    }
+
     public int getId() {
         return id;
     }
@@ -34,36 +57,15 @@ public class Payment {
         this.id = id;
     }
 
-    public int getInvoiceId() {
-        return invoiceId;
-    }
-
-    public void setInvoiceId(int invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
-    public float getAmount() {
-        return amount;
-    }
-
     public void setAmount(float amount) {
         this.amount = amount;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
+    public Timestamp getReceivedDate() {
+        return receivedDate;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public Date getPaymentDate() {
-        return paymentDate;
-    }
-
-    public void setPaymentDate(Date paymentDate) {
-        this.paymentDate = paymentDate;
+    public void setReceivedDate(Timestamp receivedDate) {
+        this.receivedDate = receivedDate;
     }
 }
-

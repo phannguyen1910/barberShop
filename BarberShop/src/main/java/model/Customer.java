@@ -24,6 +24,17 @@ public class Customer extends Account {
         this.lastName = lastName;
     }
 
+    public Customer(int id, String firstName, String lastName, String email, String phoneNumber) {
+        super(email, phoneNumber);
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    
+    
+    
+
     public Customer(int accountId, String firstName, String lastName) {
         this.accountId = accountId;
         this.firstName = firstName;

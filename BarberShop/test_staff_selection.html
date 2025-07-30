@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Staff Selection</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .result {
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 3px;
+        margin-top: 10px;
+        white-space: pre-wrap;
+      }
+      .staff-card {
+        display: inline-block;
+        margin: 5px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+      }
+      .staff-card.selected {
+        background-color: #007bff;
+        color: white;
+      }
+      .time-slot {
+        display: inline-block;
+        margin: 5px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .time-slot.disabled {
+        background-color: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+      }
+      .time-slot.selected {
+        background-color: #007bff;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Staff Selection and Data Fetching</h1>
+
+    <div class="test-section">
+      <h3>Step 1: Select Staff</h3>
+      <div id="staffSelection">
+        <div class="staff-card" onclick="selectStaff(this, 1)">
+          <strong>Staff 1</strong><br />
+          <small>Branch 1</small>
+        </div>
+        <div class="staff-card" onclick="selectStaff(this, 2)">
+          <strong>Staff 2</strong><br />
+          <small>Branch 1</small>
+        </div>
+      </div>
+      <p>Selected Staff ID: <span id="selectedStaffId">None</span></p>
+      <p>Hidden Staff ID: <span id="hiddenStaffIdValue">None</span></p>
+    </div>
+
+    <div class="test-section">
+      <h3>Step 2: Select Date</h3>
+      <label>Date: <input type="date" id="appointmentDate" /></label>
+      <p>Selected Date: <span id="selectedDate">None</span></p>
+    </div>
+
+    <div class="test-section">
+      <h3>Step 3: Test Fetch</h3>
+      <button onclick="testFetch()">Test Fetch Data</button>
+      <div id="fetchResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+      <h3>Step 4: Generate Time Slots</h3>
+      <button onclick="generateTimeSlots()">Generate Time Slots</button>
+      <div id="timeSlotsContainer"></div>
+    </div>
+
+    <script>
+      // Set default date to today
+      document.getElementById("appointmentDate").value = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      let selectedStaffId = null;
+      let selectedTime = null;
+      let occupiedSlots = [];
+
+      function selectStaff(cardElement, staffId) {
+        // Remove selection from all cards
+        document.querySelectorAll(".staff-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+
+        // Add selection to clicked card
+        cardElement.classList.add("selected");
+        selectedStaffId = staffId;
+        document.getElementById("selectedStaffId").textContent = staffId;
+        document.getElementById("hiddenStaffIdValue").textContent = staffId;
+
+        console.log(`Selected staff: ${staffId}`);
+      }
+
+      function updateSelectedDate() {
+        const date = document.getElementById("appointmentDate").value;
+        document.getElementById("selectedDate").textContent = date;
+      }
+
+      // Update date display when date changes
+      document
+        .getElementById("appointmentDate")
+        .addEventListener("change", updateSelectedDate);
+      updateSelectedDate(); // Initial update
+
+      async function testFetch() {
+        const staffId = selectedStaffId;
+        const appointmentDate =
+          document.getElementById("appointmentDate").value;
+        const resultDiv = document.getElementById("fetchResult");
+
+        if (!staffId) {
+          resultDiv.textContent = "Vui lòng chọn staff trước";
+          return;
+        }
+
+        if (!appointmentDate) {
+          resultDiv.textContent = "Vui lòng chọn ngày trước";
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `/BarberShop/StaffAvailabilityServlet?staffId=${staffId}&appointmentDate=${appointmentDate}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          occupiedSlots = await response.json();
+          resultDiv.textContent =
+            `✅ Fetch thành công!\n` +
+            `Staff ID: ${staffId}\n` +
+            `Date: ${appointmentDate}\n` +
+            `Response: ${JSON.stringify(occupiedSlots, null, 2)}`;
+
+          console.log("Fetch successful:", occupiedSlots);
+        } catch (error) {
+          resultDiv.textContent = `❌ Error: ${error.message}`;
+          console.error("Fetch error:", error);
+        }
+      }
+
+      async function generateTimeSlots() {
+        const staffId = selectedStaffId;
+        const appointmentDate =
+          document.getElementById("appointmentDate").value;
+        const container = document.getElementById("timeSlotsContainer");
+
+        if (!staffId) {
+          container.innerHTML = "<p>Vui lòng chọn staff trước</p>";
+          return;
+        }
+
+        if (!appointmentDate) {
+          container.innerHTML = "<p>Vui lòng chọn ngày trước</p>";
+          return;
+        }
+
+        // Get occupied slots if not already loaded
+        if (occupiedSlots.length === 0) {
+          try {
+            const response = await fetch(
+              `/BarberShop/StaffAvailabilityServlet?staffId=${staffId}&appointmentDate=${appointmentDate}`
+            );
+            occupiedSlots = await response.json();
+            console.log("Occupied slots:", occupiedSlots);
+          } catch (error) {
+            console.error("Error fetching occupied slots:", error);
+            occupiedSlots = [];
+          }
+        }
+
+        // Generate time slots
+        container.innerHTML = "";
+        const startHour = 8.5; // 8:30 AM
+        const endHour = 20.5; // 8:30 PM
+
+        for (
+          let hour = Math.floor(startHour);
+          hour <= Math.floor(endHour);
+          hour++
+        ) {
+          for (let minute of [0, 30]) {
+            // Skip times before startHour
+            if (hour === Math.floor(startHour) && minute < (startHour % 1) * 60)
+              continue;
+            // Skip times after endHour
+            if (hour === Math.floor(endHour) && minute > (endHour % 1) * 60)
+              continue;
+
+            const label =
+              hour.toString().padStart(2, "0") +
+              ":" +
+              (minute === 0 ? "00" : "30");
+            const timeValueMinutes = hour * 60 + minute;
+
+            // Check if time is occupied
+            let isDisabled = false;
+            if (occupiedSlots && occupiedSlots.length > 0) {
+              const isOccupied = occupiedSlots.some((slot) => {
+                const slotStartMinutes =
+                  parseInt(slot.startTime.split(":")[0]) * 60 +
+                  parseInt(slot.startTime.split(":")[1]);
+                const slotEndMinutes =
+                  parseInt(slot.endTime.split(":")[0]) * 60 +
+                  parseInt(slot.endTime.split(":")[1]);
+                return (
+                  timeValueMinutes >= slotStartMinutes &&
+                  timeValueMinutes < slotEndMinutes
+                );
+              });
+
+              if (isOccupied) {
+                isDisabled = true;
+              }
+            }
+
+            const btn = document.createElement("button");
+            btn.className = "time-slot" + (isDisabled ? " disabled" : "");
+            btn.innerText = label;
+            btn.disabled = isDisabled;
+
+            if (!isDisabled) {
+              btn.addEventListener("click", () => {
+                document
+                  .querySelectorAll(".time-slot")
+                  .forEach((b) => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                selectedTime = label;
+                console.log(`Selected time: ${label}`);
+              });
+            }
+
+            container.appendChild(btn);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

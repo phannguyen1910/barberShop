@@ -42,8 +42,18 @@ public abstract class Account {
         this.phoneNumber = phoneNumber;
     }
 
+    public Account(String email, String phoneNumber, int status) {
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+    }
+    
+    
+
     public Account() {
     }
+    
+    
     
     
     // Getters and Setters

@@ -1,838 +1,889 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hồ Sơ Cá Nhân - Cut & Styles</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    <style>
-        :root {
-            --primary-gold: #D4AF37;
-            --dark-charcoal: #1a1a1a;
-            --light-gray: #f8f9fa;
-            --text-muted: #6c757d;
-            --shadow-luxury: 0 12px 25px rgba(0, 0, 0, 0.1);
-            --shadow-soft: 0 8px 25px rgba(212, 175, 55, 0.15);
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.2);
-        }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            height: 100vh;
-            overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
-            line-height: 1.5;
-            color: var(--dark-charcoal);
-            background: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80') center center/cover fixed no-repeat;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .content-overlay {
-            background: transparent;
-            flex: 1;
-            padding: 2rem 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .custom-navbar {
-            background-color: #201E15 !important;
-            backdrop-filter: blur(10px);
-        }
-
-        .custom-navbar .navbar-brand {
-            color: #ffffff !important;
-            font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: 1px;
-        }
-
-        .custom-navbar .nav-link {
-            color: #f5f5f5 !important;
-            font-weight: 500;
-            font-size: 1.05rem;
-            letter-spacing: 0.5px;
-            position: relative;
-            padding-bottom: 6px;
-            transition: color 0.2s ease;
-        }
-
-        .custom-navbar .nav-link::after {
-            content: "";
-            position: absolute;
-            width: 0%;
-            height: 2px;
-            left: 0;
-            bottom: 0;
-            background-color: #d4af37;
-            transition: width 0.3s ease-in-out;
-        }
-
-        .custom-navbar .nav-link:hover::after,
-        .custom-navbar .nav-link:focus::after {
-            width: 100%;
-        }
-
-        .custom-navbar .nav-link:hover {
-            color: #ffe58a !important;
-        }
-
-        .custom-navbar .btn-outline-primary {
-            border: 1px solid #d4af37;
-            color: #d4af37;
-            font-weight: 500;
-            padding: 6px 16px;
-            transition: all 0.3s ease;
-        }
-
-        .custom-navbar .btn-outline-primary:hover {
-            background-color: #d4af37;
-            color: #201E15;
-        }
-
-        .profile-container {
-            max-width: 800px;
-            margin: 1rem auto;
-            padding: 2.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-luxury);
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .profile-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-gold), #B8860B);
-            border-radius: 25px 25px 0 0;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-gold), #B8860B);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: white;
-            font-size: 3rem;
-            box-shadow: var(--shadow-soft);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-avatar::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transform: rotate(-45deg);
-            animation: shimmer 3s infinite;
-        }
-
-
-        .profile-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: var(--dark-charcoal);
-            margin-bottom: 0.5rem;
-        }
-
-        .profile-subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .golden-line {
-            width: 100px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
-            margin: 1rem auto;
-            border-radius: 2px;
-        }
-
-        .profile-field {
-            margin-bottom: 1.8rem;
-            padding: 1.2rem;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .profile-field:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .profile-field label {
-            font-weight: 600;
-            color: var(--dark-charcoal);
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            font-size: 0.95rem;
-            letter-spacing: 0.3px;
-        }
-
-        .profile-field label i {
-            color: var(--primary-gold);
-            margin-right: 0.5rem;
-            width: 20px;
-        }
-
-        .profile-field .value {
-            font-size: 1.1rem;
-            color: var(--dark-charcoal);
-            font-weight: 500;
-            padding: 0.5rem 0;
-        }
-
-        .profile-field input {
-            display: none;
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 500;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-            color: var(--dark-charcoal);
-        }
-
-        .profile-field input:focus {
-            outline: none;
-            border-color: var(--primary-gold);
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
-            background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-1px);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-custom {
-            padding: 0.8rem 1.8rem;
-            border-radius: 30px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-custom::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
-            transition: left 0.6s;
-        }
-
-        .btn-custom:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-gold), #B8860B);
-            color: white;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .btn-primary-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
-            background: linear-gradient(135deg, #E6C547, var(--primary-gold));
-            color: white;
-        }
-
-        .btn-warning-custom {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white;
-            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
-        }
-
-        .btn-warning-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(245, 87, 108, 0.4);
-            color: white;
-        }
-
-        .btn-info-custom {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: white;
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
-        }
-
-        .btn-info-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
-            color: white;
-        }
-
-        .btn-secondary-custom {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--dark-charcoal);
-            border: 2px solid rgba(212, 175, 55, 0.5);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary-custom:hover {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: var(--primary-gold);
-            color: var(--dark-charcoal);
-            transform: translateY(-3px);
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: var(--shadow-luxury);
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-gold), #B8860B);
-            color: white;
-            border-radius: 20px 20px 0 0;
-            border-bottom: none;
-            padding: 1.5rem;
-        }
-
-        .modal-header .btn-close {
-            filter: invert(1);
-            opacity: 0.8;
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-footer {
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 1.5rem 2rem;
-        }
-
-        .form-control {
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 10px;
-            padding: 0.8rem 1rem;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-gold);
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        .edit-mode .profile-field .value {
-            display: none;
-        }
-
-        .edit-mode .profile-field input {
-            display: block;
-        }
-
-        .save-buttons {
-            display: none;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .edit-mode .save-buttons {
-            display: flex;
-        }
-
-        .edit-mode .action-buttons {
-            display: none;
-        }
-
-        .alert-custom {
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            border: none;
-            backdrop-filter: blur(10px);
-            font-weight: 500;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.9), rgba(32, 201, 151, 0.9));
-            color: white;
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(200, 35, 51, 0.9));
-            color: white;
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .profile-container {
-                padding: 1.5rem;
-                margin: 0.5rem;
-                max-width: 95%;
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Profile - Cut&Styles Barber</title>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/profile.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <style>
+            /* General styles for the Profile Page to match overall theme */
+            body {
+                font-family: 'Inter', sans-serif;
+                background: linear-gradient(rgba(29, 29, 27, 0.7), rgba(29, 29, 27, 0.7)),
+                    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+                min-height: 100vh;
+                color: #e0e0e0;
             }
 
-            .profile-title {
-                font-size: 2rem;
+            .section-title {
+                font-family: 'Playfair Display', serif;
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #DAA520;
+                text-align: center;
+                margin-bottom: 2.5rem;
+                position: relative;
+                padding-bottom: 0.5rem;
             }
 
-            .btn-custom {
-                padding: 0.7rem 1.5rem;
-                font-size: 0.9rem;
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background-color: #DAA520;
+                border-radius: 2px;
+            }
+
+            /* Modern Profile Card */
+            .profile-card {
+                background: linear-gradient(135deg, #DAA520 0%, #B8860B 100%);
+                border-radius: 25px;
+                padding: 0;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                color: white;
+                overflow: hidden;
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .profile-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+                pointer-events: none;
+            }
+
+            .profile-header {
+                padding: 40px 30px 30px;
+                text-align: center;
+                position: relative;
+                z-index: 2;
+            }
+
+            .profile-avatar {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                border: 4px solid rgba(255, 255, 255, 0.3);
+                margin: 0 auto 20px;
+                overflow: hidden;
+                background: rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3rem;
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            .profile-avatar img {
                 width: 100%;
-                max-width: 280px;
+                height: 100%;
+                object-fit: cover;
             }
 
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
+            .profile-name {
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             }
 
-            .save-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .profile-container {
-                padding: 1rem;
+            .profile-role {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin-bottom: 25px;
             }
 
-            .profile-title {
-                font-size: 1.8rem;
+            .profile-edit-btn {
+                background: rgba(255, 255, 255, 0.15);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                padding: 12px 30px;
+                border-radius: 25px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                text-decoration: none;
+                display: inline-block;
             }
 
-            .profile-field {
-                padding: 1rem;
+            .profile-edit-btn:hover {
+                background: rgba(255, 255, 255, 0.25);
+                border-color: rgba(255, 255, 255, 0.5);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             }
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/index.jsp">
-                <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">                   
-                Cut&Styles Barber
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/index.jsp">Trang chủ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/views/common/aboutUs.jsp">Về chúng tôi</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/views/common/franchise.jsp">Nhượng quyền</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/views/booking/booking.jsp">Đặt lịch</a>
-                    </li>
-                </ul>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-outline-primary" href="${pageContext.request.contextPath}/views/auth/login.jsp">Đăng nhập</a>
-                    <a class="btn btn-outline-primary" href="${pageContext.request.contextPath}/views/auth/register.jsp">Đăng ký</a>
-                </div>
-            </div>
-        </div>
-    </nav>
 
-    <div class="content-overlay">
-        <div class="container">
-            <div class="profile-container">
-                <!-- Alert Messages -->
-                <c:if test="${not empty successMessage}">
-                    <div class="alert alert-success alert-custom" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>${successMessage}
-                    </div>
-                </c:if>
+            /* Profile Info Cards */
+            .profile-info {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 0 0 25px 25px;
+                padding: 30px;
+                color: #333;
+                position: relative;
+                z-index: 2;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+                margin-bottom: 30px;
+            }
+
+            .info-item {
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                border-left: 4px solid #DAA520;
+                transition: all 0.3s ease;
+            }
+
+            .info-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            }
+
+            .info-icon {
+                color: #DAA520;
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+            }
+
+            .info-label {
+                font-size: 0.9rem;
+                color: #666;
+                margin-bottom: 5px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #333;
+                word-break: break-word;
+            }
+
+            .history-btn {
+                background: linear-gradient(135deg, #DAA520, #B8860B);
+                border: none;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-weight: 600;
+                font-size: 1.1rem;
+                width: 100%;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3);
+            }
+
+            .history-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(218, 165, 32, 0.4);
+                background: linear-gradient(135deg, #B8860B, #DAA520);
+            }
+
+            .status-unknown {
+                color: gray;
+                font-weight: bold;
+            }
+
+            .alert-success {
+                background-color: #d4edda;
+                color: #155724;
+                border-color: #badbcc;
+                text-align: center;
+                margin-bottom: 1rem;
+                border-radius: 8px;
+                padding: 15px;
+            }
+
+            .alert-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+                text-align: center;
+                margin-bottom: 1rem;
+                border-radius: 8px;
+                padding: 15px;
+            }
+
+            /* Enhanced Modal Styles - White background with black text */
+            #historyTableModal .modal-content {
+                background: #ffffff;
+                border-radius: 15px;
+                border: 2px solid #DAA520;
+                color: #000000;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            }
+
+            #historyTableModal .modal-header {
+                background: linear-gradient(135deg, #DAA520, #B8860B);
+                border-bottom: none;
+                border-radius: 15px 15px 0 0;
+                padding: 20px 30px;
+            }
+
+            #historyTableModal .modal-title {
+                font-weight: 700;
+                color: #ffffff;
+                font-family: 'Playfair Display', serif;
+                font-size: 1.5rem;
+            }
+
+            #historyTableModal .btn-close {
+                filter: brightness(0) invert(1);
+            }
+
+            #historyTableModal .modal-body {
+                padding: 30px;
+                background: #ffffff;
+            }
+
+            #historyTableModal .table {
+                color: #000000;
+                margin-bottom: 0;
+                border-collapse: separate;
+                border-spacing: 0;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            #historyTableModal .table thead th {
+                background: linear-gradient(135deg, #DAA520, #B8860B);
+                color: #ffffff;
+                border: none;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: 600;
+                padding: 15px 12px;
+                font-size: 0.95rem;
+            }
+
+            #historyTableModal .table thead th:first-child {
+                border-top-left-radius: 10px;
+            }
+
+            #historyTableModal .table thead th:last-child {
+                border-top-right-radius: 10px;
+            }
+
+            #historyTableModal .table tbody tr td {
+                vertical-align: middle;
+                text-align: center;
+                padding: 12px;
+                border-bottom: 1px solid #e9ecef;
+                font-size: 0.9rem;
+            }
+
+            #historyTableModal .table tbody tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+
+            #historyTableModal .table tbody tr:hover {
+                background-color: #fff3cd;
+                transform: translateY(-1px);
+                transition: all 0.2s ease;
+            }
+
+            #historyTableModal .modal-footer {
+                background: #f8f9fa;
+                border-top: 1px solid #dee2e6;
+                border-radius: 0 0 15px 15px;
+                padding: 20px 30px;
+            }
+
+            /* Status styles with better contrast for white background */
+            .status-pending {
+                color: #ff8c00;
+                font-weight: bold;
+                background: #fff3cd;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+            }
+            .status-confirmed {
+                color: #28a745;
+                font-weight: bold;
+                background: #d4edda;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+            }
+            .status-completed {
+                color: #17a2b8;
+                font-weight: bold;
+                background: #d1ecf1;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+            }
+            .status-cancelled {
+                color: #dc3545;
+                font-weight: bold;
+                background: #f8d7da;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+            }
+
+            /* Cancel button styles */
+            .btn-cancel {
+                background-color: #dc3545;
+                border-color: #dc3545;
+                color: #ffffff;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .btn-cancel:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+                color: #ffffff;
+                transform: scale(1.05);
+            }
+
+            .btn-cancel:disabled {
+                background-color: #6c757d;
+                border-color: #6c757d;
+                color: #ffffff;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
+            /* Loading message styles */
+            #noHistoryMessage {
+                color: #6c757d;
+                font-style: italic;
+                padding: 40px 20px;
+                text-align: center;
+                font-size: 1.1rem;
+            }
+
+            /* Footer Styles */
+            .footer {
+                background: rgba(29, 29, 27, 0.95);
+                backdrop-filter: blur(10px);
+                color: #f5f5f5;
+                padding: 40px 0;
+                margin-top: 60px;
+                border-top: 2px solid rgba(218, 165, 32, 0.3);
+            }
+
+            .footer .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 15px;
+            }
+
+            .footer-col {
+                margin-bottom: 30px;
+            }
+
+            .footer-logo {
+                width: 120px;
+                margin-bottom: 20px;
+                filter: brightness(1.2);
+            }
+
+            .footer-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #DAA520;
+                margin-bottom: 20px;
+            }
+
+            .footer-links {
+                list-style: none;
+                padding: 0;
+            }
+
+            .footer-links li {
+                margin-bottom: 10px;
+            }
+
+            .footer-links a {
+                color: #cccccc;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .footer-links a:hover {
+                color: #DAA520;
+            }
+
+            .footer-contact p {
+                color: #cccccc;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .footer-contact i {
+                margin-right: 10px;
+                color: #DAA520;
+                font-size: 1.1em;
+                flex-shrink: 0;
+            }
+
+            .footer-bottom {
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-top: 20px;
+                margin-top: 20px;
+                color: #999999;
+                font-size: 0.9rem;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .section-title {
+                    font-size: 2rem;
+                }
                 
-                <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-danger alert-custom" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>${errorMessage}
-                    </div>
-                </c:if>
+                .profile-card {
+                    margin: 0 10px;
+                }
+                
+                .profile-header {
+                    padding: 30px 20px 20px;
+                }
+                
+                .profile-name {
+                    font-size: 1.5rem;
+                }
+                
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                }
+                
+                .info-item {
+                    padding: 15px;
+                }
+                
+                .footer-col {
+                    text-align: center;
+                }
+                
+                .footer-contact p {
+                    justify-content: center;
+                }
+                
+                .footer-logo {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
 
-                <!-- Profile Header -->
-                <div class="profile-header">
-                    <div class="profile-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h2 class="profile-title">Hồ Sơ Cá Nhân</h2>
-                    <p class="profile-subtitle">Quản lý thông tin tài khoản của bạn</p>
-                    <div class="golden-line"></div>
-                </div>
+                #historyTableModal .modal-body {
+                    padding: 15px;
+                }
 
-                <!-- Profile Form -->
-                <form id="profileForm" action="EditProfileServlet" method="post">
-                    <div class="row">
-                        
-                        <div class="col-md-6">
-                            <div class="profile-field">
-                                <label><i class="fas fa-user"></i>Họ</label>
-                                <div class="value" id="lastName-display">${user.lastName}</div>
-                                <input type="text" name="lastName" id="lastName" value="${user.lastName}" required>
+                #historyTableModal .table {
+                    font-size: 0.8rem;
+                }
+
+                .btn-cancel {
+                    font-size: 0.7rem;
+                    padding: 4px 8px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <c:if test="${not empty message}">
+            <div class="alert alert-success">${message}</div>
+        </c:if>
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger">${error}</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger">${errorMessage}</div>
+        </c:if>
+
+        <jsp:include page="/views/common/navbar.jsp"/>
+
+        <div class="container mt-5">
+            <h2 class="section-title">Thông tin cá nhân</h2>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <c:choose>
+                                    <c:when test="${sessionScope.customer.role == 'Staff' && not empty sessionScope.customer.img}">
+                                        <img src="${pageContext.request.contextPath}/${sessionScope.customer.img}" alt="Profile Picture">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i class="fas fa-user"></i>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
+                            <div class="profile-name">
+                                ${sessionScope.customer.lastName} ${sessionScope.customer.firstName}
+                            </div>
+                            <div class="profile-role">
+                                <c:choose>
+                                    <c:when test="${sessionScope.customer.role == 'Staff'}">
+                                        Nhân viên
+                                    </c:when>
+                                    <c:otherwise>
+                                        Khách hàng
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/views/common/editProfile.jsp" class="profile-edit-btn">
+                                <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin
+                            </a>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="profile-field">
-                                <label><i class="fas fa-user"></i>Tên</label>
-                                <div class="value" id="firstName-display">${user.firstName}</div>
-                                <input type="text" name="firstName" id="firstName" value="${user.firstName}" required>
+                        <div class="profile-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="info-label">Họ và tên</div>
+                                    <div class="info-value">${sessionScope.customer.lastName} ${sessionScope.customer.firstName}</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">${sessionScope.customer.email}</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="info-label">Số điện thoại</div>
+                                    <div class="info-value">${sessionScope.customer.phoneNumber}</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="info-label">Số đơn đã đặt</div>
+                                    <div class="info-value">${quantityAppointment}</div>
+                                </div>
                             </div>
+                            
+                            <button id="showHistoryModalBtn" class="history-btn" data-bs-toggle="modal" data-bs-target="#historyTableModal">
+                                <i class="fas fa-history me-2"></i>Lịch sử đặt lịch
+                            </button>
                         </div>
                     </div>
-
-                    <div class="profile-field">
-                        <label><i class="fas fa-envelope"></i>Email</label>
-                        <div class="value">Cuong123@gmail.com</div>
-                        <input style="text" name="email" value="Cuong123@gmail.com" readonly>
-                    </div>
-
-                    <div class="profile-field">
-                        <label><i class="fas fa-phone"></i>Số Điện Thoại</label>
-                        <div class="value" id="phone-display">${user.phone}</div>
-                        <input type="tel" name="phone" id="phone" value="${user.phone}" required>
-                    </div>
-
-                    <div class="profile-field">
-                        <label><i class="fas fa-lock"></i>Mật Khẩu</label>
-                        <div class="value">••••••••</div>
-                    </div>
-
-                    <!-- Save/Cancel Buttons (Hidden by default) -->
-                    <div class="save-buttons">
-                        <button type="submit" class="btn-custom btn-primary-custom">
-                            <i class="fas fa-save me-2"></i>Lưu Thay Đổi
-                        </button>
-                        <button type="button" class="btn-custom btn-secondary-custom" onclick="cancelEdit()">
-                            <i class="fas fa-times me-2"></i>Hủy
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <button class="btn-custom btn-primary-custom" onclick="enableEdit()">
-                        <i class="fas fa-edit me-2"></i>Chỉnh Sửa Hồ Sơ
-                    </button>
-                    <button class="btn-custom btn-warning-custom" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                        <i class="fas fa-key me-2"></i>Đổi Mật Khẩu
-                    </button>
-                    <a href="BookingHistoryServlet" class="btn-custom btn-info-custom">
-                        <i class="fas fa-history me-2"></i>Lịch Sử Đặt Lịch
-                    </a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="changePasswordModalLabel">
-                        <i class="fas fa-key me-2"></i>Đổi Mật Khẩu
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="changePasswordForm" action="ChangePasswordServlet" method="post">
+        <%-- Modal Dialog cho Lịch sử đặt lịch --%>
+        <div class="modal fade" id="historyTableModal" tabindex="-1" aria-labelledby="historyTableModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="historyTableModalLabel">
+                            <i class="fas fa-history me-2"></i>Lịch sử đặt lịch của bạn
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">
-                                <i class="fas fa-lock me-2 text-warning"></i>Mật Khẩu Hiện Tại
-                            </label>
-                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required placeholder="Nhập mật khẩu hiện tại">
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">
-                                <i class="fas fa-key me-2 text-success"></i>Mật Khẩu Mới
-                            </label>
-                            <input type="password" class="form-control" id="newPassword" name="newPassword" required minlength="6" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)">
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">
-                                <i class="fas fa-check-circle me-2 text-info"></i>Xác Nhận Mật Khẩu Mới
-                            </label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required placeholder="Nhập lại mật khẩu mới">
-                        </div>
-                        <div id="passwordError" class="alert alert-danger d-none" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <span id="passwordErrorMessage"></span>
+                        <div id="historyTableContainer" class="table-responsive">
+                            <p id="noHistoryMessage" class="text-center">Đang tải lịch sử đặt lịch...</p>
+                            <table class="table" id="historyTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Thời gian</th>
+                                        <th>Dịch vụ</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th>Nhân viên</th>
+                                        <th>Chi nhánh</th>
+                                        <th>Thao tác</th>
+                                        <th>Thanh toán còn lại</th>
+                                        <th>Feedback</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>Hủy
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-check me-2"></i>Xác Nhận
+                            <i class="fas fa-times me-1"></i>Đóng
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function enableEdit() {
-            document.querySelector('.profile-container').classList.add('edit-mode');
-        }
-
-        function cancelEdit() {
-            document.querySelector('.profile-container').classList.remove('edit-mode');
-            // Reset form values
-            document.getElementById('firstName').value = '${user.firstName}';
-            document.getElementById('lastName').value = '${user.lastName}';
-            document.getElementById('phone').value = '${user.phone}';
-        }
-
-        // Password confirmation validation
-        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorDiv = document.getElementById('passwordError');
-            const errorMessage = document.getElementById('passwordErrorMessage');
-
-            if (newPassword !== confirmPassword) {
-                e.preventDefault();
-                errorMessage.textContent = 'Mật khẩu mới và xác nhận mật khẩu không khớp!';
-                errorDiv.classList.remove('d-none');
-            } else if (newPassword.length < 6) {
-                e.preventDefault();
-                errorMessage.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
-                errorDiv.classList.remove('d-none');
-            } else {
-                errorDiv.classList.add('d-none');
-            }
-        });
-
-        // Hide password error when user types
-        document.getElementById('newPassword').addEventListener('input', function() {
-            document.getElementById('passwordError').classList.add('d-none');
-        });
-
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            document.getElementById('passwordError').classList.add('d-none');
-        });
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert-custom');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-20px)';
-                setTimeout(function() {
-                    alert.remove();
-                }, 500);
-            });
-        }, 5000);
-
-        // Add smooth scrolling and animation effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add hover effects to profile fields
-            const profileFields = document.querySelectorAll('.profile-field');
-            profileFields.forEach(field => {
-                field.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.transition = 'all 0.3s ease';
-                });
-                
-                field.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+        <%@ include file="/views/common/footer.jsp" %>
+        
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const changePasswordBtn = document.getElementById('changePasswordBtn');
-                const popupOverlay = document.getElementById('popupOverlay');
-                const popupBox = document.getElementById('popupBox');
-                const confirmPopupBtn = document.getElementById('confirmPopupBtn');
-                const cancelPopupBtn = document.getElementById('cancelPopupBtn');
-                const changePasswordForm = document.getElementById('changePasswordForm');
-                const currentPasswordInput = document.getElementById('currentPassword');
-                const newPasswordInput = document.getElementById('newPassword');
-                const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+                const showHistoryModalBtn = document.getElementById('showHistoryModalBtn');
+                const historyTableBody = document.querySelector('#historyTable tbody');
+                const historyTable = document.getElementById('historyTable');
+                const noHistoryMessage = document.getElementById('noHistoryMessage');
 
-                function showPopup() {
-                    popupOverlay.style.display = 'block';
-                    popupBox.style.display = 'block';
-                }
+                showHistoryModalBtn.addEventListener('click', function () {
+                    // Hiển thị thông báo "Đang tải..." và ẩn bảng cũ
+                    noHistoryMessage.textContent = 'Đang tải lịch sử đặt lịch...';
+                    noHistoryMessage.style.display = 'block';
+                    historyTable.style.display = 'none';
+                    historyTableBody.innerHTML = ''; // Xóa nội dung cũ trong bảng
 
-                function hidePopup() {
-                    popupOverlay.style.display = 'none';
-                    popupBox.style.display = 'none';
-                    changePasswordForm.reset();
-                }
+                    fetch('${pageContext.request.contextPath}/HistoryAppointmentServlet')
+                            .then(response => {
+                                return response.text().then(text => {
+                                    if (!response.ok) {
+                                        try {
+                                            const errorData = JSON.parse(text);
+                                            if (response.status === 401 && errorData.error) {
+                                                throw new Error(errorData.error);
+                                            }
+                                            throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + (errorData.message || JSON.stringify(errorData)));
+                                        } catch (e) {
+                                            console.error("Raw Server Error Response (not JSON):", text);
+                                            const errorMessage = text.substring(0, Math.min(text.length, 200));
+                                            throw new Error(`Lỗi Server (${response.status} ${response.statusText}): ` + errorMessage + '...');
+                                        }
+                                    }
+                                    return JSON.parse(text);
+                                });
+                            })
+                            .then(data => {
+                                noHistoryMessage.style.display = 'none';
+                                if (data && data.length > 0) {
+                                    historyTable.style.display = 'table';
+                                    data.forEach(appointment => {
+                                        const row = historyTableBody.insertRow();
 
-                function showSuccessMessage(message) {
-                    const successDiv = document.createElement('div');
-                    successDiv.className = 'success-message';
-                    successDiv.textContent = message;
-                    document.body.appendChild(successDiv);
-                    setTimeout(() => {
-                        successDiv.remove();
-                    }, 3000);
-                }
+                                        row.insertCell().textContent = formatDateTime(appointment.appointmentTime);
+                                        row.insertCell().textContent = appointment.services;
 
-                changePasswordBtn.addEventListener('click', showPopup);
-                cancelPopupBtn.addEventListener('click', hidePopup);
-                popupOverlay.addEventListener('click', function (e) {
-                    if (e.target === popupOverlay) {
-                        hidePopup();
-                    }
+                                        const totalAmountCell = row.insertCell();
+                                        totalAmountCell.textContent = formatCurrency(appointment.totalAmount);
+
+                                        // Trạng thái
+                                        const statusCell = row.insertCell();
+                                        const statusSpan = document.createElement('span');
+                                        statusSpan.textContent = appointment.status;
+                                        statusSpan.className = getStatusClass(appointment.status);
+                                        statusCell.appendChild(statusSpan);
+
+                                        row.insertCell().textContent = appointment.staffName;
+                                        row.insertCell().textContent = appointment.branchName;
+
+                                        // Thao tác
+                                        const actionCell = row.insertCell();
+                                        const canCancel = appointment.status === 'Pending' || appointment.status === 'Confirmed';
+                                        if (canCancel) {
+                                            const cancelBtn = document.createElement('button');
+                                            cancelBtn.className = 'btn btn-cancel';
+                                            cancelBtn.innerHTML = '<i class="fas fa-times me-1"></i>Hủy';
+                                            cancelBtn.onclick = function () {
+                                                handleCancelAppointment(appointment.id, appointment.status);
+                                            };
+                                            actionCell.appendChild(cancelBtn);
+                                        } else {
+                                            const disabledBtn = document.createElement('button');
+                                            disabledBtn.className = 'btn btn-cancel';
+                                            disabledBtn.innerHTML = '<i class="fas fa-ban me-1"></i>Hủy';
+                                            disabledBtn.disabled = true;
+                                            actionCell.appendChild(disabledBtn);
+                                        }
+
+                                        // ✅ Thanh toán còn lại (hiển thị nút nếu Confirmed)
+                                        const remainCell = row.insertCell();
+                                        if (appointment.status.toLowerCase() === 'confirmed') {
+                                            const form = document.createElement('form');
+                                            form.method = 'POST';
+                                            form.action = '${pageContext.request.contextPath}/final-payment';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'hidden';
+                                            input.name = 'appointmentId';
+                                            input.value = appointment.id;
+
+                                            const payBtn = document.createElement('button');
+                                            payBtn.className = 'btn btn-primary';
+                                            payBtn.type = 'submit';
+                                            payBtn.innerHTML = '<i class="fas fa-credit-card me-1"></i>Thanh toán';
+
+                                            form.appendChild(input);
+                                            form.appendChild(payBtn);
+                                            remainCell.appendChild(form);
+                                        } else {
+                                            remainCell.textContent = '-';
+                                        }
+                                        const feedbackCell = row.insertCell();
+                                if (appointment.status === 'Completed') {
+                                    const feedbackForm = document.createElement('form');
+                                    feedbackForm.action = '${pageContext.request.contextPath}/views/common/feedback.jsp';
+                                    feedbackForm.method = 'get';
+                                    feedbackForm.style.display = 'flex';
+                                    feedbackForm.style.flexDirection = 'column';
+                                    feedbackForm.style.alignItems = 'center';
+                                    const feedbackLabel = document.createElement('span');
+                                    feedbackLabel.textContent = 'Feedback';
+                                    feedbackLabel.style.fontWeight = 'bold';
+                                    feedbackLabel.style.marginBottom = '4px';
+                                    feedbackForm.appendChild(feedbackLabel);
+                                    const inputCustomer = document.createElement('input');
+                                    inputCustomer.type = 'hidden';
+                                    inputCustomer.name = 'customerId';
+                                    inputCustomer.value = appointment.customerId || '${sessionScope.customer.id}';
+                                    feedbackForm.appendChild(inputCustomer);
+                                    const inputStaff = document.createElement('input');
+                                    inputStaff.type = 'hidden';
+                                    inputStaff.name = 'staffId';
+                                    inputStaff.value = appointment.staffId || '';
+                                    feedbackForm.appendChild(inputStaff);
+                                    const inputAppointment = document.createElement('input');
+                                    inputAppointment.type = 'hidden';
+                                    inputAppointment.name = 'appointmentId';
+                                    inputAppointment.value = appointment.id;
+                                    feedbackForm.appendChild(inputAppointment);
+                                    const feedbackBtn = document.createElement('button');
+                                    feedbackBtn.type = 'submit';
+                                    feedbackBtn.className = 'btn btn-primary';
+                                    feedbackBtn.style.marginTop = '4px';
+                                    feedbackBtn.textContent = 'Gửi Feedback';
+                                    feedbackForm.appendChild(feedbackBtn);
+                                    feedbackCell.appendChild(feedbackForm);
+                                } else {
+                                    feedbackCell.textContent = '-';
+                                }
+
+                                    });
+
+                                } else {
+                                    noHistoryMessage.textContent = 'Bạn chưa có lịch sử đặt lịch nào.';
+                                    noHistoryMessage.style.display = 'block';
+                                    historyTable.style.display = 'none';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching history:', error);
+                                noHistoryMessage.textContent = 'Không thể tải lịch sử đặt lịch: ' + error.message;
+                                noHistoryMessage.style.display = 'block';
+                                historyTable.style.display = 'none';
+                                alert('Lỗi: ' + error.message);
+                            });
                 });
 
-                confirmPopupBtn.addEventListener('click', function () {
-                    const currentPassword = currentPasswordInput.value.trim();
-                    const newPassword = newPasswordInput.value.trim();
-                    const confirmNewPassword = confirmNewPasswordInput.value.trim();
-
-                    console.log('Confirm button clicked');
-                    console.log('Current Password:', currentPassword);
-                    console.log('New Password:', newPassword);
-                    console.log('Confirm New Password:', confirmNewPassword);
-
-                    if (!currentPassword || !newPassword || !confirmNewPassword) {
-                        alert('Vui lòng điền đầy đủ tất cả các trường.');
-                        return;
-                    }
-
-                    if (newPassword !== confirmNewPassword) {
-                        alert('Mật khẩu mới và xác nhận mật khẩu không khớp.');
-                        return;
-                    }
-
-                    if (newPassword.length < 6) {
-                        alert('Mật khẩu mới phải có ít nhất 6 ký tự.');
-                        return;
-                    }
-
-                    const formData = new FormData(changePasswordForm);
-                    console.log('Form Data:', Object.fromEntries(formData));
-                    console.log('Form action:', changePasswordForm.action);
-
-                    fetch('${pageContext.request.contextPath}/ChangePasswordServlet', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => {
-                        return response.text().then(text => ({
-                            ok: response.ok,
-                            status: response.status,
-                            text: text
-                        }));
-                    })
-                    .then(data => {
-                        if (data.ok) {
-                            showSuccessMessage('Đổi mật khẩu thành công!');
-                            hidePopup();
-                        } else {
-                            throw new Error(data.text || 'Đổi mật khẩu thất bại.');
+                // Function to handle cancel appointment
+                function handleCancelAppointment(appointmentId, status) {
+                    if (status === 'Confirmed') {
+                        // Show warning for confirmed appointments
+                        if (confirm('Nếu như hủy lịch bạn sẽ mất tiền đặt cọc. Bạn có chắc chắn muốn hủy lịch không?')) {
+                            cancelAppointment(appointmentId);
                         }
-                    })
-                    .catch(error => {
-                        alert(error.message);
-                    });
-                });
+                    } else if (status === 'Pending') {
+                        // Direct confirmation for pending appointments
+                        if (confirm('Bạn có chắc chắn muốn hủy lịch hẹn này không?')) {
+                            cancelAppointment(appointmentId);
+                        }
+                    }
+                }
+
+                // Function to send cancel request to servlet
+                function cancelAppointment(appointmentId) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '${pageContext.request.contextPath}/CancelAppointmentServlet';
+
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'appointmentId';
+                    input.value = appointmentId;
+
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+
+                // Function to get status CSS class
+                function getStatusClass(status) {
+                    switch (status) {
+                        case 'Pending':
+                            return 'status-pending';
+                        case 'Confirmed':
+                            return 'status-confirmed';
+                        case 'Completed':
+                            return 'status-completed';
+                        case 'Cancelled':
+                            return 'status-cancelled';
+                        default:
+                            return 'status-unknown';
+                    }
+                }
+
+                // Hàm định dạng ngày giờ
+                function formatDateTime(isoString) {
+                    if (!isoString)
+                        return '';
+                    try {
+                        const date = new Date(isoString);
+                        if (isNaN(date.getTime())) {
+                            throw new Error('Invalid date string');
+                        }
+                        const options = {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        };
+                        return date.toLocaleString('vi-VN', options);
+                    } catch (e) {
+                        console.error("Lỗi định dạng ngày giờ cho chuỗi:", isoString, e);
+                        return isoString;
+                    }
+                }
+
+                // Hàm định dạng tiền tệ
+                function formatCurrency(amount) {
+                    const numAmount = parseFloat(amount);
+                    if (isNaN(numAmount)) {
+                        console.warn("Giá trị không phải số để định dạng tiền tệ:", amount);
+                        return amount;
+                    }
+                    return numAmount.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+                }
             });
         </script>
     </body>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test APIs</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .result {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        white-space: pre-wrap;
+      }
+      input {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test APIs</h1>
+
+    <div class="test-section">
+      <h3>Test Staff Availability API</h3>
+      <input type="number" id="staffId" placeholder="Staff ID" value="1" />
+      <input type="date" id="appointmentDate" placeholder="Appointment Date" />
+      <button onclick="testStaffAvailability()">Test Staff Availability</button>
+      <div id="staffAvailabilityResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+      <h3>Test Service Duration API</h3>
+      <input
+        type="text"
+        id="serviceIds"
+        placeholder="Service IDs (comma separated)"
+        value="1,2"
+      />
+      <button onclick="testServiceDuration()">Test Service Duration</button>
+      <div id="serviceDurationResult" class="result"></div>
+    </div>
+
+    <script>
+      // Set today's date as default
+      document.getElementById("appointmentDate").value = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      async function testStaffAvailability() {
+        const staffId = document.getElementById("staffId").value;
+        const appointmentDate =
+          document.getElementById("appointmentDate").value;
+        const resultDiv = document.getElementById("staffAvailabilityResult");
+
+        try {
+          const response = await fetch(
+            `/BarberShop/api/staff-availability?staffId=${staffId}&appointmentDate=${appointmentDate}`
+          );
+          const data = await response.json();
+          resultDiv.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          resultDiv.textContent = "Error: " + error.message;
+        }
+      }
+
+      async function testServiceDuration() {
+        const serviceIds = document.getElementById("serviceIds").value;
+        const resultDiv = document.getElementById("serviceDurationResult");
+
+        try {
+          const params = serviceIds
+            .split(",")
+            .map((id) => `serviceIds=${id.trim()}`)
+            .join("&");
+          const response = await fetch(
+            `/BarberShop/api/service-duration?${params}`
+          );
+          const data = await response.json();
+          resultDiv.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          resultDiv.textContent = "Error: " + error.message;
+        }
+      }
+    </script>
+  </body>
+</html>

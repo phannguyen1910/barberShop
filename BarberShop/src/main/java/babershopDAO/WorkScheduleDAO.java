@@ -10,11 +10,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import model.Branch;
 import model.WorkSchedule;
 
 public class WorkScheduleDAO {
@@ -25,13 +27,13 @@ public class WorkScheduleDAO {
         try {
             Class.forName(DRIVERNAME);
         } catch (ClassNotFoundException e) {
-            System.out.println("Error loading driver" + e);
+            System.out.println("Error loading driver: " + e.getMessage());
         }
         try {
             Connection con = DriverManager.getConnection(DBURL, USERDB, PASSDB);
             return con;
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
+            System.out.println("Error connecting to database: " + e.getMessage());
         }
         return null;
     }
@@ -42,7 +44,7 @@ public class WorkScheduleDAO {
             System.out.println("Failed to establish database connection");
             return false;
         }
-        String sql = "INSERT INTO [WorkSchedule] (staffId, workDate, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO [WorkSchedule] (staffId, workDate, status) VALUES (?,?,?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, schedule.getStaffId());
             ps.setObject(2, schedule.getWorkDate());
@@ -133,8 +135,11 @@ public class WorkScheduleDAO {
 
     public List<WorkSchedule> getAllOffSchedules() {
         List<WorkSchedule> schedules = new ArrayList<>();
-        String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName " +
-                     "FROM [WorkSchedule] ws JOIN [Staff] s ON ws.staffId = s.id WHERE ws.status = 'off'";
+        String sql = "SELECT ws.id, ws.staffId, ws.workDate, ws.status, s.firstName, s.lastName, b.name AS branch "
+                + "FROM [WorkSchedule] ws "
+                + "JOIN [Staff] s ON ws.staffId = s.id "
+                + "LEFT JOIN [Branch] b ON s.branchId = b.id "
+                + "WHERE ws.status IN ('accept', 'pending', 'reject')"; // Sửa chỗ này!
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -145,13 +150,33 @@ public class WorkScheduleDAO {
                 ws.setStatus(rs.getString("status"));
                 ws.setFirstName(rs.getString("firstName"));
                 ws.setLastName(rs.getString("lastName"));
+                ws.setBranch(rs.getString("branch") != null ? rs.getString("branch") : "Chưa xác định"); // Lấy tên chi nhánh hoặc giá trị mặc định
                 schedules.add(ws);
-                System.out.println("Fetched schedule: " + ws.getId() + ", " + ws.getStaffId() + ", " + ws.getWorkDate());
+                System.out.println("Fetched schedule: ID=" + ws.getId() + ", Status=" + ws.getStatus());
             }
         } catch (SQLException e) {
-            System.out.println("Error fetching all off schedules: " + e.getMessage());
+            System.out.println("Error fetching all off schedules: " + e.getMessage() + ". SQL: " + sql);
         }
         return schedules;
+    }
+
+    public List<Branch> getAllBranches() {
+        List<Branch> branches = new ArrayList<>();
+        String sql = "SELECT id, name FROM [Branch]"; // Điều chỉnh tên bảng và cột nếu cần
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Branch branch = new Branch();
+                branch.setId(rs.getInt("id"));
+                branch.setName(rs.getString("name"));
+                branches.add(branch);
+                System.out.println("Fetched branch: ID=" + branch.getId() + ", Name=" + branch.getName());
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching branches: " + e.getMessage());
+        }
+        System.out.println("Total branches fetched: " + branches.size());
+        return branches;
     }
 
     public List<LocalDate> getDisallowedDays() {
@@ -168,9 +193,9 @@ public class WorkScheduleDAO {
         return disallowedDays;
     }
 
-    public Map<String, Integer> getRegisteredDaysForStaff(int staffId, int year, int month) {
-        Map<String, Integer> registeredDays = new HashMap<>();
-        String sql = "SELECT workDate FROM [WorkSchedule] WHERE staffId = ? AND YEAR(workDate) = ? AND MONTH(workDate) = ? AND status = 'off'";
+    public Map<String, String> getRegisteredDaysForStaff(int staffId, int year, int month) {
+        Map<String, String> registeredDays = new HashMap<>();
+        String sql = "SELECT workDate, status FROM [WorkSchedule] WHERE staffId = ? AND YEAR(workDate) = ? AND MONTH(workDate) = ?";
         try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, staffId);
             ps.setInt(2, year);
@@ -178,7 +203,8 @@ public class WorkScheduleDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 LocalDate date = rs.getObject("workDate", LocalDate.class);
-                registeredDays.put(date.toString(), 1);
+                String status = rs.getString("status");
+                registeredDays.put(date.toString(), status);
             }
         } catch (SQLException e) {
             System.out.println("Error fetching registered days for staff: " + e.getMessage());
@@ -198,5 +224,84 @@ public class WorkScheduleDAO {
             System.out.println("Error fetching staff name: " + e.getMessage());
         }
         return "Unknown Staff";
+    }
+
+    public int getStaffIdByAccountId(int accountId) {
+        String sql = "SELECT id FROM [Staff] WHERE accountId = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int staffId = rs.getInt("id");
+                System.out.println("Found staffId " + staffId + " for accountId " + accountId);
+                return staffId;
+            } else {
+                System.out.println("No staffId found for accountId " + accountId);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching staff by account ID: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int getAccountIdByEmailAndPassword(String email, String password) {
+        String sql = "SELECT accountId FROM [Account] WHERE email = ? AND password = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, password); // Nên mã hóa password trong thực tế
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("accountId");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching accountId: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public boolean isDuplicateSchedule(int staffId, LocalDate workDate) {
+        String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND workDate = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, staffId);
+            ps.setObject(2, workDate);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking duplicate schedule: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Đếm số ngày accept của nhân viên trong tháng
+    public int countStaffAcceptForMonth(int staffId, int year, int month) {
+        String sql = "SELECT COUNT(*) FROM [WorkSchedule] WHERE staffId = ? AND YEAR(workDate) = ? AND MONTH(workDate) = ? AND status = 'accept'";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, staffId);
+            ps.setInt(2, year);
+            ps.setInt(3, month);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error counting staff accept for month: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // Cập nhật trạng thái lịch nghỉ (accept/reject) theo id
+    public boolean updateScheduleStatus(int id, String status) {
+        String sql = "UPDATE [WorkSchedule] SET status = ? WHERE id = ?";
+        try (Connection conn = getConnect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, id);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            System.out.println("Error updating schedule status: " + e.getMessage());
+        }
+        return false;
     }
 }

@@ -9,6 +9,7 @@ public class WorkSchedule {
     private String status;
     private String firstName;
     private String lastName;
+    private String branch;
 
     // Default constructor
     public WorkSchedule() {
@@ -39,6 +40,10 @@ public class WorkSchedule {
         return lastName;
     }
 
+    public String getBranch() {
+        return branch;
+    }
+
     // Setters
     public void setId(int id) {
         this.id = id;
@@ -62,5 +67,9 @@ public class WorkSchedule {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 }

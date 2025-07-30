@@ -1,47 +1,84 @@
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\ServiceDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ForgetPassword.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Appointment.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\VoucherDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\WorkScheduleDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDatabase\databaseInfo.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ValidateOTP.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\CustomerDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Staff.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\SendOTPServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ChooseServiceServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\HomeServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Admin.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Voucher.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ChangePasswordServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Customer.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\LoginServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\InvoiceDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ScheduleServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Invoice.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\GoogleAccount.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\AppointmentManager\UpdateAppointmentStatusServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Validation.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\AccountDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\GoogleLogin.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\WorkSchedule.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\AppointmentDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\BookingServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ResendOTPServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Account.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\LogoutServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\FeedbackDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\AppointmentManager\ChangeStatusServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\AdminDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\AppointmentService.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Feedback.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ConfirmationServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\StaffDAO.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\EditProfileServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\AppointmentManager\DashBoardServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\constant\Iconstant.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\AppointmentManager\AppointmentManagerServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Payment.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\CustomerVoucher.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ViewScheduleServlet.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\model\Service.java
-C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\RegisterServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Customer.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\ValidateOTP.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\HistoryAppointmentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\RegisterServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Account.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\ChooseBranchServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AccountDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Payment.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AdviseDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\ChangeStatusServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\HomeServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\ScheduleServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\TestServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\ChangePasswordServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\BanCustomerServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\CancelAppointmentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\UpdateAppointmentStatusServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\DashBoardServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\LoginServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\BanStaffServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffAppointmentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\AddAppointmentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\CustomerVoucher.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Advise.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\AddCustomerServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\AddStaffServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffAppointment.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffAvailabilityServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\ServiceDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\SendOTPServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AdminFeedbackApiServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\GoogleAccount.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Holiday.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AppointmentDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\LogoutServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\ProfileServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\ViewScheduleServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\BookingServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Branch.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\AdminDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\HolidayAPI.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Invoice.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\chatbot\GeminiApiClient.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDatabase\databaseInfo.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\HolidayServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Payment\FinalPaymentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\InvoiceDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ChatServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Admin.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\StaffDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\CustomerDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\EditAppointmentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\StaffManagement\StaffListServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\EditProfileServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Feedback.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Staff.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\ViewCustomerServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\ForgetPassword.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\HolidayDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ServiceManagement\VoucherServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\AppointmentManagerServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ServiceManagement\ChooseServiceServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\ResendOTPServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\constant\Iconstant.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\BranchDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\WorkScheduleDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Payment\VnpayReturnServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Service.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\WorkSchedule.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\FeedbackDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\AddFeedbackServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\ChatMessage.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\RevenueManagement\RevenueManagementServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Validation.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\CustomerManagement\ConfirmationServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Payment\PaymentServlet.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Authentication\GoogleLogin.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\Payment\Config.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\AppointmentService.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Voucher.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\VoucherDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\model\Appointment.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\babershopDAO\PaymentDAO.java
+D:\study\Đồ án Babershop\SWP đồ án\barberShop\BarberShop\src\main\java\controller\ServiceManagement\ServiceDurationServlet.java

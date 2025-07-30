@@ -9,12 +9,12 @@
         <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+       
         <!-- Bootstrap Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
         <!-- Custom CSS -->
         <link rel="stylesheet" href="CSS/html.css">
-
+        
     </head>
     <body>
         <!-- Navbar -->
@@ -152,40 +152,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <!-- Logo and About -->
-                    <div class="col-lg-4 col-md-6 footer-col">
-                        <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Cut&Styles Logo" class="footer-logo">                      
-                    </div>
-                    <!-- Links -->
-                    <div class="col-lg-4 col-md-6 footer-col">
-                        <h4 class="footer-title">Liên kết nhanh</h4>
-                        <ul class="footer-links">
-                            <li><a href="${pageContext.request.contextPath}/views/common/aboutUs.jsp">Về chúng tôi</a></li>
-                            <li><a href="${pageContext.request.contextPath}/views/common/franchise.jsp">Liên hệ nhượng quyền</a></li>
-                            <li><a href="${pageContext.request.contextPath}/views/commit/details.jsp">Chính sách cam kết</a></li>
-                        </ul>
-                    </div>
-                    <!-- Contact -->
-                    <div class="col-lg-4 col-md-6 footer-col">
-                        <h4 class="footer-title">Thông tin liên hệ</h4>
-                        <div class="footer-contact">
-                            <p><i class="bi bi-geo-alt-fill"></i> <span>Khu đô thị FPT city, Hòa Hải, Ngũ Hành Sơn, Đà Nẵng</span></p>
-                            <p><i class="bi bi-telephone-fill"></i> <span>Liên hệ học nghề tóc: 0774511941</span></p>
-                            <p><i class="bi bi-clock-fill"></i> <span>Giờ phục vụ: Thứ 2 đến Chủ Nhật, 8h30 - 20h30</span></p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer bottom -->
-                <div class="row footer-bottom">
-                    <div class="col-12 text-center">
-                        <p>&copy; 2025 Cut&Styles Barber. Tất cả quyền được bảo lưu.</p>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <%@ include file="/views/common/footer.jsp" %>
 
         <!-- Scroll to top button -->
         <button class="scroll-top" id="scrollTop">
@@ -194,7 +161,7 @@
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      
 
         <script>
             // Scroll animations

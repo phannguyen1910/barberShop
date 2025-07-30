@@ -209,6 +209,25 @@
                 min-width: 120px;
             }
 
+            .search-container select {
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background: rgba(255, 255, 255, 0.1);
+                color: #DAA520; /* Thay đổi màu chữ thành vàng đồng để nổi bật */
+                width: 200px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='%23DAA520'%3e%3cpath d='M2 4l4 4 4-4H2z'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                background-size: 10px 10px;
+            }
+
+            .search-container select option {
+                color: #DAA520; /* Đảm bảo màu chữ của các option cũng nổi bật */
+                background: rgba(29, 29, 27, 0.9); /* Giữ nền tối để tương phản */
+            }
+
             .search-container input[type="text"],
             .search-container input[type="date"],
             .search-container input[type="month"] {
@@ -216,7 +235,7 @@
                 border: 1px solid #ccc;
                 border-radius: 4px;
                 background: rgba(255, 255, 255, 0.1);
-                color: #fff;
+                color: #DAA520; /* Thay đổi màu chữ cho các ô input khác cũng thành vàng đồng */
                 width: 200px;
             }
 
@@ -253,6 +272,41 @@
                 font-size: 1rem;
             }
 
+            .status-accept {
+                background: #4CAF50;
+                color: #fff;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            .status-pending {
+                background: #FF9800;
+                color: #fff;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            .status-reject {
+                background: #F44336;
+                color: #fff;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            .action-btn {
+                margin: 0 2px;
+                padding: 2px 8px;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+                font-size: 0.95em;
+            }
+            .action-accept {
+                background: #4CAF50;
+                color: #fff;
+            }
+            .action-reject {
+                background: #F44336;
+                color: #fff;
+            }
+
             @media (max-width: 768px) {
                 .mobile-menu-btn {
                     display: block;
@@ -284,7 +338,8 @@
 
                 .search-container input[type="text"],
                 .search-container input[type="date"],
-                .search-container input[type="month"] {
+                .search-container input[type="month"],
+                .search-container select {
                     width: 100%;
                 }
 
@@ -294,12 +349,63 @@
                     margin-top: 5px;
                 }
             }
+            .status-dropdown {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid #DAA520;
+                border-radius: 6px;
+                color: #DAA520;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 120px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='%23DAA520'%3e%3cpath d='M2 4l4 4 4-4H2z'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 10px 10px;
+                transition: all 0.3s ease;
+            }
+
+            .status-dropdown:hover {
+                background: rgba(218, 165, 32, 0.1);
+                border-color: #B8860B;
+            }
+
+            .status-dropdown:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.3);
+            }
+
+            .status-dropdown option {
+                background: rgba(29, 29, 27, 0.95);
+                color: #DAA520;
+                padding: 5px;
+            }
+
+            /* CSS cho các trạng thái hiển thị */
+            .status-dropdown.status-accept {
+                background: rgba(76, 175, 80, 0.2);
+                border-color: #4CAF50;
+                color: #4CAF50;
+            }
+
+            .status-dropdown.status-pending {
+                background: rgba(255, 152, 0, 0.2);
+                border-color: #FF9800;
+                color: #FF9800;
+            }
+
+            .status-dropdown.status-reject {
+                background: rgba(244, 67, 54, 0.2);
+                border-color: #F44336;
+                color: #F44336;
+            }
         </style>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="index.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
                     <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -336,25 +442,25 @@
 
                 <div class="nav-menu">
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/customerManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/admin/view-customers" class="nav-link">
                             <i class="fas fa-users"></i>
                             <span>Quản lý Khách hàng</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/staffManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link active">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -366,7 +472,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
                             <i class="fas fa-store"></i>
                             <span>Quản lý Dịch Vụ</span>
                         </a>
@@ -378,13 +484,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Quản lý Nhượng quyền</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
                         </a>
@@ -392,7 +492,13 @@
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
                             <i class="fas fa-calendar"></i>
-                            <span>Lịch làm nhân viên</span>
+                            <span>Lịch nghỉ nhân viên</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Quản lí ngày nghỉ</span>
                         </a>
                     </div>
                 </div>
@@ -418,6 +524,22 @@
                         <label>Tìm kiếm theo tháng:</label>
                         <input type="month" id="searchMonth" placeholder="Tháng">
                     </div>
+                    <div class="search-group">
+                        <label>Tìm kiếm theo chi nhánh:</label>
+                        <select id="searchBranch">
+                            <option value="">Tất cả chi nhánh</option>
+                            <c:choose>
+                                <c:when test="${not empty branches}">
+                                    <c:forEach var="branch" items="${branches}">
+                                        <option value="${branch.name}">${branch.name}</option>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <option value="N/A">Không có chi nhánh</option>
+                                </c:otherwise>
+                            </c:choose>
+                        </select>
+                    </div>
                     <button class="reset-btn" onclick="resetSearch()">Xóa</button>
                 </div>
 
@@ -428,6 +550,7 @@
                                 <th>ID</th>
                                 <th>Staff ID</th>
                                 <th>Tên Nhân Viên</th>
+                                <th>Chi Nhánh</th>
                                 <th>Ngày Nghỉ</th>
                                 <th>Trạng Thái</th>
                             </tr>
@@ -436,18 +559,28 @@
                             <c:choose>
                                 <c:when test="${not empty schedules}">
                                     <c:forEach var="schedule" items="${schedules}">
-                                        <tr data-id="${schedule.id}" data-staff-id="${schedule.staffId}" data-fullname="${schedule.firstName} ${schedule.lastName}" data-workdate="${schedule.workDate}" data-status="${schedule.status}">
-                                            <td><c:out value="${schedule.id != null ? schedule.id : 0}" default="0" /></td>
-                                            <td><c:out value="${schedule.staffId != null ? schedule.staffId : 0}" default="0" /></td>
-                                            <td><c:out value="${schedule.firstName != null ? schedule.firstName : 'N/A'} ${schedule.lastName != null ? schedule.lastName : 'N/A'}" default="N/A" /></td>
-                                            <td><c:out value="${schedule.workDate != null ? schedule.workDate : 'N/A'}" default="N/A" /></td>
-                                            <td><c:out value="${schedule.status != null ? schedule.status : 'N/A'}" default="N/A" /></td>
+                                        <tr data-id="${schedule.id}" data-staff-id="${schedule.staffId}" data-fullname="${schedule.firstName} ${schedule.lastName}" data-workdate="${schedule.workDate}" data-status="${schedule.status}" data-branch="${schedule.branch}">
+                                            <td><c:out value="${schedule.id != null ? schedule.id : 0}" /></td>
+                                            <td><c:out value="${schedule.staffId != null ? schedule.staffId : 0}" /></td>
+                                            <td><c:out value="${schedule.firstName != null ? schedule.firstName : 'N/A'} ${schedule.lastName != null ? schedule.lastName : 'N/A'}" /></td>
+                                            <td><c:out value="${schedule.branch != null ? schedule.branch : 'N/A'}" /></td>
+                                            <td><c:out value="${schedule.workDate != null ? schedule.workDate : 'N/A'}" /></td>
+                                            <td>
+                                                <select class="status-dropdown status-${schedule.status}" 
+                                                        onchange="handleStatusChange(this, ${schedule.id})" 
+                                                        data-original-status="${schedule.status}">
+                                                    <option value="accept" ${schedule.status == 'accept' ? 'selected' : ''}>Đã duyệt</option>
+                                                    <option value="pending" ${schedule.status == 'pending' ? 'selected' : ''}>Chờ duyệt</option>
+                                                    <option value="reject" ${schedule.status == 'reject' ? 'selected' : ''}>Từ chối</option>
+                                                </select>
+                                            </td>
+
                                         </tr>
                                     </c:forEach>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="5" style="text-align: center; color: #ccc;">Không có dữ liệu lịch nghỉ.</td>
+                                        <td colspan="6" style="text-align: center; color: #ccc;">Không có dữ liệu lịch nghỉ.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
@@ -487,6 +620,7 @@
                     const fullName = row.getAttribute('data-fullname');
                     const workDate = row.getAttribute('data-workdate');
                     const status = row.getAttribute('data-status');
+                    const branch = row.getAttribute('data-branch');
 
                     if (id && staffId && fullName && fullName !== 'N/A N/A') {
                         allSchedules.push({
@@ -495,12 +629,13 @@
                             staffId: staffId,
                             fullName: fullName.trim(),
                             workDate: workDate || '',
-                            status: status || ''
+                            status: status || '',
+                            branch: branch || ''
                         });
                     }
                 });
 
-                console.log('Initialized', allSchedules.length, 'schedules');
+                console.log('Initialized', allSchedules.length, 'schedules from DOM');
                 return allSchedules.length > 0;
             }
 
@@ -514,7 +649,7 @@
                 tbody.innerHTML = '';
 
                 if (!schedules || schedules.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ccc;">Không có dữ liệu phù hợp.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ccc;">Không có dữ liệu phù hợp.</td></tr>';
                     return;
                 }
 
@@ -529,15 +664,19 @@
             // Hàm lọc dữ liệu
             function filterSchedules() {
                 if (!isInitialized) {
-                    console.log('Data not initialized yet');
-                    return;
+                    console.log('Data not initialized yet, initializing now...');
+                    if (!initializeData()) {
+                        console.error('Failed to initialize data');
+                        return;
+                    }
                 }
 
                 const nameInput = document.getElementById('searchName');
                 const dateInput = document.getElementById('searchDate');
                 const monthInput = document.getElementById('searchMonth');
+                const branchSelect = document.getElementById('searchBranch');
 
-                if (!nameInput || !dateInput || !monthInput) {
+                if (!nameInput || !dateInput || !monthInput || !branchSelect) {
                     console.error('Search inputs not found!');
                     return;
                 }
@@ -545,11 +684,12 @@
                 const searchName = nameInput.value.trim().toLowerCase();
                 const searchDate = dateInput.value.trim();
                 const searchMonth = monthInput.value.trim();
+                const searchBranch = branchSelect.value.trim().toLowerCase();
 
-                console.log('Filtering with:', {name: searchName, date: searchDate, month: searchMonth});
+                console.log('Filtering with:', {name: searchName, date: searchDate, month: searchMonth, branch: searchBranch});
 
                 // Nếu không có điều kiện tìm kiếm, hiển thị tất cả
-                if (!searchName && !searchDate && !searchMonth) {
+                if (!searchName && !searchDate && !searchMonth && !searchBranch) {
                     displayResults(allSchedules);
                     return;
                 }
@@ -559,6 +699,7 @@
                     let matchName = true;
                     let matchDate = true;
                     let matchMonth = true;
+                    let matchBranch = true;
 
                     // Kiểm tra tên
                     if (searchName) {
@@ -578,7 +719,12 @@
                         matchMonth = monthYear === searchMonth;
                     }
 
-                    return matchName && matchDate && matchMonth;
+                    // Kiểm tra chi nhánh
+                    if (searchBranch) {
+                        matchBranch = schedule.branch.toLowerCase().includes(searchBranch);
+                    }
+
+                    return matchName && matchDate && matchMonth && matchBranch;
                 });
 
                 console.log('Found', filteredSchedules.length, 'matches');
@@ -590,6 +736,7 @@
                 const nameInput = document.getElementById('searchName');
                 const dateInput = document.getElementById('searchDate');
                 const monthInput = document.getElementById('searchMonth');
+                const branchSelect = document.getElementById('searchBranch');
 
                 if (nameInput)
                     nameInput.value = '';
@@ -597,6 +744,8 @@
                     dateInput.value = '';
                 if (monthInput)
                     monthInput.value = '';
+                if (branchSelect)
+                    branchSelect.value = '';
 
                 displayResults(allSchedules);
                 console.log('Search reset');
@@ -620,6 +769,7 @@
                 const nameInput = document.getElementById('searchName');
                 const dateInput = document.getElementById('searchDate');
                 const monthInput = document.getElementById('searchMonth');
+                const branchSelect = document.getElementById('searchBranch');
 
                 if (nameInput) {
                     const debouncedFilter = debounce(filterSchedules, 300);
@@ -637,6 +787,11 @@
                     monthInput.addEventListener('change', filterSchedules);
                     console.log('Month search listener added');
                 }
+
+                if (branchSelect) {
+                    branchSelect.addEventListener('change', filterSchedules);
+                    console.log('Branch select listener added');
+                }
             }
 
             // Hàm khởi tạo chính
@@ -648,21 +803,29 @@
                 const nameInput = document.getElementById('searchName');
                 const dateInput = document.getElementById('searchDate');
                 const monthInput = document.getElementById('searchMonth');
+                const branchSelect = document.getElementById('searchBranch');
 
-                if (!tbody || !nameInput || !dateInput || !monthInput) {
+                if (!tbody || !nameInput || !dateInput || !monthInput || !branchSelect) {
                     console.log('Required elements not found, retrying...');
                     setTimeout(initialize, 200);
                     return;
                 }
 
                 try {
+                    // Đảm bảo dữ liệu đã được tải từ server
+                    if (tbody.querySelectorAll('tr').length === 1 && tbody.querySelector('td[colspan="6"]')) {
+                        console.log('Table contains only default message, waiting for data...');
+                        setTimeout(initialize, 200);
+                        return;
+                    }
+
                     // Khởi tạo dữ liệu
                     const hasData = initializeData();
 
                     if (hasData) {
                         console.log('✓ Data initialized successfully:', allSchedules.length, 'records');
                     } else {
-                        console.log('⚠ No data found');
+                        console.log('⚠ No data found in DOM, relying on server-rendered table');
                     }
 
                     // Thiết lập event listeners
@@ -681,7 +844,7 @@
             // Khởi tạo khi DOM sẵn sàng
             document.addEventListener('DOMContentLoaded', function () {
                 console.log('DOM Content Loaded - Starting initialization...');
-                setTimeout(initialize, 100);
+                setTimeout(initialize, 100); // Delay to ensure table is rendered
             });
 
             // Backup initialization
@@ -695,6 +858,59 @@
             // Export functions for debugging
             window.resetSearch = resetSearch;
             window.filterSchedules = filterSchedules;
+
+            function handleStatusChange(dropdown, scheduleId) {
+                const newStatus = dropdown.value;
+                const originalStatus = dropdown.getAttribute('data-original-status');
+
+                // Cập nhật màu sắc ngay lập tức
+                updateDropdownColor(dropdown, newStatus);
+
+                // Gọi hàm cập nhật trạng thái
+                updateStatus(scheduleId, newStatus, dropdown, originalStatus);
+            }
+
+            function updateDropdownColor(dropdown, status) {
+                // Xóa tất cả class trạng thái cũ
+                dropdown.classList.remove('status-accept', 'status-pending', 'status-reject');
+                // Thêm class mới theo trạng thái
+                dropdown.classList.add('status-' + status);
+            }
+
+<!-- 4. Cập nhật hàm updateStatus -->
+            function updateStatus(id, status, dropdown, originalStatus) {
+                if (!confirm('Bạn có chắc chắn muốn cập nhật trạng thái này?')) {
+                    // Reset về trạng thái ban đầu nếu user cancel
+                    dropdown.value = originalStatus;
+                    updateDropdownColor(dropdown, originalStatus);
+                    return;
+                }
+
+                fetch('${pageContext.request.contextPath}/ViewScheduleServlet?action=updateStatus&id=' + id + '&status=' + status, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.success) {
+                                // Cập nhật data-original-status với trạng thái mới
+                                dropdown.setAttribute('data-original-status', status);
+                                // Đảm bảo màu sắc đúng
+                                updateDropdownColor(dropdown, status);
+                            } else {
+                                // Reset về trạng thái ban đầu nếu update thất bại
+                                dropdown.value = originalStatus;
+                                updateDropdownColor(dropdown, originalStatus);
+                            }
+                        })
+                        .catch(err => {
+                            alert('Lỗi kết nối: ' + err);
+                            // Reset về trạng thái ban đầu nếu có lỗi
+                            dropdown.value = originalStatus;
+                            updateDropdownColor(dropdown, originalStatus);
+                        });
+            }
         </script>
     </body>
 </html>

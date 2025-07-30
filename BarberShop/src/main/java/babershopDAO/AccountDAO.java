@@ -1,6 +1,6 @@
 package babershopDAO;
 
-import static babershopDAO.CustomerDAO.getConnect;
+
 import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;
@@ -20,7 +20,7 @@ import model.Staff;
 
 public class AccountDAO {
 
-    private static String password;
+    private static String password; 
 
     public static Connection getConnect() {
         try {
@@ -55,6 +55,18 @@ public class AccountDAO {
             System.out.println(e);
         }
         return null;
+    }
+
+    public static boolean updateEmail(int accountId, String newEmail) {
+        String sql = "UPDATE Account SET email = ? WHERE id = ?";
+        try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newEmail);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static boolean checkExistedEmail(String email) {
@@ -115,7 +127,7 @@ public class AccountDAO {
         return null;
     }
 
-public static Account getAccountById(int id) {
+    public static Account getAccountById(int id) {
         String sql = "SELECT id, email, phoneNumber, password, role FROM [Account] WHERE id = ?";
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -126,7 +138,26 @@ public static Account getAccountById(int id) {
                 String phoneNumber = rs.getString("phoneNumber");
                 String password = rs.getString("password");
                 String role = rs.getString("role");
-                return new Account(id, email, password, role, 1, phoneNumber) {};
+                return new Account(id, email, password, role, 1, phoneNumber) {
+                };
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public static Account getAllAccount() {
+        String sql = "SELECT email, phoneNumber, status FROM [Account] WHERE phoneNumber = ? and status = 1 and role = 'Customer'";
+        try (Connection con = getConnect()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phoneNumber");
+                int status = rs.getInt("status");
+                return new Account(email, phoneNumber, status) {
+                };
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -313,8 +344,5 @@ public static Account getAccountById(int id) {
         }
         return null;
     }
-    
-    
-    
 
 }

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debug Booking</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .debug-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .time-slot {
+        display: inline-block;
+        padding: 10px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .time-slot.disabled {
+        background: #f0f0f0;
+        color: #999;
+        cursor: not-allowed;
+      }
+      .time-slot.selected {
+        background: #007bff;
+        color: white;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      .log {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        font-family: monospace;
+      }
+      input,
+      select {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Debug Booking System</h1>
+
+    <div class="debug-section">
+      <h3>1. Test Staff Availability API</h3>
+      <input type="number" id="testStaffId" placeholder="Staff ID" value="1" />
+      <input type="date" id="testDate" placeholder="Date" />
+      <button onclick="testStaffAvailability()">Test API</button>
+      <div id="staffApiResult" class="log"></div>
+    </div>
+
+    <div class="debug-section">
+      <h3>2. Test Service Duration API</h3>
+      <input
+        type="text"
+        id="testServiceIds"
+        placeholder="Service IDs (comma separated)"
+        value="1,2"
+      />
+      <button onclick="testServiceDuration()">Test API</button>
+      <div id="serviceApiResult" class="log"></div>
+    </div>
+
+    <div class="debug-section">
+      <h3>3. Simulate Booking Process</h3>
+      <div>
+        <label>Branch ID:</label>
+        <input type="number" id="simBranchId" value="1" />
+      </div>
+      <div>
+        <label>Staff ID:</label>
+        <input type="number" id="simStaffId" value="1" />
+      </div>
+      <div>
+        <label>Date:</label>
+        <input type="date" id="simDate" />
+      </div>
+      <div>
+        <label>Service IDs:</label>
+        <input type="text" id="simServiceIds" value="1,2" />
+      </div>
+      <button onclick="simulateBooking()">Simulate Booking</button>
+      <div id="simulationResult" class="log"></div>
+    </div>
+
+    <div class="debug-section">
+      <h3>4. Time Slots Display</h3>
+      <div id="timeSlotsContainer"></div>
+    </div>
+
+    <script>
+      // Set today's date as default
+      document.getElementById("testDate").value = new Date()
+        .toISOString()
+        .split("T")[0];
+      document.getElementById("simDate").value = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      async function testStaffAvailability() {
+        const staffId = document.getElementById("testStaffId").value;
+        const date = document.getElementById("testDate").value;
+        const resultDiv = document.getElementById("staffApiResult");
+
+        if (!staffId || !date) {
+          resultDiv.textContent =
+            "Error: Please fill in both Staff ID and Date";
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `/BarberShop/api/staff-availability?staffId=${staffId}&appointmentDate=${date}`
+          );
+          const result = await response.json();
+          resultDiv.textContent = `Status: ${
+            response.status
+          }\nResponse: ${JSON.stringify(result, null, 2)}`;
+        } catch (error) {
+          resultDiv.textContent = `Error: ${error.message}`;
+        }
+      }
+
+      async function testServiceDuration() {
+        const serviceIds = document.getElementById("testServiceIds").value;
+        const resultDiv = document.getElementById("serviceApiResult");
+
+        if (!serviceIds) {
+          resultDiv.textContent = "Error: Please fill in Service IDs";
+          return;
+        }
+
+        try {
+          const params = serviceIds
+            .split(",")
+            .map((id) => `serviceIds=${id.trim()}`)
+            .join("&");
+          const response = await fetch(
+            `/BarberShop/api/service-duration?${params}`
+          );
+          const result = await response.json();
+          resultDiv.textContent = `Status: ${
+            response.status
+          }\nResponse: ${JSON.stringify(result, null, 2)}`;
+        } catch (error) {
+          resultDiv.textContent = `Error: ${error.message}`;
+        }
+      }
+
+      async function simulateBooking() {
+        const branchId = document.getElementById("simBranchId").value;
+        const staffId = document.getElementById("simStaffId").value;
+        const date = document.getElementById("simDate").value;
+        const serviceIds = document.getElementById("simServiceIds").value;
+        const resultDiv = document.getElementById("simulationResult");
+
+        if (!branchId || !staffId || !date || !serviceIds) {
+          resultDiv.textContent = "Error: Please fill in all fields";
+          return;
+        }
+
+        try {
+          // Step 1: Get service duration
+          const serviceParams = serviceIds
+            .split(",")
+            .map((id) => `serviceIds=${id.trim()}`)
+            .join("&");
+          const serviceResponse = await fetch(
+            `/BarberShop/api/service-duration?${serviceParams}`
+          );
+          const serviceData = await serviceResponse.json();
+
+          // Step 2: Get staff availability
+          const availabilityResponse = await fetch(
+            `/BarberShop/api/staff-availability?staffId=${staffId}&appointmentDate=${date}`
+          );
+          const availabilityData = await availabilityResponse.json();
+
+          // Step 3: Generate time slots
+          const timeSlots = generateTimeSlots(
+            date,
+            availabilityData,
+            serviceData.totalDurationMinutes
+          );
+
+          resultDiv.textContent = `Service Duration: ${
+            serviceData.totalDurationMinutes
+          } minutes\nOccupied Slots: ${JSON.stringify(
+            availabilityData,
+            null,
+            2
+          )}\nAvailable Time Slots: ${timeSlots.length}`;
+
+          displayTimeSlots(timeSlots);
+        } catch (error) {
+          resultDiv.textContent = `Error: ${error.message}`;
+        }
+      }
+
+      function generateTimeSlots(date, occupiedSlots, serviceDuration) {
+        const slots = [];
+        const startHour = 8.5; // 8:30
+        const endHour = 20.5; // 20:30
+
+        for (
+          let hour = Math.floor(startHour);
+          hour <= Math.floor(endHour);
+          hour++
+        ) {
+          for (let minute of [0, 30]) {
+            if (hour === Math.floor(startHour) && minute < (startHour % 1) * 60)
+              continue;
+            if (hour === Math.floor(endHour) && minute > (endHour % 1) * 60)
+              continue;
+
+            const label =
+              hour.toString().padStart(2, "0") +
+              ":" +
+              (minute === 0 ? "00" : "30");
+            const timeValueMinutes = hour * 60 + minute;
+
+            let isOccupied = false;
+            let occupiedInfo = "";
+
+            // Check if slot is occupied
+            for (const slot of occupiedSlots) {
+              const slotStartMinutes =
+                parseInt(slot.startTime.split(":")[0]) * 60 +
+                parseInt(slot.startTime.split(":")[1]);
+              const slotEndMinutes =
+                parseInt(slot.endTime.split(":")[0]) * 60 +
+                parseInt(slot.endTime.split(":")[1]);
+
+              if (
+                timeValueMinutes >= slotStartMinutes &&
+                timeValueMinutes < slotEndMinutes
+              ) {
+                isOccupied = true;
+                occupiedInfo = `Occupied (${slot.durationMinutes} min)`;
+                break;
+              }
+            }
+
+            // Check if enough time for service
+            if (!isOccupied && serviceDuration > 0) {
+              const endTimeMinutes = timeValueMinutes + serviceDuration;
+              const maxWorkingMinutes = 20 * 60 + 30; // 20:30
+
+              if (endTimeMinutes > maxWorkingMinutes) {
+                isOccupied = true;
+                occupiedInfo = `Not enough time (need ${serviceDuration} min)`;
+              }
+
+              // Check conflicts with other appointments
+              for (const slot of occupiedSlots) {
+                const slotStartMinutes =
+                  parseInt(slot.startTime.split(":")[0]) * 60 +
+                  parseInt(slot.startTime.split(":")[1]);
+                const slotEndMinutes =
+                  parseInt(slot.endTime.split(":")[0]) * 60 +
+                  parseInt(slot.endTime.split(":")[1]);
+
+                if (
+                  timeValueMinutes < slotEndMinutes &&
+                  endTimeMinutes > slotStartMinutes
+                ) {
+                  isOccupied = true;
+                  occupiedInfo = `Conflict with other appointment`;
+                  break;
+                }
+              }
+            }
+
+            slots.push({
+              label,
+              timeValueMinutes,
+              isOccupied,
+              occupiedInfo,
+            });
+          }
+        }
+
+        return slots;
+      }
+
+      function displayTimeSlots(slots) {
+        const container = document.getElementById("timeSlotsContainer");
+        container.innerHTML = "";
+
+        slots.forEach((slot) => {
+          const slotElement = document.createElement("div");
+          slotElement.className = `time-slot ${
+            slot.isOccupied ? "disabled" : ""
+          }`;
+          slotElement.textContent = slot.label;
+          slotElement.title = slot.isOccupied ? slot.occupiedInfo : "Available";
+
+          if (!slot.isOccupied) {
+            slotElement.addEventListener("click", () => {
+              document
+                .querySelectorAll(".time-slot")
+                .forEach((s) => s.classList.remove("selected"));
+              slotElement.classList.add("selected");
+              console.log(`Selected time: ${slot.label}`);
+            });
+          }
+
+          container.appendChild(slotElement);
+        });
+      }
+    </script>
+  </body>
+</html>

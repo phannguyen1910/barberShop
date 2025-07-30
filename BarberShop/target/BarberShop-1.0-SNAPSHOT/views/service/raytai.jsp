@@ -161,7 +161,7 @@
             <div class="container">
                 <h2 class="fw-bold mb-3">Sẵn sàng trải nghiệm dịch vụ đỉnh cao?</h2>
                 <p class="lead mb-4">Đặt lịch ngay hôm nay để nhận ưu đãi đặc biệt dành riêng cho bạn!</p>
-                <a href="${pageContext.request.contextPath}/views/booking/booking.jsp"" class="btn btn-primary btn-lg fw-medium">Đặt lịch ngay</a>
+                <a href="${pageContext.request.contextPath}/ChooseBranchServlet" class="btn btn-primary btn-lg fw-medium">Đặt lịch ngay</a>
             </div>
         </section>
 

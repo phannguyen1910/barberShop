@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import model.Service;
 import model.Staff;
@@ -30,7 +31,46 @@ public class ServiceDAO {
         }
         return null;
     }
+    
+    
+    public List<Service> getServicesByIds(List<Integer> serviceIds) {
+    List<Service> services = new ArrayList<>();
+    String query = "SELECT * FROM services WHERE id IN (" + String.join(",", Collections.nCopies(serviceIds.size(), "?")) + ")";
+    try (Connection con = getConnect();
+         PreparedStatement stmt = con.prepareStatement(query)) {
+        for (int i = 0; i < serviceIds.size(); i++) {
+            stmt.setInt(i + 1, serviceIds.get(i));
+        }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Service service = new Service();
+            service.setId(rs.getInt("id"));
+            service.setName(rs.getString("name"));
+            service.setDuration(rs.getInt("duration"));
+            service.setPrice(rs.getFloat("price"));
+            services.add(service);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return services;
+}
 
+      public int countNumberService() {
+    String sql = "SELECT COUNT(*) AS totalService FROM [baberShop].[dbo].[Service]";
+    int count = 0;
+    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt("totalService"); // hoặc rs.getInt(1)
+        }
+    } catch (Exception e) {
+        System.out.println("🔥 ERROR in countNumberService(): " + e);
+    }
+    return count; // THIẾU return
+}
+
+    
     public Service getService(int id) {
         String sql = "Select name ,price ,duration ,description from Service where id= ?";
         try (Connection con = getConnect()) {
@@ -49,6 +89,45 @@ public class ServiceDAO {
             System.out.println(e);
         }
         return null;
+    }
+    
+    
+    public int calculateTotalServiceDuration(int[] serviceIds) {
+        if (serviceIds == null || serviceIds.length == 0) {
+            return 0; // Không có dịch vụ nào, tổng thời lượng là 0
+        }
+
+        int totalDuration = 0;
+        // Xây dựng mệnh đề IN cho truy vấn SQL
+        StringBuilder sql = new StringBuilder("SELECT duration FROM Service WHERE id IN (");
+        for (int i = 0; i < serviceIds.length; i++) {
+            sql.append("?");
+            if (i < serviceIds.length - 1) {
+                sql.append(", ");
+            }
+        }
+        sql.append(")");
+
+        try (Connection con = getConnect(); // Sử dụng phương thức getConnect() của ServiceDAO
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            // Đặt các tham số cho mệnh đề IN
+            for (int i = 0; i < serviceIds.length; i++) {
+                ps.setInt(i + 1, serviceIds[i]);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                totalDuration += rs.getInt("duration");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi tính tổng thời lượng dịch vụ: " + e.getMessage());
+            e.printStackTrace();
+            // Tùy chọn: bạn có thể ném một ngoại lệ tùy chỉnh hoặc ném lại SQLException
+            // để chỉ ra rằng có lỗi trong quá trình tính toán.
+            return 0; // Trả về 0 hoặc một giá trị đặc biệt để báo hiệu lỗi
+        }
+        return totalDuration;
     }
 
     public float getFeeService(String serviceName) {
@@ -121,10 +200,14 @@ public class ServiceDAO {
                 int duration = rs.getInt("duration");
                 String description = rs.getString("description");
                 String image = rs.getString("image");
-                String[] images = image.split(",");
-                Service service = new Service(id, name, price, duration, description, images);
+                String[] images = image.split(", ");
+                int categoryId = rs.getInt("categoryId");
+                Service service = new Service(id, name, price, duration, description, images, categoryId);
                 services.add(service);
+                
+                        
             }
+           
             return services;
         } catch (Exception e) {
             System.out.println(e);
@@ -132,17 +215,51 @@ public class ServiceDAO {
         return null;
     }
 
-    public void insertService(String name, double price, int duration, String description) {
-        String sql = "INSERT INTO Service (name, price, duration, description) VALUES (?,?,?,?)";
+   public void insertService(String name, double price, int duration, String description, String image, int categoryID) {
+    String sql = "INSERT INTO Service (name, price, duration, description, image, categoryID) VALUES (?, ?, ?, ?, ?, ?)";
+    try (Connection con = getConnect()) {
+        if (con == null) {
+            System.out.println("ServiceDAO.insertService: Connection is null");
+            return;
+        }
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, name);
+        ps.setDouble(2, price);
+        ps.setInt(3, duration);
+        ps.setString(4, description);
+        ps.setString(5, image);
+        ps.setInt(6, categoryID);
+        int rowsAffected = ps.executeUpdate();
+        System.out.println("ServiceDAO.insertService: Inserted " + rowsAffected + " rows for service: " + name);
+    } catch (Exception e) {
+        System.out.println("ServiceDAO.insertService: Error: " + e.getMessage());
+    }
+}
+public void updateService(int id, String name, float price, int duration, String description, String imagePath, int categoryID) {
+        String sql = "UPDATE Service SET name = ?, price = ?, duration = ?, description = ?, categoryID = ?" +
+                     (imagePath != null ? ", image = ?" : "") + " WHERE id = ?";
         try (Connection con = getConnect()) {
+            if (con == null) {
+                System.out.println("ServiceDAO.updateService: Connection is null");
+                return;
+            }
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, name);
-            ps.setDouble(2, price);
+            ps.setFloat(2, price);
             ps.setInt(3, duration);
             ps.setString(4, description);
-            ps.executeUpdate();
+            ps.setInt(5, categoryID);
+            if (imagePath != null) {
+                ps.setString(6, imagePath);
+                ps.setInt(7, id);
+            } else {
+                ps.setInt(6, id);
+            }
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("ServiceDAO.updateService: Updated " + rowsAffected + " rows for service id=" + id +
+                    ", imagePath=" + imagePath);
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("ServiceDAO.updateService: Error: " + e.getMessage());
         }
     }
 
@@ -190,5 +307,43 @@ public class ServiceDAO {
         }
         return null;
     }
+    public double getServicePriceById(int serviceId) {
+    String sql = "SELECT price FROM Service WHERE id = ?";
+    try (Connection con = AppointmentDAO.getConnect();  // dùng chung connection nếu ServiceDAO không có riêng
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, serviceId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("price");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+
+    public Service getServiceById(int id) {
+    String sql = "SELECT id, name, price FROM Service WHERE id = ?";
+    try (Connection con = AppointmentDAO.getConnect();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Service service = new Service();
+            service.setId(rs.getInt("id"));
+            service.setName(rs.getString("name"));
+            service.setPrice(rs.getFloat("price"));
+            return service;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+    
+    
+
 
 }

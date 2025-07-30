@@ -166,7 +166,7 @@
 
         <!-- Booking CTA Section -->
         <div class="booking-cta py-5 text-center">
-            <a href="#" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
+            <a href="${pageContext.request.contextPath}/ChooseBranchServlet" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
         </div>
         <!-- Footer -->
         <footer class="footer">
