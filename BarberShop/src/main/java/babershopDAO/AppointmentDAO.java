@@ -18,6 +18,8 @@ import static babershopDatabase.databaseInfo.DBURL;
 import static babershopDatabase.databaseInfo.DRIVERNAME;
 import static babershopDatabase.databaseInfo.PASSDB;
 import static babershopDatabase.databaseInfo.USERDB;
+import java.util.HashMap;
+import java.util.Map;
 import model.Appointment;
 import model.AppointmentService;
 import model.Customer;
@@ -45,7 +47,25 @@ public class AppointmentDAO {
         return null;
     }
     
-    
+    public Map<Integer, Integer> getMonthlyCompletedBookingsByStaff() throws SQLException {
+    Map<Integer, Integer> result = new HashMap<>();
+    String sql = 
+        "SELECT staffId, COUNT(*) AS totalBookings " +
+        "FROM Appointment " +
+        "WHERE MONTH(appointmentTime) = MONTH(GETDATE()) " +
+        "  AND YEAR(appointmentTime) = YEAR(GETDATE()) " +
+        "  AND status = 'Completed' " +
+        "GROUP BY staffId";
+
+    try (Connection conn = getConnect();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            result.put(rs.getInt("staffId"), rs.getInt("totalBookings"));
+        }
+    }
+    return result;
+}
     
      public boolean isStaffAvailable(int staffId, LocalDateTime proposedStartTime, int serviceDurationMinutes) throws SQLException {
         LocalDateTime proposedEndTime = proposedStartTime.plusMinutes(serviceDurationMinutes);
@@ -72,7 +92,20 @@ public class AppointmentDAO {
         return false;
     }
 
-    
+    public int countNumberOfAppointment() {
+    String sql = "SELECT COUNT(*) AS totalAppointment FROM [baberShop].[dbo].[Appointment]";
+    int count = 0;
+    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt("totalAppointment"); // hoặc rs.getInt(1)
+        }
+    } catch (Exception e) {
+        System.out.println("🔥 ERROR in countNumberAppointment(): " + e);
+    }
+    return count; // THIẾU return
+}
+
 
   
     public List<Appointment> getAppointmentsByStaffAndDate(int staffId, LocalDate date) {

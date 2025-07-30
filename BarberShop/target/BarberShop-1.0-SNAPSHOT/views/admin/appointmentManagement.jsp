@@ -590,7 +590,7 @@
     <body class="bg-dark">
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
                     <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -627,7 +627,7 @@
 
                 <div class="nav-menu">
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>
@@ -987,7 +987,7 @@
             </div>
         </div>
 
-                            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" style="margin-top: 35px">
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" style="margin-top: 35px">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header text-white">
@@ -1091,7 +1091,6 @@
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
         <script>
-                            // Store customer data directly from JSP for client-side use
                             const allCustomers = [
             <c:forEach var="customer" items="${listCustomer}" varStatus="loop">
                             {
@@ -1103,27 +1102,31 @@
             </c:forEach>
                             ];
                             // Store ALL staff data, including branchId, for client-side filtering
-                            const allStaff = [        <c:forEach var="staff" items="${listStaff}" varStatus="loop"> {
+                            const allStaff = [
+            <c:forEach var="staff" items="${listStaff}" varStatus="loop">
+                            {
                             id: ${staff.id},
                                     firstName: '<c:out value="${staff.firstName != null ? staff.firstName : 'null'}"/>',
                                     lastName: '<c:out value="${staff.lastName != null ? staff.lastName : 'null'}"/>',
                                     branchId: ${staff.branchId}
                             }<c:if test="${!loop.last}">,</c:if>
-            </c:forEach>];
+            </c:forEach>
+                            ];
                             // Store all appointments for client-side filtering
                             const allAppointments = [
             <c:forEach var="appointment" items="${listAppointment}" varStatus="loop">
-                            {id: ${appointment.id}, customerId: ${appointment.customerId}, staffId: ${appointment.staffId}, appointmentTime: '${appointment.appointmentTime}', status: '${appointment.status}', customerName: '${appointment.customerName}', services: '${appointment.services}', totalAmount: ${appointment.totalAmount}, branchId: ${appointment.branchId}
+                            {
+                            id: ${appointment.id}, customerId: ${appointment.customerId}, staffId: ${appointment.staffId}, appointmentTime: '${appointment.appointmentTime}', status: '${appointment.status}', customerName: '${appointment.customerName}', services: '${appointment.services}', totalAmount: ${appointment.totalAmount}, branchId: ${appointment.branchId}
                             }<c:if test="${!loop.last}">,</c:if>
             </c:forEach>
                             ];
-                            // Toggle sidebar for mobile - Copied from dashboard.jsp
+                            // Toggle sidebar for mobile
                             function toggleSidebar() {
                             const sidebar = document.getElementById('sidebar');
                             sidebar.classList.toggle('active');
                             }
 
-                            // Close sidebar when clicking outside on mobile - Copied from dashboard.jsp
+                            // Close sidebar when clicking outside on mobile
                             document.addEventListener('click', function (event) {
                             const sidebar = document.getElementById('sidebar');
                             const menuBtn = document.querySelector('.mobile-menu-btn');
@@ -1227,11 +1230,11 @@
                             // --- FUNCTIONS FOR APPOINTMENT TIME CONSTRAINTS ---
                             let flatpickrInstance = null;
                             let totalServiceDuration = Number("${requestScope.totalServiceDuration}" || 0); // phút
+
                             // Hàm fetch các slot bị chiếm cho staff và ngày
                             async function fetchDisabledSlots(staffId, dateStr) {
                             if (!staffId || !dateStr) return [];
                             try {
-                            // Lấy contextPath từ JSP
                             const contextPath = '${pageContext.request.contextPath}';
                             const baseUrl = contextPath + '/StaffAvailabilityServlet';
                             const params = new URLSearchParams();
@@ -1247,11 +1250,14 @@
                             }
                             }
 
-                            // Sửa lại generateTimeSlots để nhận thêm disabledSlots
-                            async function generateTimeSlots(selectedDate) {
+
+
+                            // Generate time slots
+                            async function generateTimeSlots(selectedDate, staffId = null) {
                             const { DateTime } = luxon;
                             const timeSlotsContainer = document.getElementById('timeSlotsContainer');
                             const addAppointmentTimeHiddenInput = document.getElementById('addAppointmentTime');
+                            // Clear previous content before generating new slots
                             timeSlotsContainer.innerHTML = '';
                             addAppointmentTimeHiddenInput.value = '';
                             if (!selectedDate) {
@@ -1259,7 +1265,6 @@
                             return;
                             }
 
-                            const staffId = document.getElementById('addStaffId').value;
                             const dateStr = selectedDate instanceof Date
                                     ? selectedDate.toISOString().split('T')[0]
                                     : '';
@@ -1294,7 +1299,6 @@
                             let isDisabled = isPastSlot;
                             if (!isDisabled && disabledSlots.length > 0) {
                             isDisabled = disabledSlots.some(slot => {
-                            // slot.startTime, slot.endTime dạng HH:mm
                             const [sh, sm] = slot.startTime.split(':').map(Number);
                             const [eh, em] = slot.endTime.split(':').map(Number);
                             const slotStart = sh * 60 + sm;
@@ -1308,11 +1312,10 @@
                             button.disabled = true;
                             } else {
                             button.addEventListener("click", () => {
-                                document.querySelectorAll(".time-slot").forEach(b => b.classList.remove("selected"));
-                                button.classList.add("selected");
-                                selectedTime = label;
-                                checkStaffAvailabilityForSelectedTime(label); // <-- Gọi hàm này
-                                checkFormComplete();
+                            document.querySelectorAll(".time-slot-btn").forEach(b => b.classList.remove("selected"));
+                            button.classList.add("selected");
+                            addAppointmentTimeHiddenInput.value = slotValue;
+                            if (staffId) checkStaffAvailabilityForSelectedTime(slotText);
                             });
                             }
                             timeSlotsContainer.appendChild(button);
@@ -1325,66 +1328,104 @@
                             }
 
                             async function checkStaffAvailabilityForSelectedTime(selectedLabel) {
-                                if (!selectedLabel || !totalServiceDuration) return;
-
-                                const [hour, minute] = selectedLabel.split(':').map(Number);
-                                const startDate = new Date(bookingDate.value);
-                                startDate.setHours(hour, minute, 0, 0);
-
-                                const staffCards = document.querySelectorAll('.staff-card');
-                                for (const card of staffCards) {
-                                    const staffId = card.getAttribute('data-staff-id');
-                                    let isBusy = false;
-                                    try {
-                                        const contextPath = '${pageContext.request.contextPath}';
-                                        const params = new URLSearchParams();
-                                        params.append('staffId', staffId);
-                                        params.append('appointmentDate', bookingDate.value);
-                                        params.append('startTime', selectedLabel);
-                                        params.append('duration', totalServiceDuration);
-                                        const url = contextPath + '/StaffAvailabilityServlet?' + params.toString();
-                                        const res = await fetch(url);
-                                        if (res.ok) {
-                                            const data = await res.json();
-                                            isBusy = data.busy;
-                                        }
-                                    } catch (e) {
-                                        isBusy = false;
-                                    }
-                                    if (isBusy) {
-                                        card.classList.add('disabled');
-                                        card.style.pointerEvents = 'none';
-                                        card.style.opacity = 0.5;
-                                    } else {
-                                        card.classList.remove('disabled');
-                                        card.style.pointerEvents = '';
-                                        card.style.opacity = '';
-                                    }
-                                }
+                            if (!selectedLabel || !totalServiceDuration) return;
+                            const [hour, minute] = selectedLabel.split(':').map(Number);
+                            const startDate = new Date(document.getElementById('addAppointmentDate').value);
+                            startDate.setHours(hour, minute, 0, 0);
+                            const staffCards = document.querySelectorAll('.staff-card');
+                            for (const card of staffCards) {
+                            const staffId = card.getAttribute('data-staff-id');
+                            let isBusy = false;
+                            try {
+                            const contextPath = '${pageContext.request.contextPath}';
+                            const params = new URLSearchParams();
+                            params.append('staffId', staffId);
+                            params.append('appointmentDate', document.getElementById('addAppointmentDate').value);
+                            params.append('startTime', selectedLabel);
+                            params.append('duration', totalServiceDuration);
+                            const url = contextPath + '/StaffAvailabilityServlet?' + params.toString();
+                            const res = await fetch(url);
+                            if (res.ok) {
+                            const data = await res.json();
+                            isBusy = data.busy;
                             }
+                            } catch (e) {
+                            isBusy = false;
+                            }
+                            if (isBusy) {
+                            card.classList.add('disabled');
+                            card.style.pointerEvents = 'none';
+                            card.style.opacity = 0.5;
+                            } else {
+                            card.classList.remove('disabled');
+                            card.style.pointerEvents = '';
+                            card.style.opacity = '';
+                            }
+                            }
+                            }
+
+                            // Khai báo biến toàn cục cho event handler
+                            let staffChangeHandler = null;
 
                             function initFlatpickrAndGenerateTimeSlots() {
                             const addAppointmentDateInput = document.getElementById('addAppointmentDate');
+                            const addStaffIdSelect = document.getElementById('addStaffId');
+                            // Destroy existing Flatpickr instance if it exists
                             if (flatpickrInstance) {
                             flatpickrInstance.destroy();
+                            flatpickrInstance = null;
                             }
 
+                            const { DateTime } = luxon;
+                            const nowVN = DateTime.now().setZone('Asia/Ho_Chi_Minh');
+                            const today = nowVN.toJSDate();
+                            const tomorrow = nowVN.plus({ days: 1 }).toJSDate();
+                            const dayAfterTomorrow = nowVN.plus({ days: 2 }).toJSDate();
                             flatpickrInstance = flatpickr(addAppointmentDateInput, {
                             inline: false,
-                                    minDate: "today",
+                                    minDate: today,
+                                    maxDate: dayAfterTomorrow,
                                     dateFormat: "Y-m-d",
                                     altInput: true,
                                     altFormat: "d F, Y",
                                     onChange: function (selectedDates, dateStr, instance) {
                                     const selectedFlatpickrDate = selectedDates[0] || null;
-                                    generateTimeSlots(selectedFlatpickrDate);
+                                    if (selectedFlatpickrDate) {
+                                    const staffId = addStaffIdSelect.value || null;
+                                    // Clear existing time slots and reset selection
+                                    const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+                                    timeSlotsContainer.innerHTML = '';
+                                    document.getElementById('addAppointmentTime').value = '';
+                                    document.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
+                                    generateTimeSlots(selectedFlatpickrDate, staffId);
+                                    }
+                                    },
+                                    onReady: function () {
+                                    // Ensure initial time slots are generated for today with current staff
+                                    const staffId = addStaffIdSelect.value || null;
+                                    const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+                                    timeSlotsContainer.innerHTML = '';
+                                    document.getElementById('addAppointmentTime').value = '';
+                                    document.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
+                                    generateTimeSlots(today, staffId);
                                     }
                             });
-                            const {DateTime} = luxon;
-                            const nowVN = DateTime.now().setZone('Asia/Ho_Chi_Minh');
-                            const initialDateStr = nowVN.toFormat('yyyy-MM-dd');
-                            flatpickrInstance.setDate(initialDateStr, true);
-                            generateTimeSlots(new Date(initialDateStr));
+                            // Set default date to today and trigger initial time slot generation
+                            flatpickrInstance.setDate(today, true);
+                            // Đảm bảo chỉ gắn 1 event listener cho staff select
+                            if (staffChangeHandler) {
+                            addStaffIdSelect.removeEventListener('change', staffChangeHandler);
+                            }
+                            staffChangeHandler = function () {
+                            const selectedDate = addAppointmentDateInput.value ? new Date(addAppointmentDateInput.value) : today;
+                            const staffId = this.value || null;
+                            const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+                            timeSlotsContainer.innerHTML = '';
+                            document.getElementById('addAppointmentTime').value = '';
+                            document.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
+                            generateTimeSlots(selectedDate, staffId);
+                            };
+                            addStaffIdSelect.addEventListener('change', staffChangeHandler);
                             }
 
                             // Open add modal
@@ -1399,8 +1440,7 @@
                             document.getElementById('addCustomerId').value = '';
                             document.getElementById('addStaffId').value = '';
                             document.getElementById('addBranchId').value = '';
-                            filterStaffByBranch(); // Filter staff when branch is reset
-
+                            filterStaffByBranch();
                             const addCheckboxes = document.querySelectorAll('input[name="addServiceIds"]');
                             addCheckboxes.forEach(cb => cb.checked = false);
                             initFlatpickrAndGenerateTimeSlots();
@@ -1437,12 +1477,12 @@
                             return;
                             }
 
-                            const {DateTime} = luxon;
-                            const selectedDateTime = DateTime.fromISO(appointmentTime, {zone: 'Asia/Ho_Chi_Minh'});
+                            const { DateTime } = luxon;
+                            const selectedDateTime = DateTime.fromISO(appointmentTime, { zone: 'Asia/Ho_Chi_Minh' });
                             const nowVN = DateTime.now().setZone('Asia/Ho_Chi_Minh');
                             const gracePeriodMs = 5 * 60 * 1000; // 5 minutes
 
-                            if (selectedDateTime < nowVN.minus({milliseconds: gracePeriodMs})) {
+                            if (selectedDateTime < nowVN.minus({ milliseconds: gracePeriodMs })) {
                             showNotification('Thời gian hẹn đã chọn đã trôi qua quá lâu. Vui lòng chọn thời gian gần đây hơn hoặc trong tương lai.', 'error');
                             return;
                             }
@@ -1660,25 +1700,9 @@
                                 branchSelect.addEventListener('change', filterStaffByBranch);
                                 }
 
-                                // Gắn lại event cho staff và ngày
-                                document.getElementById('addStaffId').addEventListener('change', function () {
-                                const dateInput = document.getElementById('addAppointmentDate');
-                                if (dateInput.value) {
-                                generateTimeSlots(new Date(dateInput.value));
-                                } else {
-                                // Nếu chưa chọn ngày, xóa time slot
-                                document.getElementById('timeSlotsContainer').innerHTML = '<span class="text-muted">Vui lòng chọn ngày để xem giờ khả dụng.</span>';
-                                }
-                                });
-                                document.getElementById('addAppointmentDate').addEventListener('change', function () {
-                                const staffId = document.getElementById('addStaffId').value;
-                                if (staffId) {
-                                generateTimeSlots(new Date(this.value));
-                                } else {
-                                // Nếu chưa chọn nhân viên, xóa time slot
-                                document.getElementById('timeSlotsContainer').innerHTML = '<span class="text-muted">Vui lòng chọn nhân viên để xem giờ khả dụng.</span>';
-                                }
-                                });
+                                // Remove redundant date change event listener
+                                // document.getElementById('addAppointmentDate').removeEventListener('change', function() { ... });
+
                                 function filterServicesByPrice() {
                                 var maxPrice = parseInt(document.getElementById('maxPriceInput').value, 10);
                                 var items = document.querySelectorAll('#allServiceList .service-item');

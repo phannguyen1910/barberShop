@@ -85,18 +85,7 @@
                     <h2>Thanh toán thành công!</h2>
                     <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Thông tin lịch hẹn đã được gửi đến email của bạn.</p>
                 </div>
-                <!-- DEBUG: Hiển thị thông tin sẽ gửi về email -->
-                <div class="alert alert-info" style="margin: 20px auto; max-width: 600px;">
-                    <b>DEBUG: Thông tin sẽ gửi về email:</b><br/>
-                    <ul style="text-align:left;">
-                        <li><b>to_email:</b> ${customerEmail}</li>
-                        <li><b>branch_name:</b> ${selectedBranchName}</li>
-                        <li><b>staff_name:</b> ${staffFullName}</li>
-                        <li><b>appointment_time:</b> ${appointmentTime}</li>
-                        <li><b>service_name:</b> ${serviceNamesList}</li>
-                        <li><b>total_amount:</b> ${selectedTotalPrice}</li>
-                    </ul>
-                </div>
+                
                 <div class="text-center" style="margin-top: 20px;">
                     <a href="${pageContext.request.contextPath}/views/common/home.jsp" class="btn btn-primary" style="margin-right: 10px;">← Trở về trang chủ</a>
                     <a href="${pageContext.request.contextPath}/views/booking/chooseBranch.jsp" class="btn btn-success">📅 Đặt lịch mới</a>

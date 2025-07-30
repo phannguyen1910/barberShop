@@ -27,11 +27,14 @@ C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\c
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\AddFeedbackServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\BranchDAO.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\CustomerManagement\BanCustomerServlet.java
+C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\ServiceManagement\ViewServicesServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\Payment\PaymentServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\StaffManagement\ScheduleServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\babershopDAO\AdminDAO.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\Authentication\HolidayServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\StaffManagement\ViewScheduleServlet.java
+C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\UpdateService.java
+C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\AddServiceServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\CustomerManagement\CancelAppointmentServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\AppointmentManagement\DashBoardServlet.java
 C:\Users\LENOVO\Documents\NetBeansProjects\barberShop\BarberShop\src\main\java\controller\Payment\Config.java

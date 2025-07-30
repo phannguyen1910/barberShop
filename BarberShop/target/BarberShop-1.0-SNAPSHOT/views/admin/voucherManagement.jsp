@@ -706,7 +706,7 @@
         <%@ page contentType="text/html; charset=UTF-8" %>
         <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
             <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/views/admin/dashboard.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
                     <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -742,7 +742,7 @@
                 </div>
                 <div class="nav-menu">
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>

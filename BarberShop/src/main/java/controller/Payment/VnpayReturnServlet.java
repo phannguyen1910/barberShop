@@ -77,6 +77,7 @@ public class VnpayReturnServlet extends HttpServlet {
                     // Cập nhật trạng thái lịch hẹn
                     if ("final".equalsIgnoreCase(paymentType)) {
                         appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "Completed");
+                     
                     } else {
                         appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "Confirmed");
                     }
@@ -132,7 +133,7 @@ public class VnpayReturnServlet extends HttpServlet {
         session.removeAttribute("totalServiceDuration");
         session.removeAttribute("selectedBranchName");
         session.removeAttribute("customerEmail");
-        session.removeAttribute("selectedTotalPrice");
+     ;
         session.removeAttribute("selectedBranchId");
         session.removeAttribute("servicesId");
         session.removeAttribute("preSelectedBranchId");

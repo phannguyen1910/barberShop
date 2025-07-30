@@ -6,6 +6,9 @@ import java.util.*;
 import model.Customer;
 
 public class CustomerDAO {
+    
+    
+    
 
     public static Connection getConnect() {
         try {
@@ -17,6 +20,24 @@ public class CustomerDAO {
         return null;
     }
 
+    
+    
+    public int countNumberCustomer() {
+    String sql = "SELECT COUNT(*) AS totalCustomers FROM [baberShop].[dbo].[Customer]";
+    int count = 0;
+    try (Connection con = getConnect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt("totalCustomers"); // hoặc rs.getInt(1)
+        }
+    } catch (Exception e) {
+        System.out.println("🔥 ERROR in countNumberCustomer(): " + e);
+    }
+    return count; // THIẾU return
+}
+
+    
+    
     public static Customer getCustomer(int id) {
         String sql = "SELECT c.id, c.accountId, c.firstName, c.lastName, a.email, a.phoneNumber, a.password, a.role, a.status "
                 + "FROM Customer c JOIN Account a ON c.accountId = a.id WHERE c.id = ?";

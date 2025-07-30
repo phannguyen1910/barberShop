@@ -868,8 +868,8 @@
 
                 <div class="schedule-container">
                     <div class="control-tabs">
-                        
-                        
+
+
                     </div>
 
                     <!-- Tab Quản lý Ngày Lễ -->
@@ -1005,6 +1005,17 @@
                 // Gọi lại sau khi override xong
                 fetchHolidays();
             });
+
+            function saveHoliday() {
+                const dateValue = document.getElementById("holidayDate").value;
+                const today = new Date().toISOString().split("T")[0];
+
+                if (dateValue < today) {
+                    showToast("Không thể chọn ngày quá khứ!");
+                    return;
+                }
+
+
         </script>
 
         <script src="${pageContext.request.contextPath}/js/schedule.js"></script>

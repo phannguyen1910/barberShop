@@ -667,17 +667,25 @@
                 }
 
                 updateCalendar() {
+                    console.log('updateCalendar: currentDate =', this.currentDate);
                     const now = new Date();
                     const minDate = new Date(now);
                     minDate.setDate(minDate.getDate() + 3); // Giới hạn cách 3 ngày từ hiện tại
                     const maxDate = new Date(now);
                     maxDate.setMonth(maxDate.getMonth() + 2); // Giới hạn 2 tháng tới
 
+                    // Không reset lại this.currentDate!
                     if (this.currentDate < minDate || this.currentDate > maxDate) {
-                        this.currentDate = new Date(now);
-                        this.currentDate.setDate(minDate.getDate()); // Đặt ngày hiện tại + 3 ngày
                         this.showToast("Chỉ có thể chọn ngày từ " + minDate.toLocaleDateString('vi-VN') + " đến " + maxDate.toLocaleDateString('vi-VN') + ".", "danger");
                     }
+
+                    // Disable nút chuyển tháng nếu vượt phạm vi
+                    const minMonth = minDate.getMonth() + minDate.getFullYear() * 12;
+                    const maxMonth = maxDate.getMonth() + maxDate.getFullYear() * 12;
+                    const currentMonth = this.currentDate.getMonth() + this.currentDate.getFullYear() * 12;
+
+                    document.querySelector('.month-nav-btn[aria-label="Tháng trước"]').disabled = currentMonth <= minMonth;
+                    document.querySelector('.month-nav-btn[aria-label="Tháng sau"]').disabled = currentMonth >= maxMonth;
 
                     const year = this.currentDate.getFullYear();
                     const month = this.currentDate.getMonth();
@@ -840,13 +848,17 @@
                 }
 
                 previousMonth() {
+                    this.currentDate.setDate(1); // Đặt về ngày đầu tháng trước
                     this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    console.log('previousMonth: currentDate =', this.currentDate);
                     this.loadRegisteredDays();
                     this.updateCalendar();
                 }
 
                 nextMonth() {
+                    this.currentDate.setDate(1); // Đặt về ngày đầu tháng sau
                     this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    console.log('nextMonth: currentDate =', this.currentDate);
                     this.loadRegisteredDays();
                     this.updateCalendar();
                 }

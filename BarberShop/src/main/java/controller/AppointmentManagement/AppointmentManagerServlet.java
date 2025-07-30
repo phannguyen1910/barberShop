@@ -62,6 +62,12 @@ public class AppointmentManagerServlet extends HttpServlet {
         List <Service> services = serviceDAO.getAllService();
         List <Customer> customers  = customerDAO.getAllCustomerInformation();
         List <Staff> staffs = staffDAO.getAllStaffs();
+        
+        for(Staff staff : staffs){
+            System.out.println(staff.getFirstName());
+        }
+        
+        
         List <Branch> branchs = branchDAO.getAllBranches();
         request.setAttribute("listCustomer", customers);
         request.setAttribute("listStaff", staffs);

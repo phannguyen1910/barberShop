@@ -95,7 +95,7 @@ public class RegisterServlet extends HttpServlet {
         customerDAO.insertCustomer(firstName, lastName, email, password, phoneNumber);
         request.setAttribute("Successfuly", message);
         System.out.println(message);
-        request.getRequestDispatcher("views/auth/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
     @Override

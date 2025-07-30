@@ -366,7 +366,7 @@
             .staff-table th,
             .staff-table td {
                 padding: 15px 12px;
-                text-align: left;
+                text-align: center;
                 border-bottom: 1px solid rgba(218, 165, 32, 0.1);
                 vertical-align: middle;
             }
@@ -892,6 +892,7 @@
                                     <th>Email</th>
                                     <th>Số điện thoại</th>
                                     <th>Vai trò</th>
+                                    <th>Số đơn hoàn thành (tháng này)</th>
                                     <th>Trạng thái</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -908,8 +909,8 @@
                                         <td class="staff-name">${staff.firstName} ${staff.lastName}</td>
                                         <td class="staff-email">${staff.email}</td>
                                         <td class="staff-phone">${staff.phoneNumber}</td>
-                                        <td class="staff-branch">${staff.branchId}</td>
                                         <td class="staff-role">${staff.role}</td>
+                                        <td>${staff.monthlyCompletedBookings}</td>
                                         <td>
                                             <c:choose>
                                                 <c:when test="${staff.status == 1}">

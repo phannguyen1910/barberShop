@@ -20,6 +20,7 @@ controller\AdminFeedbackApiServlet.class
 model\Staff.class
 controller\ServiceManagement\VoucherServlet$ResponseWrapper.class
 controller\Payment\VnpayReturnServlet.class
+controller\AddServiceServlet.class
 model\ChatMessage.class
 model\CustomerVoucher.class
 controller\Authentication\ResendOTPServlet.class
@@ -85,6 +86,7 @@ controller\ChatServlet.class
 controller\StaffManagement\StaffAvailabilityServlet$OccupiedTimeSlot.class
 controller\Authentication\LogoutServlet.class
 controller\CustomerManagement\AddCustomerServlet.class
+controller\ServiceManagement\ViewServicesServlet.class
 model\Invoice.class
 babershopDAO\ServiceDAO.class
 controller\Payment\FinalPaymentServlet.class
