@@ -551,7 +551,7 @@
                     <div class="d-flex gap-2 align-items-center">
                         <div class="text-warning d-none d-lg-block me-3">
                             <i class="fas fa-user-shield me-1"></i>
-                             <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
+                            <span> ${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
                         </div>
                         <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
                             <i class="fas fa-sign-out-alt me-1"></i>
@@ -572,7 +572,7 @@
                     <div class="logo">
                         <i class="fas fa-cut"></i>
                     </div>
-                    <div class="logo-text">BarberShop Pro</div>
+                    <div class="logo-text">Cut & Style</div>
                     <div class="logo-subtitle">Admin Dashboard</div>
                 </div>
 
@@ -590,13 +590,13 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link ">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link active">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -608,7 +608,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
                             <i class="fas fa-store"></i>
                             <span>Quản lý Dịch Vụ</span>
                         </a>
@@ -620,7 +620,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <span>Quản lý Doanh thu</span>
                         </a>
@@ -628,7 +628,7 @@
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
                             <i class="fas fa-calendar"></i>
-                            <span>Lịch làm nhân viên</span>
+                            <span>Lịch nghỉ nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
@@ -743,7 +743,7 @@
                                 <th>Ngày gửi</th>
                             </tr>
                         </thead>
-                            <tbody id="feedbackTableBody"></tbody>
+                        <tbody id="feedbackTableBody"></tbody>
                     </table>
                 </div>
             </main>
@@ -794,212 +794,213 @@
         </div>
 
         <script>
-        let feedbacks = [];
-        let filteredFeedbacks = [];
+            let feedbacks = [];
+            let filteredFeedbacks = [];
 
-        document.addEventListener('DOMContentLoaded', function () {
-            fetchFeedbacks();
-        });
+            document.addEventListener('DOMContentLoaded', function () {
+                fetchFeedbacks();
+            });
 
-        function fetchFeedbacks() {
-            fetch('${pageContext.request.contextPath}/admin/api/feedback')
-                .then(response => response.json())
-                .then(data => {
-                    feedbacks = data;
-                    filteredFeedbacks = [...feedbacks];
-                    renderFeedbacks();
-                    updateStatistics();
-                })
-                .catch(error => {
-                    console.error('Error fetching feedbacks:', error);
+            function fetchFeedbacks() {
+                fetch('${pageContext.request.contextPath}/admin/api/feedback')
+                        .then(response => response.json())
+                        .then(data => {
+                            feedbacks = data;
+                            filteredFeedbacks = [...feedbacks];
+                            renderFeedbacks();
+                            updateStatistics();
+                        })
+                        .catch(error => {
+                            console.error('Error fetching feedbacks:', error);
+                        });
+            }
+
+            function renderFeedbacks() {
+                const tableBody = document.getElementById('feedbackTableBody');
+                if (!tableBody)
+                    return;
+                tableBody.innerHTML = '';
+
+                filteredFeedbacks.forEach(feedback => {
+                    const row = document.createElement('tr');
+
+                    // Appointment ID
+                    const idCell = document.createElement('td');
+                    idCell.className = 'appointment-id';
+                    idCell.textContent = feedback.appointmentId || 'N/A';
+                    row.appendChild(idCell);
+
+                    // Staff Name
+                    const staffCell = document.createElement('td');
+                    staffCell.textContent = feedback.staffName || 'N/A';
+                    row.appendChild(staffCell);
+
+                    // Customer Name with Avatar
+                    const customerCell = document.createElement('td');
+                    customerCell.className = 'customer-info';
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.className = 'customer-avatar';
+
+                    // Get first letter of customer name for avatar
+                    let customerInitial = '?';
+                    if (feedback.customerName) {
+                        customerInitial = feedback.customerName.charAt(0).toUpperCase();
+                    } else if (feedback.customerId) {
+                        customerInitial = feedback.customerId.toString().charAt(0);
+                    }
+
+                    avatarDiv.textContent = customerInitial;
+                    const nameDiv = document.createElement('div');
+                    nameDiv.textContent = feedback.customerName || 'Khách hàng #' + feedback.customerId;
+                    customerCell.appendChild(avatarDiv);
+                    customerCell.appendChild(nameDiv);
+                    row.appendChild(customerCell);
+
+                    // Star Rating
+                    const ratingCell = document.createElement('td');
+                    ratingCell.className = 'star-rating';
+                    const rating = feedback.rate || feedback.rating || 0;
+                    for (let i = 0; i < 5; i++) {
+                        const star = document.createElement('i');
+                        star.className = 'fas fa-star';
+                        star.style.color = i < rating ? '#FFC107' : '#ccc';
+                        ratingCell.appendChild(star);
+                    }
+                    row.appendChild(ratingCell);
+
+                    // Feedback Text
+                    const feedbackCell = document.createElement('td');
+                    feedbackCell.className = 'feedback-text';
+                    feedbackCell.textContent = feedback.comment || 'Chưa có phản hồi';
+                    row.appendChild(feedbackCell);
+
+                    // Date
+                    const dateCell = document.createElement('td');
+                    dateCell.className = 'feedback-date';
+                    if (feedback.feedbackTime) {
+                        const date = new Date(feedback.feedbackTime);
+                        dateCell.textContent = date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+                    } else {
+                        dateCell.textContent = 'N/A';
+                    }
+                    row.appendChild(dateCell);
+
+                    tableBody.appendChild(row);
                 });
-        }
 
-        function renderFeedbacks() {
-            const tableBody = document.getElementById('feedbackTableBody');
-            if (!tableBody) return;
-            tableBody.innerHTML = '';
+                updateTableInfo();
+            }
 
-            filteredFeedbacks.forEach(feedback => {
-                const row = document.createElement('tr');
-
-                // Appointment ID
-                const idCell = document.createElement('td');
-                idCell.className = 'appointment-id';
-                idCell.textContent = feedback.appointmentId || 'N/A';
-                row.appendChild(idCell);
-
-                // Staff Name
-                const staffCell = document.createElement('td');
-                staffCell.textContent = feedback.staffName || 'N/A';
-                row.appendChild(staffCell);
-
-                // Customer Name with Avatar
-                const customerCell = document.createElement('td');
-                customerCell.className = 'customer-info';
-                const avatarDiv = document.createElement('div');
-                avatarDiv.className = 'customer-avatar';
-                
-                // Get first letter of customer name for avatar
-                let customerInitial = '?';
-                if (feedback.customerName) {
-                    customerInitial = feedback.customerName.charAt(0).toUpperCase();
-                } else if (feedback.customerId) {
-                    customerInitial = feedback.customerId.toString().charAt(0);
+            function updateTableInfo() {
+                const tableInfo = document.getElementById('tableInfo');
+                if (tableInfo) {
+                    tableInfo.textContent = 'Hiển thị ' + filteredFeedbacks.length + ' phản hồi';
                 }
-                
-                avatarDiv.textContent = customerInitial;
-                const nameDiv = document.createElement('div');
-                nameDiv.textContent = feedback.customerName || 'Khách hàng #' + feedback.customerId;
-                customerCell.appendChild(avatarDiv);
-                customerCell.appendChild(nameDiv);
-                row.appendChild(customerCell);
+            }
 
-                // Star Rating
-                const ratingCell = document.createElement('td');
-                ratingCell.className = 'star-rating';
-                const rating = feedback.rate || feedback.rating || 0;
-                for (let i = 0; i < 5; i++) {
-                    const star = document.createElement('i');
-                    star.className = 'fas fa-star';
-                    star.style.color = i < rating ? '#FFC107' : '#ccc';
-                    ratingCell.appendChild(star);
+            function updateStatistics() {
+                // Calculate total feedbacks
+                document.getElementById('totalFeedbacks').textContent = feedbacks.length;
+
+                // Calculate average rating
+                if (feedbacks.length > 0) {
+                    const totalRating = feedbacks.reduce((sum, feedback) => {
+                        return sum + (feedback.rate || feedback.rating || 0);
+                    }, 0);
+                    const avgRating = (totalRating / feedbacks.length).toFixed(1);
+                    document.getElementById('avgRating').textContent = avgRating;
                 }
-                row.appendChild(ratingCell);
 
-                // Feedback Text
-                const feedbackCell = document.createElement('td');
-                feedbackCell.className = 'feedback-text';
-                feedbackCell.textContent = feedback.comment || 'Chưa có phản hồi';
-                row.appendChild(feedbackCell);
+                // Calculate unique customers
+                const uniqueCustomers = new Set(feedbacks.map(feedback => feedback.customerId)).size;
+                document.getElementById('uniqueCustomers').textContent = uniqueCustomers;
 
-                // Date
-                const dateCell = document.createElement('td');
-                dateCell.className = 'feedback-date';
-                if (feedback.feedbackTime) {
-                    const date = new Date(feedback.feedbackTime);
-                    dateCell.textContent = date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
-                } else {
-                    dateCell.textContent = 'N/A';
+                // Calculate unique staff
+                const uniqueStaff = new Set(feedbacks.map(feedback => feedback.staffId)).size;
+                document.getElementById('uniqueStaff').textContent = uniqueStaff;
+            }
+
+            function searchFeedbacks() {
+                const searchTerm = document.getElementById('searchFeedback').value.toLowerCase();
+                const ratingFilter = document.getElementById('searchRating').value;
+
+                filteredFeedbacks = feedbacks.filter(feedback => {
+                    const customerNameMatch = !searchTerm ||
+                            (feedback.customerName && feedback.customerName.toLowerCase().includes(searchTerm)) ||
+                            (feedback.appointmentId && feedback.appointmentId.toString().includes(searchTerm));
+
+                    const ratingMatch = !ratingFilter ||
+                            (feedback.rate && feedback.rate.toString() === ratingFilter) ||
+                            (feedback.rating && feedback.rating.toString() === ratingFilter);
+
+                    return customerNameMatch && ratingMatch;
+                });
+
+                renderFeedbacks();
+            }
+
+            function resetFilters() {
+                document.getElementById('searchFeedback').value = '';
+                document.getElementById('searchRating').value = '';
+                filteredFeedbacks = [...feedbacks];
+                renderFeedbacks();
+            }
+
+            function addFeedback() {
+                const staffName = document.getElementById('staffName').value;
+                const customerName = document.getElementById('customerName').value;
+                const appointmentId = document.getElementById('appointmentId').value;
+                const rating = document.getElementById('rating').value;
+                const feedbackText = document.getElementById('feedbackText').value;
+
+                if (!staffName || !customerName || !appointmentId || !feedbackText) {
+                    alert('Vui lòng điền đầy đủ thông tin!');
+                    return;
                 }
-                row.appendChild(dateCell);
 
-                tableBody.appendChild(row);
+                // Here you would typically send an AJAX request to add the feedback
+                console.log('Adding feedback:', {
+                    staffName,
+                    customerName,
+                    appointmentId,
+                    rating,
+                    feedbackText
+                });
+
+                alert('Phản hồi đã được thêm thành công!');
+
+                // Reset form and close modal
+                document.getElementById('staffName').value = '';
+                document.getElementById('customerName').value = '';
+                document.getElementById('appointmentId').value = '';
+                document.getElementById('rating').value = '5';
+                document.getElementById('feedbackText').value = '';
+
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addFeedbackModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }
+
+            // Toggle sidebar for mobile
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('active');
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function (event) {
+                const sidebar = document.getElementById('sidebar');
+                const mobileBtn = document.querySelector('.mobile-menu-btn');
+
+                if (window.innerWidth <= 768 &&
+                        !sidebar.contains(event.target) &&
+                        !mobileBtn.contains(event.target) &&
+                        sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
             });
-
-            updateTableInfo();
-        }
-
-        function updateTableInfo() {
-            const tableInfo = document.getElementById('tableInfo');
-            if (tableInfo) {
-                tableInfo.textContent = 'Hiển thị ' + filteredFeedbacks.length + ' phản hồi';
-            }
-        }
-
-        function updateStatistics() {
-            // Calculate total feedbacks
-            document.getElementById('totalFeedbacks').textContent = feedbacks.length;
-
-            // Calculate average rating
-            if (feedbacks.length > 0) {
-                const totalRating = feedbacks.reduce((sum, feedback) => {
-                    return sum + (feedback.rate || feedback.rating || 0);
-                }, 0);
-                const avgRating = (totalRating / feedbacks.length).toFixed(1);
-                document.getElementById('avgRating').textContent = avgRating;
-            }
-
-            // Calculate unique customers
-            const uniqueCustomers = new Set(feedbacks.map(feedback => feedback.customerId)).size;
-            document.getElementById('uniqueCustomers').textContent = uniqueCustomers;
-
-            // Calculate unique staff
-            const uniqueStaff = new Set(feedbacks.map(feedback => feedback.staffId)).size;
-            document.getElementById('uniqueStaff').textContent = uniqueStaff;
-        }
-
-        function searchFeedbacks() {
-            const searchTerm = document.getElementById('searchFeedback').value.toLowerCase();
-            const ratingFilter = document.getElementById('searchRating').value;
-            
-            filteredFeedbacks = feedbacks.filter(feedback => {
-                const customerNameMatch = !searchTerm || 
-                    (feedback.customerName && feedback.customerName.toLowerCase().includes(searchTerm)) ||
-                    (feedback.appointmentId && feedback.appointmentId.toString().includes(searchTerm));
-                
-                const ratingMatch = !ratingFilter || 
-                    (feedback.rate && feedback.rate.toString() === ratingFilter) ||
-                    (feedback.rating && feedback.rating.toString() === ratingFilter);
-                
-                return customerNameMatch && ratingMatch;
-            });
-            
-            renderFeedbacks();
-        }
-
-        function resetFilters() {
-            document.getElementById('searchFeedback').value = '';
-            document.getElementById('searchRating').value = '';
-            filteredFeedbacks = [...feedbacks];
-            renderFeedbacks();
-        }
-
-        function addFeedback() {
-            const staffName = document.getElementById('staffName').value;
-            const customerName = document.getElementById('customerName').value;
-            const appointmentId = document.getElementById('appointmentId').value;
-            const rating = document.getElementById('rating').value;
-            const feedbackText = document.getElementById('feedbackText').value;
-
-            if (!staffName || !customerName || !appointmentId || !feedbackText) {
-                alert('Vui lòng điền đầy đủ thông tin!');
-                return;
-            }
-
-            // Here you would typically send an AJAX request to add the feedback
-            console.log('Adding feedback:', {
-                staffName,
-                customerName,
-                appointmentId,
-                rating,
-                feedbackText
-            });
-
-            alert('Phản hồi đã được thêm thành công!');
-            
-            // Reset form and close modal
-            document.getElementById('staffName').value = '';
-            document.getElementById('customerName').value = '';
-            document.getElementById('appointmentId').value = '';
-            document.getElementById('rating').value = '5';
-            document.getElementById('feedbackText').value = '';
-            
-            // Close modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addFeedbackModal'));
-            if (modal) {
-                modal.hide();
-            }
-        }
-
-        // Toggle sidebar for mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function (event) {
-            const sidebar = document.getElementById('sidebar');
-            const mobileBtn = document.querySelector('.mobile-menu-btn');
-
-            if (window.innerWidth <= 768 &&
-                    !sidebar.contains(event.target) &&
-                    !mobileBtn.contains(event.target) &&
-                    sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            }
-        });
         </script>
     </body>
 </html>

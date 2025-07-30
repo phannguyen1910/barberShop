@@ -80,6 +80,7 @@ public class AddAppointmentServlet extends HttpServlet {
 
         System.out.println("\n--- AddAppointmentServlet: Starting POST Request ---");
 
+
         try {
             StringBuilder sb = new StringBuilder();
             try (BufferedReader reader = request.getReader()) {
@@ -101,7 +102,6 @@ public class AddAppointmentServlet extends HttpServlet {
                 out.close();
                 return;
             }
-
             JsonObject receivedData = null;
             try {
                 receivedData = gson.fromJson(jsonBody, JsonObject.class);
@@ -120,7 +120,7 @@ public class AddAppointmentServlet extends HttpServlet {
             int staffId;
             String appointmentTimeStr;
             LocalDateTime appointmentDateTime;
- 
+
             int branchId; // Added
             List<Integer> serviceIds = new ArrayList<>();
 
@@ -148,16 +148,12 @@ public class AddAppointmentServlet extends HttpServlet {
                     throw new IllegalArgumentException("Trường 'appointmentTime' bị thiếu hoặc sai định dạng.");
                 }
 
-    
-             
-
                 // Added parsing for branchId
                 if (receivedData.has("branchId") && receivedData.get("branchId").isJsonPrimitive()) {
                     branchId = receivedData.get("branchId").getAsInt();
                 } else {
                     throw new IllegalArgumentException("Trường 'branchId' bị thiếu hoặc sai định dạng.");
                 }
-
 
                 if (receivedData.has("serviceIds") && receivedData.get("serviceIds").isJsonArray()) {
                     serviceIds = receivedData.getAsJsonArray("serviceIds").asList().stream()
@@ -172,7 +168,7 @@ public class AddAppointmentServlet extends HttpServlet {
                         + ", ServiceIDs=" + serviceIds);
 
                 boolean success = appointmentDAO.addAppointmentByAdmin(customerId, staffId, appointmentDateTime, branchId, serviceIds);
-    
+
                 System.out.println("DEBUG: DAO addAppointment returned: " + success);
 
                 if (success) {

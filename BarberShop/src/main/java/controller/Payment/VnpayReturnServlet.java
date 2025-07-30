@@ -121,10 +121,7 @@ public class VnpayReturnServlet extends HttpServlet {
 
     }
 
-    /**
-     * Xóa tất cả session liên quan đến booking để tránh thông tin cũ còn lưu
-     * khi người dùng đặt lịch mới
-     */
+ 
     private void clearBookingSession(HttpSession session) {
         // Xóa session booking cơ bản
         session.removeAttribute("serviceNames");

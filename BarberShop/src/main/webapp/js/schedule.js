@@ -45,7 +45,6 @@ async function fetchHolidays() {
 // Đảm bảo khi trang load, dữ liệu được gọi theo thứ tự hợp lý
 window.addEventListener("DOMContentLoaded", async () => {
     await fetchHolidays();
-    await fetchStaffList();
 });
 
 // Hiển thị lịch theo tháng và ngày lễ
@@ -110,11 +109,13 @@ function renderCalendar() {
                     deleteHoliday(dateStr);
                     modal.hide();
                 }
-        };
-        const modalFooter = document.querySelector('#addHolidayModal .modal-footer');
+            };
+            const modalFooter = document.querySelector('#addHolidayModal .modal-footer');
             const existingDeleteBtn = modalFooter.querySelector('.btn-danger');
-            if (existingDeleteBtn) existingDeleteBtn.remove();
-            if (holiday) modalFooter.insertBefore(deleteButton, modalFooter.firstChild);
+            if (existingDeleteBtn)
+                existingDeleteBtn.remove();
+            if (holiday)
+                modalFooter.insertBefore(deleteButton, modalFooter.firstChild);
         });
 
         // Fade-in effect
@@ -154,21 +155,32 @@ function nextMonth() {
 
 // Thêm hoặc cập nhật ngày lễ
 async function saveHoliday() {
-    const date = document.getElementById('holidayDate').value;
-    const name = document.getElementById('holidayName').value;
+    const date = document.getElementById('holidayDate').value.trim();
+    const name = document.getElementById('holidayName').value.trim();
     const status = document.getElementById('holidayStatus').value;
 
+    // Kiểm tra dữ liệu bắt buộc
     if (!date || !name) {
         showToast('Vui lòng nhập đầy đủ thông tin ngày lễ!');
         return;
     }
 
-    const holiday = {date, name, status};
+    // Kiểm tra ngày không được là quá khứ
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // loại bỏ giờ
+    const selectedDate = new Date(date);
+
+    if (selectedDate < today) {
+        showToast('Không thể chọn ngày quá khứ!');
+        return;
+    }
+
+    const holiday = { date, name, status };
 
     try {
         await fetch(`${contextPath}/api/holidays`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(holiday)
         });
 
@@ -183,7 +195,6 @@ async function saveHoliday() {
         bootstrap.Modal.getInstance(document.getElementById('addHolidayModal')).hide();
 
         // Tải lại danh sách
-        await fetchHolidays();
         await fetchHolidays();
 
     } catch (err) {
@@ -205,52 +216,6 @@ async function deleteHoliday(date) {
         console.error("Lỗi khi xoá ngày lễ:", err);
         showToast('Lỗi khi xoá ngày lễ!');
     }
-}
-
-// Tải lịch làm việc của nhân viên từ server
-async function loadStaffSchedule() {
-    const date = document.getElementById('staffScheduleDate').value;
-    const staffId = document.getElementById('staffSelect').value;
-    if (!date || !staffId)
-        return;
-
-    try {
-        const res = await fetch(`${contextPath}/api/staff-schedule?staffId=${staffId}&date=${date}`);
-        const data = await res.json();
-        staffSchedules[`${staffId}_${date}`] = data;
-        renderStaffSchedule(staffId, date);
-        updateInfoCards();
-    } catch (err) {
-        console.error("Lỗi khi tải lịch làm việc:", err);
-    }
-}
-
-// Gửi lịch làm việc mới lên server
-async function saveStaffSchedule(staffId, date) {
-    const data = staffSchedules[`${staffId}_${date}`];
-    try {
-        await fetch(`${contextPath}/api/staff-schedule`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({staffId, date, schedules: data})
-        });
-        showToast('Đã lưu lịch làm việc!');
-    } catch (err) {
-        console.error("Lỗi khi lưu lịch làm việc:", err);
-        showToast('Lỗi khi lưu lịch làm việc!');
-    }
-}
-
-// Hiển thị lịch làm việc nhân viên
-function renderStaffSchedule(staffId, date) {
-    const staffScheduleList = document.getElementById('staffScheduleList');
-    const schedules = staffSchedules[`${staffId}_${date}`] || [];
-    const html = schedules.map(slot => `
-        <div class="time-slot ${slot.status}" onclick="toggleSlotStatus(${staffId}, '${date}', '${slot.time}')">
-            ${slot.time}
-        </div>
-    `).join('');
-    staffScheduleList.innerHTML = html;
 }
 
 function toggleSlotStatus(staffId, date, time) {
@@ -284,14 +249,6 @@ function showToast(message) {
     }, 3000);
 }
 
-
-// Gọi khi trang load
-document.addEventListener('DOMContentLoaded', () => {
-    fetchHolidays();
-    fetchStaffList();
-    document.getElementById('staffScheduleDate').addEventListener('change', loadStaffSchedule);
-    document.getElementById('staffSelect').addEventListener('change', loadStaffSchedule);
-});
 function renderHolidayList() {
     const container = document.getElementById("holidayList");
     container.innerHTML = "";
@@ -319,24 +276,41 @@ function renderHolidayList() {
         container.appendChild(item);
     });
 }
-function switchTab(tabName) {
-    const tabs = ['holidays', 'staff'];
-    tabs.forEach(tab => {
-        const btn = document.getElementById(`${tab}Tab`);
-        const content = document.getElementById(`${tab}Content`);
-        if (tab === tabName) {
-            btn.classList.add('active');
-            content.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-            content.classList.remove('active');
-        }
-    });
-}
+
 
 function confirmDeleteHoliday(date) {
     if (confirm("Bạn có chắc chắn muốn xóa ngày lễ này?")) {
         deleteHoliday(date);
+    }
+}
+
+
+window.addEventListener("DOMContentLoaded", () => {
+    const originalFetchHolidays = fetchHolidays;
+    fetchHolidays = async function () {
+        try {
+            const res = await fetch(`${contextPath}/api/holidays`);
+            holidays = await res.json();
+            console.log("Dữ liệu ngày lễ:", holidays);
+            renderCalendar();
+            renderHolidayList(); // Gọi hiển thị danh sách
+            updateInfoCards();
+        } catch (err) {
+            console.error("Lỗi khi tải danh sách ngày lễ:", err);
+        }
+    }
+
+    // Gọi lại sau khi override xong
+    fetchHolidays();
+});
+
+function saveHolidays() {
+    const dateValue = document.getElementById("holidayDate").value;
+    const today = new Date().toISOString().split("T")[0];
+
+    if (dateValue < today) {
+        showToast("Không thể chọn ngày quá khứ!");
+        return;
     }
 }
 // Ghi nhớ tab active khi reload
@@ -345,10 +319,3 @@ window.addEventListener('beforeunload', () => {
     if (activeTab)
         localStorage.setItem('activeTab', activeTab);
 });
-
-window.addEventListener('DOMContentLoaded', () => {
-    const savedTab = localStorage.getItem('activeTab');
-    if (savedTab)
-        switchTab(savedTab.replace('Tab', ''));
-});
-

@@ -647,7 +647,7 @@
                             </a>
                         </div>
                         <div class="nav-item">
-                            <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
                                 <i class="fas fa-store"></i>
                                 <span>Quản lý Dịch Vụ</span>
                             </a>
@@ -667,7 +667,7 @@
                         <div class="nav-item">
                             <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
                                 <i class="fas fa-calendar"></i>
-                                <span>Lịch làm nhân viên</span>
+                                <span>Lịch nghỉ nhân viên</span>
                             </a>
                         </div>
                         <div class="nav-item">
@@ -753,14 +753,7 @@
                                 <label for="searchPhone">SĐT</label>
                                 <input type="text" name="phone" class="search-input" placeholder="Nhập số điện thoại...">
                             </div>
-                            <div class="search-group">
-                                <label for="sortBy">Sắp xếp</label>
-                                <select name="sort" class="search-select">
-                                    <option value="">Mặc định</option>
-                                    <option value="id_asc">ID tăng dần</option>
-                                    <option value="id_desc">ID giảm dần</option>
-                                </select>
-                            </div>
+                            
 
                             <div class="search-group" style="align-self: flex-end;">
                                 <button type="submit" class="btn btn-secondary">Tìm kiếm </button>

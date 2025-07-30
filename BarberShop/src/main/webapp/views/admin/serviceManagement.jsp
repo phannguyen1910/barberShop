@@ -68,27 +68,79 @@
     <i class="fas fa-bars"></i>
 </button>
 
-<div class="dashboard-layout">
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo"><i class="fas fa-cut"></i></div>
-            <div class="logo-text">BarberShop Pro</div>
-            <div class="logo-subtitle">Admin Dashboard</div>
-        </div>
-        <div class="nav-menu">
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/admin/view-customers" class="nav-link"><i class="fas fa-users"></i> Quản lý Khách hàng</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link"><i class="fas fa-user-tie"></i> Quản lý Nhân viên</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/appointmentManagement.jsp" class="nav-link"><i class="fas fa-calendar-check"></i> Quản lý Lịch hẹn</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/feedbackManagement.jsp" class="nav-link"><i class="fas fa-comments"></i> Quản lý Phản hồi</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link active"><i class="fas fa-store"></i> Quản lý Dịch vụ</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/voucherManagement.jsp" class="nav-link"><i class="fas fa-ticket-alt"></i> Quản lý Voucher</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/franchiseManagement.jsp" class="nav-link"><i class="fas fa-handshake"></i> Quản lý Nhượng quyền</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/revenueManagement.jsp" class="nav-link"><i class="fas fa-chart-line"></i> Quản lý Doanh thu</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link"><i class="fas fa-calendar"></i> Lịch làm nhân viên</a></div>
-            <div class="nav-item"><a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link"><i class="fas fa-calendar"></i> Quản lý ngày nghỉ</a></div>
-        </div>
-    </nav>
+ <div class="dashboard-layout">
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <div class="logo-text">Cut & Style</div>
+                    <div class="logo-subtitle">Admin Dashboard</div>
+                </div>
+
+                <div class="nav-menu">
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/admin/view-customers" class="nav-link">
+                            <i class="fas fa-users"></i>
+                            <span>Quản lý Khách hàng</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Quản lý Nhân viên</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link active">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Quản lý Lịch hẹn</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/feedbackManagement.jsp" class="nav-link">
+                            <i class="fas fa-comments"></i>
+                            <span>Quản lý Phản hồi</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
+                            <i class="fas fa-store"></i>
+                            <span>Quản lý Dịch Vụ</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/voucherManagement.jsp" class="nav-link">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Quản lý Voucher</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/RevenueManagementServlet" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Quản lý Doanh thu</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Lịch nghỉ nhân viên</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="${pageContext.request.contextPath}/views/admin/Holiday.jsp" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Quản lí ngày nghỉ</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
 
     <main class="main-content">
         <div class="header">

@@ -737,9 +737,10 @@
                     <div class="logo">
                         <i class="fas fa-cut"></i>
                     </div>
-                    <div class="logo-text">BarberShop Pro</div>
+                    <div class="logo-text">Cut & Style</div>
                     <div class="logo-subtitle">Admin Dashboard</div>
                 </div>
+
                 <div class="nav-menu">
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/DashboardServlet" class="nav-link">
@@ -754,13 +755,13 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link ">
+                        <a href="${pageContext.request.contextPath}/admin/view-staff" class="nav-link">
                             <i class="fas fa-user-tie"></i>
                             <span>Quản lý Nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/AppointmentManagerServlet" class="nav-link active">
                             <i class="fas fa-calendar-check"></i>
                             <span>Quản lý Lịch hẹn</span>
                         </a>
@@ -772,7 +773,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
                             <i class="fas fa-store"></i>
                             <span>Quản lý Dịch Vụ</span>
                         </a>
@@ -792,7 +793,7 @@
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
                             <i class="fas fa-calendar"></i>
-                            <span>Lịch làm nhân viên</span>
+                           <span>Lịch nghỉ nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">

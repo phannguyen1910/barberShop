@@ -197,7 +197,7 @@ public class BookingServlet extends HttpServlet {
                 throw new IllegalArgumentException("Vui lòng chọn nhân viên!");
             }
 
-            System.out.println("Booking POST received - Staff ID: " + staffId);
+     
 
             ServiceDAO serviceDAO = new ServiceDAO();
             StaffDAO staffDAO = new StaffDAO();

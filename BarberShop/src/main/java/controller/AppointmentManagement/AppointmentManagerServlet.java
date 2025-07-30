@@ -1,6 +1,5 @@
 package controller.AppointmentManagement;
 
-import babershopDAO.AccountDAO;
 import babershopDAO.AppointmentDAO;
 import babershopDAO.BranchDAO;
 import babershopDAO.CustomerDAO;
@@ -13,10 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import model.Appointment;
-import model.AppointmentService;
 import model.Branch;
 import model.Customer;
 import model.Service;

@@ -6,7 +6,6 @@ import babershopDAO.AdminDAO;
 import babershopDAO.CustomerDAO;
 import babershopDAO.StaffDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
@@ -20,10 +19,6 @@ import model.Customer;
 import model.GoogleAccount;
 import model.Staff;
 
-/**
- *
- * @author LENOVO
- */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login", "/updatePhone"})
 public class LoginServlet extends HttpServlet {
 
@@ -32,7 +27,7 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         String servletPath = request.getServletPath();
-        System.out.println("Servlet Path: " + servletPath); // Log để debug
+        System.out.println("Servlet Path: " + servletPath);
 
         if ("/updatePhone".equals(servletPath)) {
             System.out.println("Processing /updatePhone in doGet");
@@ -40,7 +35,6 @@ public class LoginServlet extends HttpServlet {
             String phoneNumber = request.getParameter("phoneNumber");
             System.out.println("Email: " + email + ", PhoneNumber: " + phoneNumber);
 
-            // Cập nhật phoneNumber vào cơ sở dữ liệu
             try (java.sql.Connection conn = AccountDAO.getConnect();
                  java.sql.PreparedStatement stmt = conn.prepareStatement("UPDATE [dbo].[Account] SET phoneNumber = ? WHERE email = ?")) {
                 stmt.setString(1, phoneNumber);
@@ -49,17 +43,15 @@ public class LoginServlet extends HttpServlet {
                 System.out.println("Rows affected: " + rowsAffected);
             } catch (java.sql.SQLException e) {
                 e.printStackTrace();
-                response.sendRedirect(request.getContextPath() + "/views/auth/phoneInput.jsp?error=update_failed");
+                request.setAttribute("errorMes", "Cập nhật số điện thoại thất bại!");
+                request.getRequestDispatcher("/views/auth/phoneInput.jsp").forward(request, response);
                 return;
             }
 
-            // Lấy lại tài khoản và lưu vào session
             Account account = AccountDAO.getAccountByEmail(email);
             if (account != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("account", account);
-
-                // Lưu thông tin customer, staff, admin vào session
                 Customer customer = CustomerDAO.getCustomerByAccountId(account.getId());
                 session.setAttribute("customer", customer);
                 Staff staff = StaffDAO.getStaffByAccountId(account.getId());
@@ -67,7 +59,6 @@ public class LoginServlet extends HttpServlet {
                 Admin admin = AdminDAO.getAdminByAccountId(account.getId());
                 session.setAttribute("admin", admin);
 
-                // Chuyển hướng dựa trên role
                 if ("Admin".equals(account.getRole())) {
                     response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
                 } else if ("Staff".equals(account.getRole())) {
@@ -76,33 +67,27 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/views/common/home.jsp");
                 }
             } else {
-                response.sendRedirect(request.getContextPath() + "/login.jsp?error=account_not_found");
+                request.setAttribute("errorMes", "Không tìm thấy tài khoản!");
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             }
         } else {
-            // Xử lý Google OAuth callback (logic đăng nhập bằng Google)
             String code = request.getParameter("code");
             if (code != null && !code.isEmpty()) {
                 try {
-                    // Bước 1: Lấy access token từ Google
                     GoogleLogin gg = new GoogleLogin();
                     String accessToken = gg.getToken(code);
                     System.out.println("Access Token: " + accessToken);
-                    // Bước 2: Lấy thông tin user từ Google
                     GoogleAccount googleAcc = gg.getUserInfo(accessToken);
                     System.out.println("Google Account: " + googleAcc);
                     if (googleAcc != null && googleAcc.getEmail() != null) {
                         String email = googleAcc.getEmail();
                         String name = googleAcc.getName();
-                        // Bước 3: Kiểm tra xem email đã tồn tại trong database chưa
                         Account existingAccount = AccountDAO.getAccountByEmail(email);            
                         if (existingAccount == null) {
-                            // Bước 4: Nếu chưa tồn tại, tạo account mới
                             System.out.println("Tạo account mới cho email: " + email);                       
-                            // Tạo Account mới với role Customer
                             int accountId = AccountDAO.addAccount(email, null);
                             
                             if (accountId > 0) {
-                                // Tách tên từ Google name (firstName, lastName)
                                 String firstName = "";
                                 String lastName = "";
                                 
@@ -113,7 +98,6 @@ public class LoginServlet extends HttpServlet {
                                         lastName = "";
                                     } else if (nameParts.length >= 2) {
                                         firstName = nameParts[0];
-                                        // Ghép các phần còn lại thành lastName
                                         StringBuilder lastNameBuilder = new StringBuilder();
                                         for (int i = 1; i < nameParts.length; i++) {
                                             if (i > 1) lastNameBuilder.append(" ");
@@ -125,18 +109,16 @@ public class LoginServlet extends HttpServlet {
                                     firstName = "User";
                                     lastName = "";
                                 }
-                                // Tạo Customer record
                                 CustomerDAO.insertCustomer(accountId, firstName, lastName);
-                                // Chuyển hướng đến trang nhập số điện thoại
                                 request.setAttribute("email", email);
                                 request.getRequestDispatcher("/views/auth/phoneInput.jsp").forward(request, response);
                                 return;
                             } else {
-                                response.sendRedirect(request.getContextPath() + "/login.jsp?error=create_account_failed");
+                                request.setAttribute("errorMes", "Tạo tài khoản thất bại!");
+                                request.getRequestDispatcher("/login.jsp").forward(request, response);
                                 return;
                             }
                         } else {
-                            // Kiểm tra nếu phoneNumber là null hoặc rỗng
                             if (existingAccount.getPhoneNumber() == null || existingAccount.getPhoneNumber().trim().isEmpty()) {
                                 request.setAttribute("email", email);
                                 request.getRequestDispatcher("/views/auth/phoneInput.jsp").forward(request, response);
@@ -145,8 +127,6 @@ public class LoginServlet extends HttpServlet {
                             
                             HttpSession session = request.getSession();
                             session.setAttribute("account", existingAccount);
-
-                            // Lưu thông tin customer, staff, admin vào session
                             Customer customer = CustomerDAO.getCustomerByAccountId(existingAccount.getId());
                             session.setAttribute("customer", customer);
                             Staff staff = StaffDAO.getStaffByAccountId(existingAccount.getId());
@@ -154,7 +134,6 @@ public class LoginServlet extends HttpServlet {
                             Admin admin = AdminDAO.getAdminByAccountId(existingAccount.getId());
                             session.setAttribute("admin", admin);
 
-                            // Chuyển hướng dựa trên role
                             if ("Admin".equals(existingAccount.getRole())) {
                                 response.sendRedirect(request.getContextPath() + "/DashboardServlet");
                             } else if ("Staff".equals(existingAccount.getRole())) {
@@ -164,14 +143,16 @@ public class LoginServlet extends HttpServlet {
                             }
                         }
                     } else {
-                        response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_info_failed");
+                        request.setAttribute("errorMes", "Không lấy được thông tin từ Google!");
+                        request.getRequestDispatcher("/login.jsp").forward(request, response);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_login_failed");
+                    request.setAttribute("errorMes", "Đăng nhập bằng Google thất bại!");
+                    request.getRequestDispatcher("/login.jsp").forward(request, response);
                 }
             } else {
-                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             }
         }
     }
@@ -185,13 +166,11 @@ public class LoginServlet extends HttpServlet {
         System.out.println("Email: " + email);
         System.out.println("Password: " + password);
 
-        // Sử dụng AccountDAO để kiểm tra đăng nhập
         Account account = AccountDAO.checkAccount(email, password);
 
         if (account != null) {
             HttpSession session = request.getSession();
             session.setAttribute("account", account);
-
             Customer customer = CustomerDAO.getCustomerByAccountId(account.getId());
             session.setAttribute("customer", customer);
             Staff staff = StaffDAO.getStaffByAccountId(account.getId());
@@ -205,14 +184,13 @@ public class LoginServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/views/common/home.jsp");
             }
-            // Lưu email vào cookie nếu 'remember me' được chọn
             if ("on".equals(remember)) {
                 Cookie userCookie = new Cookie("username", email);
                 userCookie.setMaxAge(3 * 24 * 60 * 60);
                 response.addCookie(userCookie);
             }
         } else {
-            request.setAttribute("loginError", "Sai email hoặc mật khẩu!");
+            request.setAttribute("errorMes", "Sai email hoặc mật khẩu!");
             System.out.println("Login fail");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }

@@ -245,7 +245,7 @@
         checkFormComplete();
     }
 
-    // Hàm bỏ chọn nhân viên hiện tại
+  
     function clearStaffSelection() {
         const allStaffCards = document.querySelectorAll('.staff-card');
         allStaffCards.forEach(card => {

@@ -492,7 +492,8 @@ public class AppointmentDAO {
 
     public List<Appointment> getAllAppointmentsWithDetails() {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId, [TotalDurationMinutes] FROM Appointment";
+        String sql = "SELECT id, customerId, staffId, appointmentTime, status, branchId, [TotalDurationMinutes] FROM Appointment ORDER BY id DESC";
+
         try (Connection con = getConnect()) {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -712,7 +713,7 @@ public class AppointmentDAO {
                 + "INNER JOIN Staff s ON a.staffId = s.id "
                 + "INNER JOIN Branch b ON a.branchId = b.id "
                 + "WHERE a.customerId = ? "
-                + "ORDER BY a.appointmentTime DESC";
+                + "ORDER BY a.id DESC";
         String sql2 = "SELECT s.name, s.price FROM Appointment_Service aps JOIN Service s ON aps.serviceId = s.id WHERE aps.appointmentId = ?";
 
         try (Connection con = getConnect()) {

@@ -657,7 +657,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
                             <i class="fas fa-store"></i>
                             <span>Quản lý Dịch Vụ</span>
                         </a>
@@ -677,7 +677,7 @@
                     <div class="nav-item">
                         <a href="${pageContext.request.contextPath}/ViewScheduleServlet" class="nav-link">
                             <i class="fas fa-calendar"></i>
-                            <span>Lịch làm nhân viên</span>
+                            <span>Lịch nghỉ nhân viên</span>
                         </a>
                     </div>
                     <div class="nav-item">
@@ -1115,7 +1115,8 @@
                             // Store all appointments for client-side filtering
                             const allAppointments = [
             <c:forEach var="appointment" items="${listAppointment}" varStatus="loop">
-                            {id: ${appointment.id}, customerId: ${appointment.customerId}, staffId: ${appointment.staffId}, appointmentTime: '${appointment.appointmentTime}', status: '${appointment.status}', customerName: '${appointment.customerName}', services: '${appointment.services}', totalAmount: ${appointment.totalAmount}, branchId: ${appointment.branchId}
+                            {
+                            id: ${appointment.id}, customerId: ${appointment.customerId}, staffId: ${appointment.staffId}, appointmentTime: '${appointment.appointmentTime}', status: '${appointment.status}', customerName: '${appointment.customerName}', services: '${appointment.services}', totalAmount: ${appointment.totalAmount}, branchId: ${appointment.branchId}
                             }<c:if test="${!loop.last}">,</c:if>
             </c:forEach>
                             ];
@@ -1363,6 +1364,9 @@
                             }
                             }
 
+                            // Khai báo biến toàn cục cho event handler
+                            let staffChangeHandler = null;
+
                             function initFlatpickrAndGenerateTimeSlots() {
                             const addAppointmentDateInput = document.getElementById('addAppointmentDate');
                             const addStaffIdSelect = document.getElementById('addStaffId');
@@ -1408,8 +1412,11 @@
                             });
                             // Set default date to today and trigger initial time slot generation
                             flatpickrInstance.setDate(today, true);
-                            // Handle staff change to regenerate slots
-                            addStaffIdSelect.addEventListener('change', function () {
+                            // Đảm bảo chỉ gắn 1 event listener cho staff select
+                            if (staffChangeHandler) {
+                            addStaffIdSelect.removeEventListener('change', staffChangeHandler);
+                            }
+                            staffChangeHandler = function () {
                             const selectedDate = addAppointmentDateInput.value ? new Date(addAppointmentDateInput.value) : today;
                             const staffId = this.value || null;
                             const timeSlotsContainer = document.getElementById('timeSlotsContainer');
@@ -1417,7 +1424,8 @@
                             document.getElementById('addAppointmentTime').value = '';
                             document.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
                             generateTimeSlots(selectedDate, staffId);
-                            });
+                            };
+                            addStaffIdSelect.addEventListener('change', staffChangeHandler);
                             }
 
                             // Open add modal
