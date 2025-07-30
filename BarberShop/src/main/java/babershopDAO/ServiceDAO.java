@@ -215,17 +215,51 @@ public class ServiceDAO {
         return null;
     }
 
-    public void insertService(String name, double price, int duration, String description) {
-        String sql = "INSERT INTO Service (name, price, duration, description) VALUES (?,?,?,?)";
+   public void insertService(String name, double price, int duration, String description, String image, int categoryID) {
+    String sql = "INSERT INTO Service (name, price, duration, description, image, categoryID) VALUES (?, ?, ?, ?, ?, ?)";
+    try (Connection con = getConnect()) {
+        if (con == null) {
+            System.out.println("ServiceDAO.insertService: Connection is null");
+            return;
+        }
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, name);
+        ps.setDouble(2, price);
+        ps.setInt(3, duration);
+        ps.setString(4, description);
+        ps.setString(5, image);
+        ps.setInt(6, categoryID);
+        int rowsAffected = ps.executeUpdate();
+        System.out.println("ServiceDAO.insertService: Inserted " + rowsAffected + " rows for service: " + name);
+    } catch (Exception e) {
+        System.out.println("ServiceDAO.insertService: Error: " + e.getMessage());
+    }
+}
+public void updateService(int id, String name, float price, int duration, String description, String imagePath, int categoryID) {
+        String sql = "UPDATE Service SET name = ?, price = ?, duration = ?, description = ?, categoryID = ?" +
+                     (imagePath != null ? ", image = ?" : "") + " WHERE id = ?";
         try (Connection con = getConnect()) {
+            if (con == null) {
+                System.out.println("ServiceDAO.updateService: Connection is null");
+                return;
+            }
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, name);
-            ps.setDouble(2, price);
+            ps.setFloat(2, price);
             ps.setInt(3, duration);
             ps.setString(4, description);
-            ps.executeUpdate();
+            ps.setInt(5, categoryID);
+            if (imagePath != null) {
+                ps.setString(6, imagePath);
+                ps.setInt(7, id);
+            } else {
+                ps.setInt(6, id);
+            }
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("ServiceDAO.updateService: Updated " + rowsAffected + " rows for service id=" + id +
+                    ", imagePath=" + imagePath);
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("ServiceDAO.updateService: Error: " + e.getMessage());
         }
     }
 

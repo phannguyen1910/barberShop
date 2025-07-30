@@ -488,7 +488,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="${pageContext.request.contextPath}/views/admin/serviceManagement.jsp" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/ViewServicesServlet" class="nav-link">
                             <i class="fas fa-store"></i>
                             <span>Quản lý Dịch Vụ</span>
                         </a>

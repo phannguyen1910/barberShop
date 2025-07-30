@@ -77,6 +77,7 @@ public class VnpayReturnServlet extends HttpServlet {
                     // Cập nhật trạng thái lịch hẹn
                     if ("final".equalsIgnoreCase(paymentType)) {
                         appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "Completed");
+                     
                     } else {
                         appointmentDAO.updateAppointmentStatusAfterPayment(appointmentId, "Confirmed");
                     }
