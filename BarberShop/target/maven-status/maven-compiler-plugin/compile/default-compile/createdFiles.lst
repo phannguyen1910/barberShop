@@ -22,6 +22,7 @@ controller\ServiceManagement\VoucherServlet$ResponseWrapper.class
 controller\Payment\VnpayReturnServlet.class
 controller\AddServiceServlet.class
 model\ChatMessage.class
+model\CustomerVoucher.class
 controller\Authentication\ResendOTPServlet.class
 controller\Authentication\SendOTPServlet$1.class
 controller\Authentication\ValidateOTP.class
@@ -69,6 +70,7 @@ model\Holiday.class
 controller\AppointmentManagement\AppointmentManagerServlet.class
 controller\CustomerManagement\HistoryAppointmentServlet$1.class
 babershopDAO\BranchDAO.class
+controller\AppointmentManagement\DashBoardServlet.class
 controller\ServiceManagement\ServiceDurationServlet$ServiceDurationResponse.class
 babershopDAO\VoucherDAO.class
 controller\AppointmentManagement\ChangeStatusServlet.class

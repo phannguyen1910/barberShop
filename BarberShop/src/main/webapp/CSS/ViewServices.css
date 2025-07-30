@@ -1,17 +1,45 @@
-        /* Giữ nguyên CSS */
-        /* Giữ nguyên CSS hiện tại */
-        .custom-navbar {
-            background: rgba(29, 29, 27, 0.95) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid rgba(218, 165, 32, 0.3) !important;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1100;
-            height: 70px;
-        }
+/* Navbar styling */
+.custom-navbar {
+    background: #201E15 !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(218, 165, 32, 0.3) !important;
+    z-index: 1100;
+    height: 90px;
+    transition: transform 0.3s ease;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+}
 
+.custom-navbar.navbar-hidden {
+    transform: translateY(-100%);
+}
+
+.navbar-brand {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #DAA520 !important;
+}
+
+.navbar-nav .nav-link {
+    color: #fff !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #DAA520 !important;
+}
+
+/* ...giữ các phần còn lại như bạn đã có... */
+
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    padding-top: 90px; /* tăng từ 70px lên 90px */
+}
         .navbar-brand img {
             border-radius: 50%;
             border: 2px solid #DAA520;

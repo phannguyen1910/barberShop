@@ -14,33 +14,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/ViewServices.css"> 
-    <style>
-        option[value="dichvu1"] {
-          color: black;
-        }
-
-        option[value="dichvu2"] {
-          color: black;
-        }
-
-        option[value="dichvu3"] {
-          color: black;
-        }
-        option[value="dichvu4"] {
-          color: black;
-        }
-
-        option[value="dichvu5"] {
-          color: black;
-        }
-
-    </style>
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg custom-navbar border-bottom shadow-sm">
     <div class="container-fluid px-4">
-        <a class="navbar-brand d-flex align-items-center" href="index.jsp">
+        <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/DashboardServlet">
             <img src="${pageContext.request.contextPath}/image/image_logo/LogoShop.png" alt="Logo" width="55" height="55" class="me-2">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -53,7 +31,8 @@
                     <span>${sessionScope.admin.lastName} ${sessionScope.admin.firstName}</span>
                 </div>
                 <a class="btn btn-warning" href="${pageContext.request.contextPath}/logout" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
-                    <i class="fas fa-sign-out-alt me-1"></i> Đăng xuất
+                    <i class="fas fa-sign-out-alt me-1"></i>
+                    Đăng xuất
                 </a>
             </div>
         </div>
